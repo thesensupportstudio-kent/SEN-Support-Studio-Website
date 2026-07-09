@@ -80,17 +80,38 @@ export async function onRequestPost(context) {
       html: buildEmailHtml({ clientName, sessionDate, serviceType, summary, nextSteps })
     };
 
-    return new Response(JSON.stringify({
-      ok: true,
-      diagnostic: 'built payload without calling Resend',
-      hasApiKey: !!env.RESEND_API_KEY,
-      fromUsed: emailPayload.from,
-      toUsed: emailPayload.to
-    }), {
+    if (!env.RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const resendResp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + env.RESEND_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(emailPayload)
+    });
+
+    const resendText = await resendResp.text();
+    console.log('RESEND_STATUS ' + resendResp.status + ' BODY ' + resendText);
+
+    if (!resendResp.ok) {
+      return new Response(JSON.stringify({ error: 'Resend rejected the email.', status: resendResp.status, detail: resendText }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: true, resendStatus: resendResp.status, resendBody: resendText }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
+    console.log('CAUGHT_EXCEPTION ' + String(err && err.message));
     return new Response(JSON.stringify({ error: 'Unexpected server error.', detail: String(err && err.message) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
