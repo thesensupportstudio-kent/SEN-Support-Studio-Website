@@ -31,3 +31,6 @@ build/
 # Testing
 coverage/
 .nyc_output/
+
+# Cloudflare
+.wrangler/

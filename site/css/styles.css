@@ -1226,6 +1226,144 @@ img {
   display: none !important;
 }
 
+/* ---------- Internal tools ---------- */
+
+.internal-bar {
+  background: var(--green-dark);
+  color: var(--text-on-green);
+  text-align: center;
+  padding: 10px 20px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.internal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 48px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border-green);
+  flex-wrap: wrap;
+}
+
+.internal-header .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.internal-header .nav-logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.internal-header .nav-logo span {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  color: var(--green);
+  line-height: 1.1;
+}
+
+.internal-header a.internal-exit {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+.internal-header a.internal-exit:hover {
+  color: var(--green);
+}
+
+.internal-section {
+  padding: 48px 48px 96px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.internal-section h1 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 34px;
+  color: var(--green);
+  margin: 0 0 8px;
+}
+
+.internal-section .lede {
+  font-size: 15px;
+  color: var(--text-light);
+  margin: 0 0 32px;
+}
+
+.internal-card {
+  background: var(--offwhite);
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.internal-card .form-field {
+  margin-bottom: 18px;
+}
+
+.internal-form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.internal-form-row .form-field {
+  flex: 1 1 220px;
+}
+
+.form-error {
+  background: rgba(178, 58, 58, 0.1);
+  border: 1px solid rgba(178, 58, 58, 0.3);
+  color: #8a2d2d;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.internal-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.internal-link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--offwhite);
+  border: 1px solid var(--border-green);
+  border-radius: 14px;
+  padding: 18px 20px;
+  text-decoration: none;
+}
+
+.internal-link-card .title {
+  font-weight: 700;
+  color: var(--green);
+  font-size: 16px;
+}
+
+.internal-link-card .desc {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.internal-link-card:hover {
+  border-color: var(--green);
+}
+
 /* ---------- Book In page ---------- */
 
 .book-hero {
