@@ -426,27 +426,27 @@ img {
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 460px;
-  height: 460px;
+  width: 380px;
+  height: 380px;
 }
 
 .hero-art .circle {
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 340px;
+  height: 340px;
   border-radius: 50%;
   background: var(--cream-dark);
-  top: 10px;
-  left: 24px;
+  top: 8px;
+  left: 20px;
   z-index: 0;
 }
 
 .hero-art img {
   position: relative;
   z-index: 1;
-  width: 420px;
-  height: 420px;
-  object-fit: contain;
+  width: 340px;
+  height: 340px;
+  object-fit: cover;
   border-radius: 32px;
   box-shadow: 0 24px 48px rgba(45, 84, 57, 0.18);
 }
