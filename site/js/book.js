@@ -2,6 +2,7 @@
   var SERVICES = {
     'tuition-parent': {
       role: 'parent', label: '1:1 Tuition',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition',
       options: [
         { id: 'single', label: 'Single session', price: '£50 / hour' },
         { id: 'pack', label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
@@ -9,18 +10,21 @@
     },
     'sensory-parent': {
       role: 'parent', label: 'Sensory Profile Builder',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/parent-support-sessions-clone',
       options: [
         { id: 'single', label: 'One profile', price: '£80 (questionnaire, 1hr chat & report)' }
       ]
     },
     'support': {
       role: 'parent', label: 'Support Sessions',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone',
       options: [
         { id: 'single', label: 'Single hour', price: '£50 / hour, in person or online' }
       ]
     },
     'tuition-school': {
       role: 'school', label: '1:1 Pupil Tuition',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone-1',
       options: [
         { id: 'single', label: 'Single session', price: '£60 / hour' },
         { id: 'pack', label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
@@ -28,6 +32,7 @@
     },
     'sensory-school': {
       role: 'school', label: 'Sensory Profile Builder',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/sensory-profile-builder-parents-carers-clone',
       options: [
         { id: 'single', label: 'Single profile', price: '£80 / hour' },
         { id: 'pack', label: 'Pack of 5 profiles', price: '£380 total (5% off)' }
@@ -35,6 +40,7 @@
     },
     'sentence-steps': {
       role: 'school', label: 'Sentence Steps Intervention',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/brick-buddies-intervention-schools-clone',
       options: [
         { id: 'single', label: 'Single hour (2 sessions, up to 4 pupils)', price: '£100 / hour' },
         { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
@@ -42,6 +48,7 @@
     },
     'build-buddies': {
       role: 'school', label: 'Build Buddies Intervention',
+      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-tuition-schools-clone',
       options: [
         { id: 'single', label: 'Single hour (2 sessions, up to 3 pupils)', price: '£100 / hour' },
         { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
@@ -60,8 +67,40 @@
     typeList: document.getElementById('type-list'),
     summary: document.getElementById('booking-summary'),
     summaryName: document.getElementById('summary-name'),
-    summaryPrice: document.getElementById('summary-price')
+    summaryPrice: document.getElementById('summary-price'),
+    calendlyHint: document.getElementById('calendly-hint'),
+    calendlyWidget: document.getElementById('calendly-widget')
   };
+
+  function updateCalendly(svc) {
+    if (!els.calendlyWidget) return;
+
+    if (!svc || !svc.calendlyUrl) {
+      els.calendlyHint.classList.remove('hidden');
+      els.calendlyWidget.classList.add('hidden');
+      els.calendlyWidget.innerHTML = '';
+      els.calendlyWidget.removeAttribute('data-current-url');
+      return;
+    }
+
+    if (els.calendlyWidget.getAttribute('data-current-url') === svc.calendlyUrl) return;
+
+    els.calendlyHint.classList.add('hidden');
+    els.calendlyWidget.classList.remove('hidden');
+    els.calendlyWidget.innerHTML = '';
+    els.calendlyWidget.setAttribute('data-current-url', svc.calendlyUrl);
+
+    var init = function () {
+      if (window.Calendly) {
+        window.Calendly.initInlineWidget({ url: svc.calendlyUrl, parentElement: els.calendlyWidget });
+      }
+    };
+    if (window.Calendly) {
+      init();
+    } else {
+      window.addEventListener('load', init, { once: true });
+    }
+  }
 
   function selectRole(role) {
     state.role = role;
@@ -102,6 +141,7 @@
     });
 
     var svc = state.serviceSlug ? SERVICES[state.serviceSlug] : null;
+    updateCalendly(svc);
     var showBookingType = !!(svc && svc.options.length > 1);
 
     els.typeField.classList.toggle('hidden', !showBookingType);

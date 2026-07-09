@@ -1442,6 +1442,13 @@ img {
   display: block;
 }
 
+.calendly-hint {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+
 .book-card.placeholder .tag {
   font-weight: 700;
   font-size: 13px;
