@@ -44,9 +44,17 @@ function buildEmailHtml(data) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  let body;
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Invalid request body.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
+  try {
     const clientName = (body.clientName || '').trim();
     const clientEmail = (body.clientEmail || '').trim();
     const ccEmail = (body.ccEmail || '').trim();
@@ -69,6 +77,13 @@ export async function onRequestPost(context) {
       });
     }
 
+    if (!env.RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const to = [clientEmail];
     if (ccEmail) to.push(ccEmail);
 
@@ -80,13 +95,6 @@ export async function onRequestPost(context) {
       html: buildEmailHtml({ clientName, sessionDate, serviceType, summary, nextSteps })
     };
 
-    if (!env.RESEND_API_KEY) {
-      return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -96,22 +104,21 @@ export async function onRequestPost(context) {
       body: JSON.stringify(emailPayload)
     });
 
-    const resendText = await resendResp.text();
-    console.log('RESEND_STATUS ' + resendResp.status + ' BODY ' + resendText);
-
     if (!resendResp.ok) {
-      return new Response(JSON.stringify({ error: 'Resend rejected the email.', status: resendResp.status, detail: resendText }), {
-        status: 200,
+      const detail = await resendResp.text().catch(function () { return ''; });
+      console.log('Resend rejected send: ' + resendResp.status + ' ' + detail);
+      return new Response(JSON.stringify({ error: 'Resend could not send the email.', detail: detail }), {
+        status: 502,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    return new Response(JSON.stringify({ ok: true, resendStatus: resendResp.status, resendBody: resendText }), {
+    return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    console.log('CAUGHT_EXCEPTION ' + String(err && err.message));
+    console.log('Unhandled error in send-report: ' + String(err && err.message));
     return new Response(JSON.stringify({ error: 'Unexpected server error.', detail: String(err && err.message) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
