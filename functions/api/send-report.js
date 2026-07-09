@@ -13,28 +13,33 @@ function nl2p(str) {
   return String(str)
     .split(/\n{2,}/)
     .map(function (para) {
-      return '<p style="margin:0 0 14px;">' + escapeHtml(para).replace(/\n/g, '<br>') + '</p>';
+      return '<p style="margin:0 0 10px;">' + escapeHtml(para).replace(/\n/g, '<br>') + '</p>';
+    })
+    .join('');
+}
+
+function buildSectionsHtml(sections) {
+  return sections
+    .filter(function (s) { return s && s.content; })
+    .map(function (s) {
+      return (
+        '<h2 style="font-family:Georgia,serif;font-weight:400;font-size:16px;color:#2D5439;margin:20px 0 8px;">' + escapeHtml(s.heading) + '</h2>' +
+        nl2p(s.content)
+      );
     })
     .join('');
 }
 
 function buildEmailHtml(data) {
-  var nextStepsBlock = data.nextSteps
-    ? '<h2 style="font-family:Georgia,serif;font-weight:400;font-size:18px;color:#2D5439;margin:24px 0 10px;">Next steps</h2>' + nl2p(data.nextSteps)
-    : '';
-
   return (
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
         '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
-        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:24px;color:#2D5439;margin:0 0 20px;">Session Report</h1>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 16px;">' + escapeHtml(data.title) + '</h1>' +
         '<p style="font-size:14px;color:#5b6f5f;margin:0 0 4px;"><strong>Client:</strong> ' + escapeHtml(data.clientName) + '</p>' +
-        '<p style="font-size:14px;color:#5b6f5f;margin:0 0 4px;"><strong>Date:</strong> ' + escapeHtml(data.sessionDate) + '</p>' +
-        '<p style="font-size:14px;color:#5b6f5f;margin:0 0 24px;"><strong>Session type:</strong> ' + escapeHtml(data.serviceType) + '</p>' +
-        '<h2 style="font-family:Georgia,serif;font-weight:400;font-size:18px;color:#2D5439;margin:0 0 10px;">What we worked on</h2>' +
-        nl2p(data.summary) +
-        nextStepsBlock +
-        '<hr style="border:none;border-top:1px solid rgba(45,84,57,0.15);margin:28px 0 16px;">' +
+        '<p style="font-size:14px;color:#5b6f5f;margin:0 0 20px;"><strong>Date:</strong> ' + escapeHtml(data.sessionDate) + '</p>' +
+        buildSectionsHtml(data.sections) +
+        '<hr style="border:none;border-top:1px solid rgba(45,84,57,0.15);margin:24px 0 16px;">' +
         '<p style="font-size:13px;color:#5b8a63;margin:0;">Any questions about this report? Just reply to this email.</p>' +
       '</div>' +
     '</div>'
@@ -59,12 +64,11 @@ export async function onRequestPost(context) {
     const clientEmail = (body.clientEmail || '').trim();
     const ccEmail = (body.ccEmail || '').trim();
     const sessionDate = (body.sessionDate || '').trim();
-    const serviceType = (body.serviceType || '').trim();
-    const summary = (body.summary || '').trim();
-    const nextSteps = (body.nextSteps || '').trim();
+    const title = (body.title || 'Session Report').trim();
+    const sections = Array.isArray(body.sections) ? body.sections : [];
 
-    if (!clientName || !clientEmail || !sessionDate || !summary) {
-      return new Response(JSON.stringify({ error: 'Please fill in client name, email, session date and summary.' }), {
+    if (!clientName || !clientEmail || !sessionDate || sections.length === 0) {
+      return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -91,8 +95,8 @@ export async function onRequestPost(context) {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: to,
       bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
-      subject: 'Session Report — ' + clientName + ' — ' + sessionDate,
-      html: buildEmailHtml({ clientName, sessionDate, serviceType, summary, nextSteps })
+      subject: title + ' — ' + clientName + ' — ' + sessionDate,
+      html: buildEmailHtml({ title, clientName, sessionDate, sections })
     };
 
     const resendResp = await fetch('https://api.resend.com/emails', {

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>1:1 Tuition Report | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=1783632195">
+</head>
+<body>
+<div class="page">
+
+  <div class="internal-bar">Staff Only</div>
+  <header class="internal-header">
+    <a href="index.html" class="nav-logo">
+      <img src="../assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>Internal Tools</span>
+    </a>
+    <a href="index.html" class="internal-exit">&larr; Internal Tools</a>
+  </header>
+
+  <section class="internal-section">
+    <h1>1:1 Tuition Report</h1>
+    <p class="lede">Quick to fill in — mostly tick boxes. Emails straight to the parent/carer, with a copy to your own inbox.</p>
+
+    <div class="internal-card">
+      <div id="report-error" class="form-error hidden"></div>
+
+      <form id="report-form">
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="client-name">Client / family name</label>
+            <input type="text" id="client-name" name="clientName" required placeholder="e.g. The Wilson family">
+          </div>
+          <div class="form-field">
+            <label for="session-date">Session date</label>
+            <input type="date" id="session-date" name="sessionDate" required>
+          </div>
+        </div>
+
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="client-email">Client email</label>
+            <input type="email" id="client-email" name="clientEmail" required placeholder="parent@example.com">
+          </div>
+          <div class="form-field">
+            <label for="cc-email">CC email (optional)</label>
+            <input type="email" id="cc-email" name="ccEmail" placeholder="e.g. second parent">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Engagement today</label>
+          <div class="toggle-row" id="engagement-group">
+            <label class="pill-option"><input type="radio" name="engagement" value="Excellent">Excellent</label>
+            <label class="pill-option"><input type="radio" name="engagement" value="Good">Good</label>
+            <label class="pill-option"><input type="radio" name="engagement" value="Mixed">Mixed</label>
+            <label class="pill-option"><input type="radio" name="engagement" value="Found it tough">Found it tough</label>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Areas covered</label>
+          <div class="pill-group" id="areas-group">
+            <label class="pill-option"><input type="checkbox" name="areas" value="Reading &amp; Phonics">Reading &amp; Phonics</label>
+            <label class="pill-option"><input type="checkbox" name="areas" value="Writing">Writing</label>
+            <label class="pill-option"><input type="checkbox" name="areas" value="Maths &amp; Number">Maths &amp; Number</label>
+            <label class="pill-option"><input type="checkbox" name="areas" value="Speech &amp; Language">Speech &amp; Language</label>
+            <label class="pill-option"><input type="checkbox" name="areas" value="Emotional Regulation">Emotional Regulation</label>
+            <label class="pill-option"><input type="checkbox" id="area-other-check" name="areas" value="Other">Other</label>
+          </div>
+          <div class="subfield hidden" id="area-other-wrap">
+            <input type="text" id="area-other-detail" placeholder="What else did you cover?">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="summary">What we worked on</label>
+          <textarea id="summary" name="summary" rows="4" required placeholder="A little more detail — how the session went, how the child engaged..."></textarea>
+        </div>
+
+        <div class="form-field">
+          <label>Homework / practice set</label>
+          <div class="toggle-row" id="homework-group">
+            <label class="pill-option"><input type="radio" name="homework" value="yes">Yes</label>
+            <label class="pill-option"><input type="radio" name="homework" value="no">No</label>
+          </div>
+          <div class="subfield hidden" id="homework-detail-wrap">
+            <input type="text" id="homework-detail" placeholder="What was set?">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="next-steps">Next steps (optional)</label>
+          <textarea id="next-steps" name="nextSteps" rows="3" placeholder="Focus for next session..."></textarea>
+        </div>
+
+        <button type="submit" class="form-submit" id="report-submit">Send Report to Client</button>
+      </form>
+
+      <div id="report-success" class="form-success hidden">
+        <h3>Report sent</h3>
+        <p id="report-success-detail"></p>
+        <button type="button" class="form-submit" id="report-reset">Send another report</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="../js/internal-reports-tuition.js?v=1783632195"></script>
+</body>
+</html>
