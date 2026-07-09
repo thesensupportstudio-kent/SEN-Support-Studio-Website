@@ -72,7 +72,7 @@
     calendlyWidget: document.getElementById('calendly-widget')
   };
 
-  var CALENDLY_BRAND_PARAMS = 'background_color=fbfaf5&text_color=2d5439&primary_color=f8f1de';
+  var CALENDLY_BRAND_PARAMS = 'background_color=fbfaf5&text_color=2d5439&primary_color=a8c0ac';
 
   function brandedCalendlyUrl(url) {
     return url + (url.indexOf('?') === -1 ? '?' : '&') + CALENDLY_BRAND_PARAMS;
