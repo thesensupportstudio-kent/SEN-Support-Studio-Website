@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Support Session Summary | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=1783637649">
+</head>
+<body>
+<div class="page">
+
+  <div class="internal-bar">Staff Only</div>
+  <header class="internal-header">
+    <a href="index.html" class="nav-logo">
+      <img src="../assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>Internal Tools</span>
+    </a>
+    <a href="index.html" class="internal-exit">&larr; Internal Tools</a>
+  </header>
+
+  <section class="internal-section">
+    <h1>Support Session Summary</h1>
+    <p class="lede">For parent support/advisory sessions — what was discussed, where the family needs most support, and your recommendations. Emails to the parent, with a copy to your own inbox.</p>
+
+    <div class="internal-card">
+      <div id="report-error" class="form-error hidden"></div>
+
+      <form id="report-form">
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="client-name">Parent / family name</label>
+            <input type="text" id="client-name" name="clientName" required placeholder="e.g. The Wilson family">
+          </div>
+          <div class="form-field">
+            <label for="session-date">Session date</label>
+            <input type="date" id="session-date" name="sessionDate" required>
+          </div>
+        </div>
+
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="client-email">Parent email</label>
+            <input type="email" id="client-email" name="clientEmail" required placeholder="parent@example.com">
+          </div>
+          <div class="form-field">
+            <label for="cc-email">CC email (optional)</label>
+            <input type="email" id="cc-email" name="ccEmail" placeholder="e.g. second parent">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>What we discussed</label>
+          <div class="pill-group" id="topics-group">
+            <label class="pill-option"><input type="checkbox" name="topics" value="Behaviour &amp; routines at home">Behaviour &amp; routines at home</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="School communication &amp; EHCP process">School communication &amp; EHCP process</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Sensory needs">Sensory needs</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Emotional wellbeing &amp; regulation">Emotional wellbeing &amp; regulation</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Communication &amp; speech">Communication &amp; speech</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Learning &amp; progress at school">Learning &amp; progress at school</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Sleep">Sleep</label>
+            <label class="pill-option"><input type="checkbox" name="topics" value="Family &amp; sibling relationships">Family &amp; sibling relationships</label>
+            <label class="pill-option"><input type="checkbox" id="topic-other-check" name="topics" value="Other">Other</label>
+          </div>
+          <div class="subfield hidden" id="topic-other-wrap">
+            <input type="text" id="topic-other-detail" placeholder="What else did you discuss?">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="struggles">Where the family is finding things hardest / what they'd like support with</label>
+          <textarea id="struggles" name="struggles" rows="4" required placeholder="The main pressures or concerns raised, in the family's own words where possible..."></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="suggestions">Guidance &amp; suggestions offered</label>
+          <textarea id="suggestions" name="suggestions" rows="4" required placeholder="Strategies, resources or approaches you talked through..."></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="next-steps">Suggested next steps (optional)</label>
+          <textarea id="next-steps" name="nextSteps" rows="3" placeholder="What to try before the next session, or what you'll follow up on..."></textarea>
+        </div>
+
+        <button type="submit" class="form-submit" id="report-submit">Send Summary to Parent</button>
+      </form>
+
+      <div id="report-success" class="form-success hidden">
+        <h3>Summary sent</h3>
+        <p id="report-success-detail"></p>
+        <button type="button" class="form-submit" id="report-reset">Send another summary</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="../js/internal-reports-support.js?v=1783637649"></script>
+</body>
+</html>
