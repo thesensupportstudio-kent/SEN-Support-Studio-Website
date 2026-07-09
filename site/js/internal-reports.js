@@ -56,7 +56,11 @@
       })
       .then(function (result) {
         if (!result.ok) {
-          throw new Error(result.data && result.data.error ? result.data.error : 'Something went wrong sending the report.');
+          var msg = (result.data && result.data.error) || 'Something went wrong sending the report.';
+          if (result.data && result.data.detail) {
+            msg += ' (' + result.data.detail + ')';
+          }
+          throw new Error(msg);
         }
         successDetail.textContent = 'Sent to ' + payload.clientEmail + ' for the ' + payload.sessionDate + ' session.';
         form.classList.add('hidden');
