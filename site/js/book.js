@@ -72,6 +72,12 @@
     calendlyWidget: document.getElementById('calendly-widget')
   };
 
+  var CALENDLY_BRAND_PARAMS = 'background_color=f8f1de&text_color=3f5c46&primary_color=2d5439';
+
+  function brandedCalendlyUrl(url) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + CALENDLY_BRAND_PARAMS;
+  }
+
   function updateCalendly(svc) {
     if (!els.calendlyWidget) return;
 
@@ -92,7 +98,7 @@
 
     var init = function () {
       if (window.Calendly) {
-        window.Calendly.initInlineWidget({ url: svc.calendlyUrl, parentElement: els.calendlyWidget });
+        window.Calendly.initInlineWidget({ url: brandedCalendlyUrl(svc.calendlyUrl), parentElement: els.calendlyWidget });
       }
     };
     if (window.Calendly) {
