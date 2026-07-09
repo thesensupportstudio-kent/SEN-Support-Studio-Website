@@ -54,68 +54,86 @@ export async function onRequestPost(context) {
     });
   }
 
-  const clientName = (body.clientName || '').trim();
-  const clientEmail = (body.clientEmail || '').trim();
-  const ccEmail = (body.ccEmail || '').trim();
-  const sessionDate = (body.sessionDate || '').trim();
-  const serviceType = (body.serviceType || '').trim();
-  const summary = (body.summary || '').trim();
-  const nextSteps = (body.nextSteps || '').trim();
+  try {
+    const clientName = (body.clientName || '').trim();
+    const clientEmail = (body.clientEmail || '').trim();
+    const ccEmail = (body.ccEmail || '').trim();
+    const sessionDate = (body.sessionDate || '').trim();
+    const serviceType = (body.serviceType || '').trim();
+    const summary = (body.summary || '').trim();
+    const nextSteps = (body.nextSteps || '').trim();
 
-  if (!clientName || !clientEmail || !sessionDate || !summary) {
-    return new Response(JSON.stringify({ error: 'Please fill in client name, email, session date and summary.' }), {
-      status: 400,
+    if (!clientName || !clientEmail || !sessionDate || !summary) {
+      return new Response(JSON.stringify({ error: 'Please fill in client name, email, session date and summary.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!EMAIL_RE.test(clientEmail) || (ccEmail && !EMAIL_RE.test(ccEmail))) {
+      return new Response(JSON.stringify({ error: 'Please check the email address(es) entered.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!env.RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const to = [clientEmail];
+    if (ccEmail) to.push(ccEmail);
+
+    const emailPayload = {
+      from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+      to: to,
+      bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
+      subject: 'Session Report — ' + clientName + ' — ' + sessionDate,
+      html: buildEmailHtml({ clientName, sessionDate, serviceType, summary, nextSteps })
+    };
+
+    let resendResp;
+    try {
+      resendResp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + env.RESEND_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailPayload)
+      });
+    } catch (fetchErr) {
+      console.error('Resend fetch threw', fetchErr && fetchErr.message);
+      return new Response(JSON.stringify({ error: 'Could not reach Resend.', detail: String(fetchErr && fetchErr.message) }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!resendResp.ok) {
+      let detail = '';
+      try {
+        detail = await resendResp.text();
+      } catch (e) {}
+      console.error('Resend responded with error', resendResp.status, detail);
+      return new Response(JSON.stringify({ error: 'Resend could not send the email.', detail: detail }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
-  }
-
-  if (!EMAIL_RE.test(clientEmail) || (ccEmail && !EMAIL_RE.test(ccEmail))) {
-    return new Response(JSON.stringify({ error: 'Please check the email address(es) entered.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  if (!env.RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
+  } catch (err) {
+    console.error('Unhandled error in send-report', err && err.message, err && err.stack);
+    return new Response(JSON.stringify({ error: 'Unexpected server error.', detail: String(err && err.message) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
   }
-
-  const to = [clientEmail];
-  if (ccEmail) to.push(ccEmail);
-
-  const emailPayload = {
-    from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
-    to: to,
-    bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
-    subject: 'Session Report — ' + clientName + ' — ' + sessionDate,
-    html: buildEmailHtml({ clientName, sessionDate, serviceType, summary, nextSteps })
-  };
-
-  const resendResp = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + env.RESEND_API_KEY,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(emailPayload)
-  });
-
-  if (!resendResp.ok) {
-    let detail = '';
-    try {
-      detail = await resendResp.text();
-    } catch (e) {}
-    return new Response(JSON.stringify({ error: 'Resend could not send the email.', detail: detail }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  });
 }
