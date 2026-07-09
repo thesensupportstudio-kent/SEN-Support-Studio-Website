@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#F8F1DE; }
+    a { color:#2D5439; }
+    a:hover { color:#1f3d29; }
+    ::placeholder { color:#8a9d8d; }
+  </style>
+</helmet>
+<div style="background:#F8F1DE; min-height:100vh; display:flex; flex-direction:column;">
+  <dc-import name="Nav" active="contact" hint-size="100%,120px"></dc-import>
+
+  <section style="padding:72px 48px 24px; max-width:900px; margin:0 auto; width:100%; box-sizing:border-box; text-align:center; display:flex; flex-direction:column; gap:16px;">
+    <h1 style="font-family:'Bevan',serif; font-weight:400; font-size:44px; color:#2D5439; margin:0;">Get in Touch</h1>
+    <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:600; font-size:19px; color:#3f5c46; margin:0;">Questions, enquiries, or just not sure where to start? Send us a message.</p>
+  </section>
+
+  <section style="padding:32px 48px 96px; max-width:1100px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; gap:48px; flex-wrap:wrap;">
+    <div style="flex:1 1 320px; min-width:280px; display:flex; flex-direction:column; gap:24px;">
+      <div style="background:#FBFAF5; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:18px;">
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Email</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:16px; color:#2D5439;">[email address]</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Phone</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:16px; color:#2D5439;">[phone number]</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Serving</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:16px; color:#2D5439;">[town / region]</span>
+        </div>
+      </div>
+      <img src="uploads/vector-beige.png" alt="Tree symbol" style="width:100%; max-width:220px; height:auto; border-radius:18px; align-self:center;" />
+    </div>
+
+    <div style="flex:1 1 420px; min-width:320px; background:#FBFAF5; border-radius:20px; padding:40px;">
+      <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ handleSubmit }}" style="display:flex; flex-direction:column; gap:18px;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439;">Name</label>
+            <input type="text" required="{{ true }}" value="{{ form.name }}" onChange="{{ setName }}" style="font-family:'Urbanist',sans-serif; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid rgba(45,84,57,0.25); background:#FBFAF5; color:#2D5439;" placeholder="Your name" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439;">Email</label>
+            <input type="email" required="{{ true }}" value="{{ form.email }}" onChange="{{ setEmail }}" style="font-family:'Urbanist',sans-serif; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid rgba(45,84,57,0.25); background:#FBFAF5; color:#2D5439;" placeholder="you@example.com" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439;">I am a...</label>
+            <select value="{{ form.role }}" onChange="{{ setRole }}" style="font-family:'Urbanist',sans-serif; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid rgba(45,84,57,0.25); background:#FBFAF5; color:#2D5439;">
+              <option value="parent">Parent / Carer</option>
+              <option value="school">School / Educator</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439;">Message</label>
+            <textarea rows="5" required="{{ true }}" value="{{ form.message }}" onChange="{{ setMessage }}" style="font-family:'Urbanist',sans-serif; font-size:15px; padding:12px 14px; border-radius:10px; border:1px solid rgba(45,84,57,0.25); background:#FBFAF5; color:#2D5439; resize:vertical;" placeholder="Tell us a little about what you're looking for..."></textarea>
+          </div>
+          <button type="submit" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#FBFAF5; background:#2D5439; padding:16px; border-radius:999px; border:none; cursor:pointer; margin-top:8px;">Send Enquiry</button>
+        </form>
+      </sc-if>
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; padding:32px 0;">
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:24px; color:#2D5439; margin:0;">Thank you!</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46; margin:0;">Your enquiry has been noted, we'll be in touch soon.</p>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,320px"></dc-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    submitted: false,
+    form: { name: '', email: '', role: 'parent', message: '' }
+  };
+  renderVals() {
+    return {
+      submitted: this.state.submitted,
+      form: this.state.form,
+      setName: e => this.setState(s => ({ form: { ...s.form, name: e.target.value } })),
+      setEmail: e => this.setState(s => ({ form: { ...s.form, email: e.target.value } })),
+      setRole: e => this.setState(s => ({ form: { ...s.form, role: e.target.value } })),
+      setMessage: e => this.setState(s => ({ form: { ...s.form, message: e.target.value } })),
+      handleSubmit: e => { e.preventDefault(); this.setState({ submitted: true }); }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

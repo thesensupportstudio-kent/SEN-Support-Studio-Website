@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book In | SEN Support Studio</title>
+<meta name="description" content="Choose a service, pick a time, and pay securely online to secure your place. Launching September 2026.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="announcement-bar">Launching September 2026. Get in touch now to secure your place.</div>
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>SEN Support<br>Studio</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="blog.html" class="nav-link">Resources</a>
+      <a href="testimonials.html" class="nav-link">Testimonials</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <a href="book.html" class="btn-book">Book In</a>
+  </nav>
+
+  <section class="book-hero">
+    <h1>Book In</h1>
+    <p class="lede">We're launching in September 2026. Choose a service, pick a time, and pay securely online to secure your place.</p>
+  </section>
+
+  <section class="book-section">
+
+    <div class="book-card">
+      <div class="book-step-heading">
+        <span class="num">01</span>
+        <h2>Choose your service</h2>
+      </div>
+
+      <div class="book-field">
+        <span class="label">Are you a</span>
+        <div class="role-toggle">
+          <button type="button" class="role-btn" id="role-parent">Parent / Carer</button>
+          <button type="button" class="role-btn" id="role-school">School / Educator</button>
+        </div>
+      </div>
+
+      <div class="book-field hidden" id="service-field">
+        <span class="label">Which service?</span>
+        <div class="service-row-list" id="service-list"></div>
+      </div>
+
+      <div class="book-field hidden" id="type-field">
+        <span class="label">Single session or pack?</span>
+        <div class="type-options" id="type-list"></div>
+      </div>
+
+      <div class="booking-summary hidden" id="booking-summary">
+        <div>
+          <span class="name" id="summary-name"></span>
+          <span class="price" id="summary-price"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="book-card placeholder">
+      <div class="book-step-heading">
+        <span class="num">02</span>
+        <h2>Pick a time</h2>
+      </div>
+      <span class="tag">Placeholder &mdash; Calendly</span>
+      <p>Once connected, live Calendly availability for the selected service appears here so you can pick a slot yourself.</p>
+      <div class="placeholder-code">&lt;div class="calendly-inline-widget" data-url="https://calendly.com/your-link" style="min-width:320px;height:630px;"&gt;&lt;/div&gt;</div>
+    </div>
+
+    <div class="book-card placeholder">
+      <div class="book-step-heading">
+        <span class="num">03</span>
+        <h2>Pay to confirm</h2>
+      </div>
+      <span class="tag">Placeholder &mdash; Stripe / GoCardless</span>
+      <p>Once you connect a payment provider, one of these becomes a live checkout so your booking is confirmed the moment payment goes through.</p>
+      <div class="payment-buttons">
+        <button class="btn-disabled" disabled>Pay by card (Stripe &mdash; not yet connected)</button>
+        <button class="btn-disabled" disabled>Pay by Direct Debit (GoCardless &mdash; not yet connected)</button>
+      </div>
+    </div>
+
+    <p class="book-footnote">Got a question before you book? <a href="contact.html">Get in touch</a> instead.</p>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo-link">
+          <img src="assets/img/mini-logo-green.png" alt="SEN Support Studio" />
+          <span class="footer-brand-name">SEN Support<br>Studio</span>
+        </a>
+        <p class="footer-tagline">Strong roots, space to flourish.</p>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Explore</span>
+        <a href="about.html">About</a>
+        <a href="services.html">Services & Pricing</a>
+        <a href="blog.html">Resources</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Studio</span>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="book.html">Book In</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Get in touch</span>
+        <span>thesensupportstudio@gmail.com</span>
+        <span>[phone number]</span>
+        <span>Serving Kent, UK</span>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SEN Support Studio. All rights reserved.</div>
+  </footer>
+
+</div>
+<script src="js/book.js"></script>
+</body>
+</html>

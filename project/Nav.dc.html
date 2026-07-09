@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+</helmet>
+<div style="background:#2D5439; color:#F8F1DE; text-align:center; padding:10px 20px; font-family:'Urbanist',sans-serif; font-weight:600; font-size:14px; letter-spacing:0.01em;">
+  Launching September 2026. Get in touch now to secure your place.
+</div>
+<nav style="display:flex; align-items:center; justify-content:space-between; gap:24px; padding:18px 48px; background:#F8F1DE; border-bottom:1px solid rgba(45,84,57,0.15); flex-wrap:wrap; font-family:'Urbanist',sans-serif;">
+  <a href="Home.dc.html" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+    <img src="uploads/mini-logo-beige.png" alt="SEN Support Studio" style="width:44px; height:44px; object-fit:contain;" />
+    <span style="font-family:'Bevan',serif; font-size:19px; color:#2D5439; letter-spacing:0.02em; line-height:1.1;">SEN Support<br/>Studio</span>
+  </a>
+  <div style="display:flex; align-items:center; gap:28px; flex-wrap:wrap;">
+    <a href="Home.dc.html" style="{{ linkStyle.home }}" style-hover="color:#2D5439;">Home</a>
+    <a href="About.dc.html" style="{{ linkStyle.about }}" style-hover="color:#2D5439;">About</a>
+    <a href="Services.dc.html" style="{{ linkStyle.services }}" style-hover="color:#2D5439;">Services</a>
+    <a href="Blog.dc.html" style="{{ linkStyle.blog }}" style-hover="color:#2D5439;">Resources</a>
+    <a href="Testimonials.dc.html" style="{{ linkStyle.testimonials }}" style-hover="color:#2D5439;">Testimonials</a>
+    <a href="Contact.dc.html" style="{{ linkStyle.contact }}" style-hover="color:#2D5439;">Contact</a>
+  </div>
+  <a href="Book-a-Session.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#FBFAF5; background:#2D5439; padding:12px 24px; border-radius:999px; text-decoration:none; letter-spacing:0.01em; white-space:nowrap;" style-hover="background:#1f3d29;">Book In</a>
+</nav>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;active&quot;: {&quot;editor&quot;: null, &quot;default&quot;: &quot;home&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const active = this.props.active || '';
+    const base = "font-family:'Urbanist',sans-serif; font-size:15px; text-decoration:none; color:#3f5c46; transition:color .15s;";
+    const activeExtra = " font-weight:700; color:#2D5439; border-bottom:2px solid #2D5439; padding-bottom:2px;";
+    const keys = ['home','about','services','blog','testimonials','contact'];
+    const linkStyle = {};
+    keys.forEach(k => { linkStyle[k] = base + (active === k ? activeExtra : ''); });
+    return { linkStyle };
+  }
+}
+
+</script>
+</body>
+</html>

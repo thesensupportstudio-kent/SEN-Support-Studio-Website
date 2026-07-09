@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#F8F1DE; }
+    a { color:#2D5439; }
+    a:hover { color:#1f3d29; }
+  </style>
+</helmet>
+<div style="background:#F8F1DE; min-height:100vh; display:flex; flex-direction:column;">
+  <dc-import name="Nav" active="home" hint-size="100%,120px"></dc-import>
+
+  <section style="display:flex; align-items:center; justify-content:space-between; gap:56px; padding:88px 48px 96px; max-width:1280px; margin:0 auto; width:100%; box-sizing:border-box; flex-wrap:wrap;">
+    <div style="flex:1 1 440px; min-width:320px; display:flex; flex-direction:column; gap:24px;">
+      <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#2D5439; background:#eee3c8; padding:8px 16px; border-radius:999px; align-self:flex-start;">Launching September 2026</span>
+      <h1 style="font-family:'Bevan',serif; font-weight:400; font-size:56px; line-height:1.08; color:#2D5439; margin:0;">Strong Roots,<br/>Space to Flourish</h1>
+      <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:700; font-size:22px; color:#3f5c46; margin:0;">Specialist SEN support for children, families and schools.</p>
+      <p style="font-family:'Urbanist',sans-serif; font-size:17px; line-height:1.6; color:#3f5c46; margin:0; max-width:480px;">Personalised 1:1 tuition, sensory profiling and language interventions, grounded in evidence and delivered with care, for the young people who need a little extra space to grow.</p>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:8px;">
+        <a href="Book-a-Session.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#FBFAF5; background:#2D5439; padding:16px 32px; border-radius:999px; text-decoration:none;">Book In</a>
+        <a href="Services.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#2D5439; background:transparent; border:2px solid #2D5439; padding:14px 30px; border-radius:999px; text-decoration:none;">Explore Services</a>
+      </div>
+    </div>
+    <div style="flex:0 0 auto; display:flex; align-items:center; justify-content:center; position:relative; width:380px; height:380px;">
+      <div style="position:absolute; width:340px; height:340px; border-radius:50%; background:#eee3c8; top:8px; left:20px; z-index:0;"></div>
+      <img src="uploads/vector-green.png" alt="SEN Support Studio tree symbol" style="position:relative; z-index:1; width:340px; height:340px; object-fit:cover; border-radius:32px; box-shadow:0 24px 48px rgba(45,84,57,0.18);" />
+    </div>
+  </section>
+
+  <section style="background:#FBFAF5; padding:80px 48px;">
+    <div style="max-width:1280px; margin:0 auto; display:flex; flex-direction:column; gap:40px;">
+      <div style="text-align:center; display:flex; flex-direction:column; gap:12px;">
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:34px; color:#2D5439; margin:0;">Who We Support</h2>
+        <p style="font-family:'Urbanist',sans-serif; font-size:16px; color:#5b6f5f; margin:0;">Two tailored paths, one shared goal: helping children thrive.</p>
+      </div>
+      <div style="display:flex; gap:32px; flex-wrap:wrap; justify-content:center;">
+        <div style="flex:1 1 420px; max-width:520px; background:#F8F1DE; border-radius:20px; padding:40px; display:flex; flex-direction:column; gap:16px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:#5b8a63;">For Parents</span>
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:26px; color:#2D5439; margin:0;">Support at home</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">1:1 tuition, sensory profile building and support sessions, in person or online, designed around your child and your family.</p>
+          <a href="Services.dc.html#parents" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#2D5439; text-decoration:underline; margin-top:4px;">See parent services →</a>
+        </div>
+        <div style="flex:1 1 420px; max-width:520px; background:#2D5439; border-radius:20px; padding:40px; display:flex; flex-direction:column; gap:16px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:#bcd6c0;">For Schools</span>
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:26px; color:#F8F1DE; margin:0;">Support in the classroom</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#dce8dd; margin:0;">Pupil tuition, sensory profiling, Sentence Steps and Build Buddies interventions, delivered flexibly across a school term.</p>
+          <a href="Services.dc.html#schools" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE; text-decoration:underline; margin-top:4px;">See school services →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:88px 48px;">
+    <div style="max-width:1280px; margin:0 auto; display:flex; flex-direction:column; gap:44px;">
+      <div style="text-align:center; display:flex; flex-direction:column; gap:12px;">
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:34px; color:#2D5439; margin:0;">Why Families & Schools Choose Us</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:32px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="width:14px; height:14px; background:#2D5439; border-radius:4px;"></div>
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:20px; color:#2D5439; margin:0;">Calm & Considered</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Every session is unhurried, child-led and paced to what actually helps, not a one-size-fits-all script.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="width:14px; height:14px; background:#2D5439; border-radius:4px;"></div>
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:20px; color:#2D5439; margin:0;">Evidence-Based</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Interventions like Sentence Steps and Build Buddies are grounded in established, research-backed approaches.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="width:14px; height:14px; background:#2D5439; border-radius:4px;"></div>
+          <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:20px; color:#2D5439; margin:0;">Personalised</h3>
+          <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Every plan starts with understanding the individual: their sensory needs, strengths and goals.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#2D5439; padding:72px 48px; margin-top:auto;">
+    <div style="max-width:1000px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:30px; color:#F8F1DE; margin:0;">Launching September 2026</h2>
+        <p style="font-family:'Urbanist',sans-serif; font-size:16px; color:#cfe0d2; margin:0;">Places are limited. Book a free consultation or send us an enquiry to secure yours before they fill up.</p>
+      </div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <a href="Book-a-Session.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#2D5439; background:#F8F1DE; padding:16px 32px; border-radius:999px; text-decoration:none; white-space:nowrap;">Book In</a>
+        <a href="Contact.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#F8F1DE; background:transparent; border:2px solid #F8F1DE; padding:14px 30px; border-radius:999px; text-decoration:none; white-space:nowrap;">Enquire</a>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,320px"></dc-import>
+</div>
+
+</x-dc>
+</body>
+</html>

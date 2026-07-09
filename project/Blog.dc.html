@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#F8F1DE; }
+    a { color:#2D5439; }
+    a:hover { color:#1f3d29; }
+  </style>
+</helmet>
+<div style="background:#F8F1DE; min-height:100vh; display:flex; flex-direction:column;">
+  <dc-import name="Nav" active="blog" hint-size="100%,120px"></dc-import>
+
+  <section style="padding:72px 48px 24px; max-width:900px; margin:0 auto; width:100%; box-sizing:border-box; text-align:center; display:flex; flex-direction:column; gap:16px;">
+    <h1 style="font-family:'Bevan',serif; font-weight:400; font-size:44px; color:#2D5439; margin:0;">Resources</h1>
+    <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:600; font-size:19px; color:#3f5c46; margin:0;">Guidance and articles for parents and schools, coming soon.</p>
+  </section>
+
+  <section style="padding:32px 48px 40px; max-width:1000px; margin:0 auto; width:100%; box-sizing:border-box;">
+    <div style="background:#FBFAF5; border-radius:20px; padding:56px 40px; display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center;">
+      <img src="uploads/vector-beige.png" alt="Tree symbol" style="width:96px; height:96px; object-fit:cover; border-radius:16px;" />
+      <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:24px; color:#2D5439; margin:0;">We're planting the first articles</h2>
+      <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0; max-width:480px;">This space will soon hold practical guidance on sensory needs, supporting SEN pupils in the classroom, and making the most of home strategies. Check back soon.</p>
+    </div>
+  </section>
+
+  <section style="padding:0 48px 88px; max-width:1000px; margin:0 auto; width:100%; box-sizing:border-box;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px;">
+      <div style="border:1px solid rgba(45,84,57,0.15); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">For Parents</span>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46; margin:0;">Home strategies, sensory tips and understanding your child's needs.</p>
+      </div>
+      <div style="border:1px solid rgba(45,84,57,0.15); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">For Schools</span>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46; margin:0;">Classroom strategies, intervention guides and staff briefings.</p>
+      </div>
+      <div style="border:1px solid rgba(45,84,57,0.15); border-radius:16px; padding:28px; display:flex; flex-direction:column; gap:8px;">
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">News</span>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46; margin:0;">Studio updates and new offerings as they launch.</p>
+      </div>
+    </div>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,320px"></dc-import>
+</div>
+
+</x-dc>
+</body>
+</html>

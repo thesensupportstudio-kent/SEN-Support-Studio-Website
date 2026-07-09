@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book In — SEN Support Studio</title>
+<template id="__bundler_thumbnail" data-bg-color="#F8F1DE">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#F8F1DE"/>
+    <g transform="translate(50,50)" fill="none" stroke="#2D5439" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M -18 -8 C -22 -18, -10 -26, 0 -22 C 10 -26, 22 -18, 18 -8 C 24 -2, 20 8, 10 8 C 12 14, 4 18, 0 12 C -4 18, -12 14, -10 8 C -20 8, -24 -2, -18 -8 Z"/>
+      <path d="M -3 8 L -4 24 L 4 24 L 3 8"/>
+    </g>
+  </svg>
+</template>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#F8F1DE; }
+    a { color:#2D5439; }
+    a:hover { color:#1f3d29; }
+  </style>
+</helmet>
+<div style="background:#F8F1DE; min-height:100vh; display:flex; flex-direction:column;">
+
+  <div style="background:#2D5439; color:#F8F1DE; text-align:center; padding:10px 20px; font-family:'Urbanist',sans-serif; font-weight:600; font-size:14px; letter-spacing:0.01em;">
+    Launching September 2026. Get in touch now to secure your place.
+  </div>
+  <nav style="display:flex; align-items:center; justify-content:space-between; gap:24px; padding:18px 48px; background:#F8F1DE; border-bottom:1px solid rgba(45,84,57,0.15); flex-wrap:wrap; font-family:'Urbanist',sans-serif;">
+    <span style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+      <img src="uploads/mini-logo-beige.png" alt="SEN Support Studio" style="width:44px; height:44px; object-fit:contain;" />
+      <span style="font-family:'Bevan',serif; font-size:19px; color:#2D5439; letter-spacing:0.02em; line-height:1.1;">SEN Support<br/>Studio</span>
+    </span>
+    <div style="display:flex; align-items:center; gap:28px; flex-wrap:wrap;">
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">Home</span>
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">About</span>
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">Services</span>
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">Resources</span>
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">Testimonials</span>
+      <span style="font-family:'Urbanist',sans-serif; font-size:15px; color:#3f5c46;">Contact</span>
+    </div>
+    <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#FBFAF5; background:#2D5439; padding:12px 24px; border-radius:999px; letter-spacing:0.01em; white-space:nowrap;">Book In</span>
+  </nav>
+
+  <section style="padding:72px 48px 8px; max-width:900px; margin:0 auto; width:100%; box-sizing:border-box; text-align:center; display:flex; flex-direction:column; gap:16px;">
+    <h1 style="font-family:'Bevan',serif; font-weight:400; font-size:44px; color:#2D5439; margin:0;">Book In</h1>
+    <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:600; font-size:19px; color:#3f5c46; margin:0;">We're launching in September 2026. Choose a service, pick a time, and pay securely online to secure your place.</p>
+  </section>
+
+  <section style="padding:32px 48px 96px; max-width:760px; margin:0 auto; width:100%; box-sizing:border-box; display:flex; flex-direction:column; gap:28px;">
+
+    <div style="background:#FBFAF5; border-radius:20px; padding:36px; display:flex; flex-direction:column; gap:24px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span style="font-family:'Bevan',serif; font-size:22px; color:#c7d9ca;">01</span>
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:22px; color:#2D5439; margin:0;">Choose your service</h2>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Are you a</span>
+        <div style="display:flex; gap:10px; background:#F8F1DE; border-radius:999px; padding:6px;">
+          <button onClick="{{ selectRoleParent }}" style="{{ roleButtonStyle.parent }}">Parent / Carer</button>
+          <button onClick="{{ selectRoleSchool }}" style="{{ roleButtonStyle.school }}">School / Educator</button>
+        </div>
+      </div>
+
+      <sc-if value="{{ role }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Which service?</span>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <sc-for list="{{ roleServices }}" as="svc" hint-placeholder-count="3">
+              <button onClick="{{ svc.select }}" style="{{ svc.rowStyle }}">
+                <span>{{ svc.label }}</span>
+                <span style="font-weight:400; color:#5b6f5f; font-size:14px;">{{ svc.fromPrice }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showBookingType }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b6f5f;">Single session or pack?</span>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <sc-for list="{{ typeOptions }}" as="opt" hint-placeholder-count="2">
+              <button onClick="{{ opt.select }}" style="{{ opt.cardStyle }}">
+                <span style="font-weight:700;">{{ opt.label }}</span>
+                <span style="font-weight:400; font-size:14px; opacity:0.85;">{{ opt.price }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasFullSelection }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; background:#2D5439; border-radius:12px; padding:16px 20px; flex-wrap:wrap;">
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE;">{{ summary.name }}</span>
+            <span style="font-family:'Urbanist',sans-serif; font-size:14px; color:#cfe0d2;">{{ summary.price }}</span>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="border:2px dashed rgba(45,84,57,0.3); border-radius:20px; padding:36px; display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span style="font-family:'Bevan',serif; font-size:22px; color:#c7d9ca;">02</span>
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:22px; color:#2D5439; margin:0;">Pick a time</h2>
+      </div>
+      <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">Placeholder — Calendly</span>
+      <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Once connected, live Calendly availability for the selected service appears here so you can pick a slot yourself.</p>
+      <div style="background:#F8F1DE; border-radius:12px; padding:20px; font-family:monospace; font-size:13px; color:#3f5c46; line-height:1.6;">
+        &lt;div class="calendly-inline-widget" data-url="https://calendly.com/your-link" style="min-width:320px;height:630px;"&gt;&lt;/div&gt;
+      </div>
+    </div>
+
+    <div style="border:2px dashed rgba(45,84,57,0.3); border-radius:20px; padding:36px; display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span style="font-family:'Bevan',serif; font-size:22px; color:#c7d9ca;">03</span>
+        <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:22px; color:#2D5439; margin:0;">Pay to confirm</h2>
+      </div>
+      <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">Placeholder — Stripe / GoCardless</span>
+      <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Once you connect a payment provider, one of these becomes a live checkout so your booking is confirmed the moment payment goes through.</p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <button disabled="{{ true }}" style="flex:1 1 220px; font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#8a9d8d; background:#eee3c8; padding:16px; border-radius:999px; border:none; cursor:not-allowed; opacity:0.7;">Pay by card (Stripe — not yet connected)</button>
+        <button disabled="{{ true }}" style="flex:1 1 220px; font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#8a9d8d; background:#eee3c8; padding:16px; border-radius:999px; border:none; cursor:not-allowed; opacity:0.7;">Pay by Direct Debit (GoCardless — not yet connected)</button>
+      </div>
+    </div>
+
+    <p style="font-family:'Urbanist',sans-serif; font-size:14px; color:#5b6f5f; margin:0; text-align:center;">Got a question before you book? Email us instead.</p>
+  </section>
+
+  <footer style="background:#2D5439; color:#F8F1DE; font-family:'Urbanist',sans-serif; padding:56px 48px 28px; display:flex; flex-direction:column; gap:40px;">
+    <div style="display:flex; flex-wrap:wrap; gap:48px; justify-content:space-between;">
+      <div style="display:flex; flex-direction:column; gap:14px; max-width:280px;">
+        <span style="display:flex; align-items:center; gap:12px; text-decoration:none;">
+          <img src="uploads/mini-logo-green.png" alt="SEN Support Studio" style="width:46px; height:46px; object-fit:contain;" />
+          <span style="font-family:'Bevan',serif; font-size:19px; color:#F8F1DE; line-height:1.1;">SEN Support<br/>Studio</span>
+        </span>
+        <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:600; font-size:15px; color:#cfe0d2; margin:0;">Strong roots, space to flourish.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-family:'Bevan',serif; font-size:14px; color:#F8F1DE; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:4px;">Explore</span>
+        <span style="color:#cfe0d2; font-size:15px;">About</span>
+        <span style="color:#cfe0d2; font-size:15px;">Services & Pricing</span>
+        <span style="color:#cfe0d2; font-size:15px;">Resources</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-family:'Bevan',serif; font-size:14px; color:#F8F1DE; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:4px;">Studio</span>
+        <span style="color:#cfe0d2; font-size:15px;">Testimonials</span>
+        <span style="color:#cfe0d2; font-size:15px;">Book In</span>
+        <span style="color:#cfe0d2; font-size:15px;">Contact</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-family:'Bevan',serif; font-size:14px; color:#F8F1DE; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:4px;">Get in touch</span>
+        <span style="color:#cfe0d2; font-size:15px;">[email address]</span>
+        <span style="color:#cfe0d2; font-size:15px;">[phone number]</span>
+        <span style="color:#cfe0d2; font-size:15px;">Serving [town / region]</span>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(248,241,222,0.2); padding-top:20px; font-size:13px; color:#a9c3ae;">
+      © 2026 SEN Support Studio. All rights reserved.
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const SERVICES = {
+  'tuition-parent': {
+    role: 'parent', label: '1:1 Tuition',
+    options: [
+      { id: 'single', label: 'Single session', price: '£50 / hour' },
+      { id: 'pack', label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
+    ]
+  },
+  'sensory-parent': {
+    role: 'parent', label: 'Sensory Profile Builder',
+    options: [
+      { id: 'single', label: 'One profile', price: '£80 (questionnaire, 1hr chat & report)' }
+    ]
+  },
+  'support': {
+    role: 'parent', label: 'Support Sessions',
+    options: [
+      { id: 'single', label: 'Single hour', price: '£50 / hour, in person or online' }
+    ]
+  },
+  'tuition-school': {
+    role: 'school', label: '1:1 Pupil Tuition',
+    options: [
+      { id: 'single', label: 'Single session', price: '£60 / hour' },
+      { id: 'pack', label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
+    ]
+  },
+  'sensory-school': {
+    role: 'school', label: 'Sensory Profile Builder',
+    options: [
+      { id: 'single', label: 'Single profile', price: '£80 / hour' },
+      { id: 'pack', label: 'Pack of 5 profiles', price: '£380 total (5% off)' }
+    ]
+  },
+  'sentence-steps': {
+    role: 'school', label: 'Sentence Steps Intervention',
+    options: [
+      { id: 'single', label: 'Single hour (2 sessions, up to 4 pupils)', price: '£100 / hour' },
+      { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
+    ]
+  },
+  'build-buddies': {
+    role: 'school', label: 'Build Buddies Intervention',
+    options: [
+      { id: 'single', label: 'Single hour (2 sessions, up to 3 pupils)', price: '£100 / hour' },
+      { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
+    ]
+  }
+};
+
+class Component extends DCLogic {
+  state = { role: '', serviceSlug: '', bookingType: '' };
+
+  roleBtnStyle(active) {
+    const base = "flex:1; font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; padding:12px 16px; border-radius:999px; border:none; cursor:pointer; transition:background .15s;";
+    return active
+      ? base + " background:#2D5439; color:#F8F1DE;"
+      : base + " background:transparent; color:#3f5c46;";
+  }
+
+  rowStyle(active) {
+    const base = "display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; padding:14px 18px; border-radius:12px; border:1px solid rgba(45,84,57,0.2); cursor:pointer; text-align:left; width:100%;";
+    return active
+      ? base + " background:#2D5439; color:#F8F1DE; border-color:#2D5439;"
+      : base + " background:#FBFAF5; color:#2D5439;";
+  }
+
+  typeCardStyle(active) {
+    const base = "flex:1 1 200px; display:flex; flex-direction:column; gap:2px; font-family:'Urbanist',sans-serif; padding:14px 18px; border-radius:12px; border:1px solid rgba(45,84,57,0.2); cursor:pointer; text-align:left;";
+    return active
+      ? base + " background:#2D5439; color:#F8F1DE; border-color:#2D5439;"
+      : base + " background:#FBFAF5; color:#2D5439;";
+  }
+
+  renderVals() {
+    const { role, serviceSlug, bookingType } = this.state;
+    const allSlugs = Object.keys(SERVICES);
+
+    const roleServices = role
+      ? allSlugs.filter(k => SERVICES[k].role === role).map(k => ({
+          label: SERVICES[k].label,
+          fromPrice: SERVICES[k].options[0].price,
+          rowStyle: this.rowStyle(serviceSlug === k),
+          select: () => this.setState({ serviceSlug: k, bookingType: '' })
+        }))
+      : [];
+
+    const svc = serviceSlug ? SERVICES[serviceSlug] : null;
+    const showBookingType = !!(svc && svc.options.length > 1);
+    const typeOptions = svc
+      ? svc.options.map(o => ({
+          label: o.label,
+          price: o.price,
+          cardStyle: this.typeCardStyle(bookingType === o.id || (!showBookingType && true)),
+          select: () => this.setState({ bookingType: o.id })
+        }))
+      : [];
+
+    const effectiveType = svc ? (svc.options.length > 1 ? bookingType : svc.options[0].id) : '';
+    const chosenOption = svc ? svc.options.find(o => o.id === effectiveType) : null;
+    const hasFullSelection = !!(svc && chosenOption);
+
+    return {
+      role,
+      roleButtonStyle: {
+        parent: this.roleBtnStyle(role === 'parent'),
+        school: this.roleBtnStyle(role === 'school')
+      },
+      selectRoleParent: () => this.setState({ role: 'parent', serviceSlug: '', bookingType: '' }),
+      selectRoleSchool: () => this.setState({ role: 'school', serviceSlug: '', bookingType: '' }),
+      roleServices,
+      showBookingType,
+      typeOptions,
+      hasFullSelection,
+      summary: hasFullSelection ? { name: svc.label + ' — ' + chosenOption.label, price: chosenOption.price } : { name: '', price: '' }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

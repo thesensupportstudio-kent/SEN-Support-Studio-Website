@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#F8F1DE; }
+    a { color:#2D5439; }
+    a:hover { color:#1f3d29; }
+  </style>
+</helmet>
+<div style="background:#F8F1DE; min-height:100vh; display:flex; flex-direction:column;">
+  <dc-import name="Nav" active="services" hint-size="100%,120px"></dc-import>
+
+  <section style="padding:72px 48px 24px; max-width:1000px; margin:0 auto; width:100%; box-sizing:border-box; text-align:center; display:flex; flex-direction:column; gap:16px;">
+    <h1 style="font-family:'Bevan',serif; font-weight:400; font-size:44px; color:#2D5439; margin:0;">The Roots</h1>
+    <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.06em; text-transform:uppercase; color:#5b8a63;">Services & Pricing</span>
+    <p style="font-family:'Urbanist',sans-serif; font-style:italic; font-weight:600; font-size:19px; color:#3f5c46; margin:0;">Tailored support for individual children and for whole classrooms. Tap a service to book it.</p>
+  </section>
+
+  <section id="parents" style="padding:32px 48px 24px; max-width:1100px; margin:0 auto; width:100%; box-sizing:border-box;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:28px;">
+      <span style="width:28px; height:4px; background:#2D5439; display:inline-block; border-radius:2px;"></span>
+      <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:28px; color:#2D5439; margin:0;">For Parents</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+      <a href="Book-a-Session.dc.html?service=tuition-parent" style="text-decoration:none; background:#FBFAF5; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(45,84,57,0.14);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#2D5439; margin:0;">1:1 Tuition</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">Individual academic support built around your child's needs and pace, delivered in person or online.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(45,84,57,0.12);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#2D5439;">£50 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#5b6f5f;">or £190 for 4 sessions (monthly pack)</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439; text-decoration:underline;">Book this service →</span>
+      </a>
+      <a href="Book-a-Session.dc.html?service=sensory-parent" style="text-decoration:none; background:#FBFAF5; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(45,84,57,0.14);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#2D5439; margin:0;">Sensory Profile Builder</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">A questionnaire, a one-hour conversation to unpick your child's sensory needs, and a written report you can share and keep.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(45,84,57,0.12);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#2D5439;">£80</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#5b6f5f;">questionnaire, 1hr chat & report</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439; text-decoration:underline;">Book this service →</span>
+      </a>
+      <a href="Book-a-Session.dc.html?service=support" style="text-decoration:none; background:#FBFAF5; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(45,84,57,0.14);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#2D5439; margin:0;">Support Sessions</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#3f5c46; margin:0;">A flexible hour of guidance and support for parents, in person or as an online chat, whatever's on your mind.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(45,84,57,0.12);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#2D5439;">£50 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#5b6f5f;">in person or online</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#2D5439; text-decoration:underline;">Book this service →</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="schools" style="padding:56px 48px 24px; max-width:1100px; margin:0 auto; width:100%; box-sizing:border-box;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:28px;">
+      <span style="width:28px; height:4px; background:#2D5439; display:inline-block; border-radius:2px;"></span>
+      <h2 style="font-family:'Bevan',serif; font-weight:400; font-size:28px; color:#2D5439; margin:0;">For Schools</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px;">
+      <a href="Book-a-Session.dc.html?service=tuition-school" style="text-decoration:none; background:#2D5439; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(0,0,0,0.2);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#F8F1DE; margin:0;">1:1 Pupil Tuition</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#dce8dd; margin:0;">Individual academic support for pupils, delivered on-site at school.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(248,241,222,0.2);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE;">£60 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#9fbfa5;">or £399 for 7 sessions (one term)</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#F8F1DE; text-decoration:underline;">Book this service →</span>
+      </a>
+      <a href="Book-a-Session.dc.html?service=sensory-school" style="text-decoration:none; background:#2D5439; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(0,0,0,0.2);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#F8F1DE; margin:0;">Sensory Profile Builder</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#dce8dd; margin:0;">Per-pupil sensory profiling: questionnaire, consultation and written report, to inform how staff support each child.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(248,241,222,0.2);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE;">£80 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#9fbfa5;">or £380 for 5 profiles</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#F8F1DE; text-decoration:underline;">Book this service →</span>
+      </a>
+      <a href="Book-a-Session.dc.html?service=sentence-steps" style="text-decoration:none; background:#2D5439; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(0,0,0,0.2);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#F8F1DE; margin:0;">Sentence Steps Intervention</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#dce8dd; margin:0;">A colour-coded sentence and language building scheme, based on Colourful Semantics. Delivered across two sessions of up to four pupils each.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(248,241,222,0.2);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE;">£100 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#9fbfa5;">or £665 for 7 x 1hr slots (one term)</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#F8F1DE; text-decoration:underline;">Book this service →</span>
+      </a>
+      <a href="Book-a-Session.dc.html?service=build-buddies" style="text-decoration:none; background:#2D5439; border-radius:18px; padding:32px; display:flex; flex-direction:column; gap:12px;" style-hover="box-shadow:0 12px 28px rgba(0,0,0,0.2);">
+        <h3 style="font-family:'Bevan',serif; font-weight:400; font-size:21px; color:#F8F1DE; margin:0;">Build Buddies Intervention</h3>
+        <p style="font-family:'Urbanist',sans-serif; font-size:15px; line-height:1.6; color:#dce8dd; margin:0;">A social and language-building scheme based on Brick Based Therapy. Delivered across two sessions of up to three pupils each.</p>
+        <div style="display:flex; flex-direction:column; gap:2px; margin-top:auto; padding-top:8px; border-top:1px solid rgba(248,241,222,0.2);">
+          <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:15px; color:#F8F1DE;">£100 / hour</span>
+          <span style="font-family:'Urbanist',sans-serif; font-size:13px; color:#9fbfa5;">or £665 for 7 x 1hr slots (one term)</span>
+        </div>
+        <span style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:14px; color:#F8F1DE; text-decoration:underline;">Book this service →</span>
+      </a>
+    </div>
+  </section>
+
+  <section style="padding:56px 48px 96px; max-width:1000px; margin:0 auto; width:100%; box-sizing:border-box; text-align:center; display:flex; flex-direction:column; align-items:center; gap:20px;">
+    <p style="font-family:'Urbanist',sans-serif; font-size:16px; color:#3f5c46; margin:0;">Not sure which service fits? Let's talk it through.</p>
+    <a href="Contact.dc.html" style="font-family:'Urbanist',sans-serif; font-weight:700; font-size:16px; color:#FBFAF5; background:#2D5439; padding:16px 32px; border-radius:999px; text-decoration:none;">Get in Touch</a>
+  </section>
+
+  <dc-import name="Footer" hint-size="100%,320px"></dc-import>
+</div>
+
+</x-dc>
+</body>
+</html>
