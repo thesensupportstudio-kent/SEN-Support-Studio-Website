@@ -100,7 +100,8 @@
     inner.className = 'calendly-inline-widget';
     inner.setAttribute('data-url', brandedCalendlyUrl(svc.calendlyUrl));
     inner.style.minWidth = '320px';
-    inner.style.height = '700px';
+    inner.style.width = '100%';
+    inner.style.height = '950px';
     els.calendlyWidget.appendChild(inner);
   }
 
