@@ -1362,6 +1362,62 @@ img {
   cursor: not-allowed;
 }
 
+.target-row {
+  background: var(--cream);
+  border: 1px solid var(--border-green);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.target-text-wrap {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.target-text {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-green-strong);
+  background: var(--offwhite);
+  color: var(--green);
+}
+
+.target-remove-btn {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.target-remove-btn:hover {
+  color: var(--green);
+}
+
+.target-add-btn {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.target-add-btn:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+
 .internal-card {
   background: var(--offwhite);
   border-radius: 20px;
