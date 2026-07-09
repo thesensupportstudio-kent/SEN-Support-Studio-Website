@@ -1302,6 +1302,66 @@ img {
   margin: 0 0 32px;
 }
 
+.internal-section.wizard-section {
+  max-width: 860px;
+}
+
+.wizard-progress {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+}
+
+.step-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--green);
+  margin: 0 0 4px;
+}
+
+.step-subtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 0 0 24px;
+}
+
+#wizard-root .form-field {
+  margin-bottom: 22px;
+}
+
+.wizard-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-green);
+  padding-top: 24px;
+}
+
+.wizard-nav .form-submit {
+  width: auto;
+  flex: 1;
+  margin-top: 0;
+}
+
+.form-submit-outline {
+  background: transparent;
+  color: var(--green);
+  border: 2px solid var(--green);
+}
+
+.form-submit-outline:hover {
+  background: var(--cream);
+}
+
+.form-submit-outline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .internal-card {
   background: var(--offwhite);
   border-radius: 20px;
