@@ -72,6 +72,12 @@
     calendlyWidget: document.getElementById('calendly-widget')
   };
 
+  var CALENDLY_BRAND_PARAMS = 'background_color=f8f1de&text_color=2d5439&primary_color=2d5439';
+
+  function brandedCalendlyUrl(url) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + CALENDLY_BRAND_PARAMS;
+  }
+
   function updateCalendly(svc) {
     if (!els.calendlyWidget) return;
 
@@ -87,19 +93,15 @@
 
     els.calendlyHint.classList.add('hidden');
     els.calendlyWidget.classList.remove('hidden');
-    els.calendlyWidget.innerHTML = '';
     els.calendlyWidget.setAttribute('data-current-url', svc.calendlyUrl);
+    els.calendlyWidget.innerHTML = '';
 
-    var init = function () {
-      if (window.Calendly) {
-        window.Calendly.initInlineWidget({ url: svc.calendlyUrl, parentElement: els.calendlyWidget });
-      }
-    };
-    if (window.Calendly) {
-      init();
-    } else {
-      window.addEventListener('load', init, { once: true });
-    }
+    var inner = document.createElement('div');
+    inner.className = 'calendly-inline-widget';
+    inner.setAttribute('data-url', brandedCalendlyUrl(svc.calendlyUrl));
+    inner.style.minWidth = '320px';
+    inner.style.height = '700px';
+    els.calendlyWidget.appendChild(inner);
   }
 
   function selectRole(role) {
