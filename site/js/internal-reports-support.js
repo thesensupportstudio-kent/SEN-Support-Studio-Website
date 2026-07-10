@@ -54,6 +54,8 @@
 
     var payload = {
       title: 'Support Session Summary',
+      service: 'Support Session Root',
+      clientLabel: 'Family',
       clientName: form.clientName.value.trim(),
       clientEmail: clientEmail,
       ccEmail: form.ccEmail.value.trim(),

@@ -145,6 +145,9 @@
 
     var payload = {
       title: '1:1 Pupil Tuition Report',
+      service: 'Tuition Root',
+      clientLabel: 'Pupil',
+      recipientName: schoolName,
       clientName: pupilName,
       clientEmail: clientEmail,
       ccEmail: form.ccEmail.value.trim(),

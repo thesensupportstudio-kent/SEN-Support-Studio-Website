@@ -1,3 +1,5 @@
+import { buildReportPdf, bytesToBase64 } from './_lib/pdf.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function escapeHtml(str) {
@@ -9,38 +11,28 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
-function nl2p(str) {
-  return String(str)
-    .split(/\n{2,}/)
-    .map(function (para) {
-      return '<p style="margin:0 0 10px;">' + escapeHtml(para).replace(/\n/g, '<br>') + '</p>';
-    })
-    .join('');
+function formatDate(iso) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(iso))) return iso;
+  const d = new Date(iso + 'T00:00:00Z');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
-function buildSectionsHtml(sections) {
-  return sections
-    .filter(function (s) { return s && s.content; })
-    .map(function (s) {
-      return (
-        '<h2 style="font-family:Georgia,serif;font-weight:400;font-size:16px;color:#2D5439;margin:20px 0 8px;">' + escapeHtml(s.heading) + '</h2>' +
-        nl2p(s.content)
-      );
-    })
-    .join('');
+function safeFileName(str) {
+  return String(str).replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').slice(0, 80);
 }
 
 function buildEmailHtml(data) {
+  const greeting = data.recipientName ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Dear ' + escapeHtml(data.recipientName) + ',</p>' : '';
   return (
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
         '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
-        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 16px;">' + escapeHtml(data.title) + '</h1>' +
-        '<p style="font-size:14px;color:#5b6f5f;margin:0 0 4px;"><strong>Client:</strong> ' + escapeHtml(data.clientName) + '</p>' +
-        '<p style="font-size:14px;color:#5b6f5f;margin:0 0 20px;"><strong>Date:</strong> ' + escapeHtml(data.sessionDate) + '</p>' +
-        buildSectionsHtml(data.sections) +
-        '<hr style="border:none;border-top:1px solid rgba(45,84,57,0.15);margin:24px 0 16px;">' +
-        '<p style="font-size:13px;color:#5b8a63;margin:0;">Any questions about this report? Just reply to this email.</p>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Thank you for booking your ' + escapeHtml(data.service) + '</h1>' +
+        greeting +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Thank you for booking your ' + escapeHtml(data.service.toLowerCase()) + ' with SEN Support Studio. Please find your full report from the ' + escapeHtml(formatDate(data.sessionDate)) + ' session attached as a PDF.</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">We hope it offers useful insight, and we look forward to continuing to build strong roots and space to flourish, together.</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 20px;">If you have any questions about this report, simply reply to this email.</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">Warm wishes,<br>SEN Support Studio</p>' +
       '</div>' +
     '</div>'
   );
@@ -66,6 +58,9 @@ export async function onRequestPost(context) {
     const sessionDate = (body.sessionDate || '').trim();
     const title = (body.title || 'Session Report').trim();
     const sections = Array.isArray(body.sections) ? body.sections : [];
+    const service = (body.service || 'Session').trim();
+    const recipientName = (body.recipientName || clientName).trim();
+    const clientLabel = (body.clientLabel || 'Client').trim();
 
     if (!clientName || !clientEmail || !sessionDate || sections.length === 0) {
       return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
@@ -91,12 +86,17 @@ export async function onRequestPost(context) {
     const to = [clientEmail];
     if (ccEmail) to.push(ccEmail);
 
+    const pdfBytes = await buildReportPdf({ title, clientName, clientLabel, sessionDate, sections });
+    const pdfBase64 = bytesToBase64(pdfBytes);
+    const pdfFileName = safeFileName(title + '-' + clientName) + '.pdf';
+
     const emailPayload = {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: to,
       bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
       subject: title + ' — ' + clientName + ' — ' + sessionDate,
-      html: buildEmailHtml({ title, clientName, sessionDate, sections })
+      html: buildEmailHtml({ service, recipientName, sessionDate }),
+      attachments: [{ filename: pdfFileName, content: pdfBase64 }]
     };
 
     const resendResp = await fetch('https://api.resend.com/emails', {

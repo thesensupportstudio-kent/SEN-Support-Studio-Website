@@ -658,6 +658,8 @@
     }
     var payload = {
       title: 'Sensory Profile Report',
+      service: 'Sensory Profile Root',
+      clientLabel: 'Child',
       clientName: state.client.clientName.trim(),
       clientEmail: state.client.clientEmail.trim(),
       ccEmail: state.client.ccEmail.trim(),

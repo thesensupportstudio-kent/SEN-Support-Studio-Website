@@ -73,6 +73,8 @@
 
     var payload = {
       title: '1:1 Tuition Report',
+      service: 'Tuition Root',
+      clientLabel: 'Family',
       clientName: form.clientName.value.trim(),
       clientEmail: clientEmail,
       ccEmail: form.ccEmail.value.trim(),
