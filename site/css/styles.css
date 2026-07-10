@@ -566,6 +566,19 @@ img {
   color: var(--text-on-green);
 }
 
+.audience-card .btn {
+  margin-top: 4px;
+  text-decoration: none;
+}
+
+.audience-card.light .btn-primary {
+  color: var(--offwhite);
+}
+
+.audience-card.dark .btn-on-green {
+  color: var(--green);
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -779,6 +792,20 @@ img {
   font-size: 19px;
   color: var(--text);
   margin: 0;
+}
+
+.service-back-link {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  align-self: center;
+  margin-bottom: 4px;
+}
+
+.service-back-link:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
 }
 
 .services-section {
