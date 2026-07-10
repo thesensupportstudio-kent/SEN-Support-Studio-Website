@@ -54,7 +54,7 @@ function contentToLines(font, size, maxWidth, text) {
 
 async function createPdfContext(data) {
   const doc = await PDFDocument.create();
-  doc.setTitle(data.title + ' - ' + data.clientName);
+  doc.setTitle(data.clientName ? data.title + ' - ' + data.clientName : data.title);
   doc.setProducer('SEN Support Studio');
 
   const headingFont = await doc.embedFont(StandardFonts.TimesRomanBold);
@@ -117,6 +117,29 @@ async function createPdfContext(data) {
     y -= 12;
   }
 
+  function drawBulletList(bullets) {
+    const bulletIndent = 14;
+    bullets.forEach(function (bullet) {
+      const lines = contentToLines(bodyFont, 10.5, CONTENT_WIDTH - bulletIndent, bullet);
+      lines.forEach(function (line, li) {
+        ensureSpace(15);
+        if (li === 0) {
+          page.drawText('•', { x: MARGIN_X, y, size: 10.5, font: bodyFont, color: GREEN });
+        }
+        if (line) page.drawText(line, { x: MARGIN_X + bulletIndent, y, size: 10.5, font: bodyFont, color: INK });
+        y -= 15;
+      });
+    });
+    y -= 8;
+  }
+
+  function drawBulletSection(heading, bullets) {
+    ensureSpace(20 + 15);
+    page.drawText(heading, { x: MARGIN_X, y, size: 14, font: headingFont, color: GREEN });
+    y -= 22;
+    drawBulletList(bullets);
+  }
+
   function drawFooters() {
     pages.forEach(function (p, idx) {
       p.drawText('SEN Support Studio  ·  Strong Roots, Space to Flourish', {
@@ -133,7 +156,7 @@ async function createPdfContext(data) {
     getY: function () { return y; },
     setY: function (val) { y = val; },
     getPage: function () { return page; },
-    addFullHeaderPage, addContinuationPage, ensureSpace, drawSection, drawFooters
+    addFullHeaderPage, addContinuationPage, ensureSpace, drawSection, drawBulletSection, drawFooters
   };
 }
 
@@ -182,6 +205,51 @@ export async function buildChildPagesPdf(data) {
         ctx.drawSection(section.heading, section.content);
       });
   });
+
+  ctx.drawFooters();
+  return ctx.doc.save();
+}
+
+export async function buildResourcePdf(data) {
+  const ctx = await createPdfContext(data);
+  ctx.addFullHeaderPage();
+
+  if (data.eyebrow) {
+    ctx.getPage().drawText(data.eyebrow.toUpperCase(), { x: MARGIN_X, y: ctx.getY(), size: 10.5, font: ctx.bodyBoldFont, color: MUTED_GREEN });
+    ctx.setY(ctx.getY() - 20);
+  }
+
+  ctx.getPage().drawText(data.title, { x: MARGIN_X, y: ctx.getY(), size: 24, font: ctx.headingFont, color: GREEN });
+  ctx.setY(ctx.getY() - 30);
+
+  if (data.intro) {
+    const introLines = contentToLines(ctx.bodyFont, 11, CONTENT_WIDTH, data.intro);
+    introLines.forEach(function (line) {
+      ctx.ensureSpace(16);
+      if (line) ctx.getPage().drawText(line, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+      ctx.setY(ctx.getY() - 16);
+    });
+    ctx.setY(ctx.getY() - 10);
+  }
+
+  (data.sections || []).forEach(function (section) {
+    if (Array.isArray(section.bullets) && section.bullets.length) {
+      ctx.drawBulletSection(section.heading, section.bullets);
+    } else if (section.content) {
+      ctx.drawSection(section.heading, section.content);
+    }
+  });
+
+  if (data.closing) {
+    ctx.ensureSpace(30);
+    ctx.setY(ctx.getY() - 6);
+    const closingLines = contentToLines(ctx.bodyFont, 10.5, CONTENT_WIDTH, data.closing);
+    closingLines.forEach(function (line) {
+      ctx.ensureSpace(15);
+      if (line) ctx.getPage().drawText(line, { x: MARGIN_X, y: ctx.getY(), size: 10.5, font: ctx.bodyFont, color: MUTED_GREEN });
+      ctx.setY(ctx.getY() - 15);
+    });
+  }
 
   ctx.drawFooters();
   return ctx.doc.save();
