@@ -91,7 +91,7 @@
       })
       .finally(function () {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Summary to Parent';
+        submitBtn.textContent = 'Send Summary to Parent/Carer';
       });
   });
 
