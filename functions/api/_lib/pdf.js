@@ -76,7 +76,7 @@ export async function buildReportPdf(data) {
     paintBackground(page);
     page.drawRectangle({ x: 0, y: PAGE_HEIGHT - HEADER_HEIGHT, width: PAGE_WIDTH, height: HEADER_HEIGHT, color: GREEN });
 
-    const logoW = 132;
+    const logoW = 260;
     const logoH = logoW * (logoImage.height / logoImage.width);
     page.drawImage(logoImage, {
       x: (PAGE_WIDTH - logoW) / 2,
