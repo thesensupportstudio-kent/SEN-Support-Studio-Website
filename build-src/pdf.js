@@ -1,12 +1,13 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { LOGO_GREEN_PNG_BASE64 } from './logo-green.js';
+import { TREE_ICON_GREEN_PNG_BASE64 } from './tree-icon-green.js';
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
 const MARGIN_X = 54;
 const HEADER_HEIGHT = 176;
 const TOP_BAR_HEIGHT = 14;
-const BOTTOM_MARGIN = 56;
+const BOTTOM_MARGIN = 76;
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
 
 const CREAM = rgb(0xfb / 255, 0xfa / 255, 0xf5 / 255);
@@ -61,6 +62,7 @@ async function createPdfContext(data) {
   const bodyFont = await doc.embedFont(StandardFonts.Helvetica);
   const bodyBoldFont = await doc.embedFont(StandardFonts.HelveticaBold);
   const logoImage = await doc.embedPng(base64ToBytes(LOGO_GREEN_PNG_BASE64));
+  const treeIcon = await doc.embedPng(base64ToBytes(TREE_ICON_GREEN_PNG_BASE64));
 
   const pages = [];
   let page;
@@ -141,13 +143,49 @@ async function createPdfContext(data) {
   }
 
   function drawFooters() {
+    const lineY = 60;
+    const iconH = 30;
+    const iconW = iconH * (treeIcon.width / treeIcon.height);
+    const textTop = lineY - 16;
+    const textBottom = lineY - 29;
+
     pages.forEach(function (p, idx) {
-      p.drawText('SEN Support Studio  ·  Strong Roots, Space to Flourish', {
-        x: MARGIN_X, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN
+      p.drawLine({
+        start: { x: MARGIN_X, y: lineY },
+        end: { x: PAGE_WIDTH - MARGIN_X, y: lineY },
+        thickness: 1, color: GREEN
       });
-      const label = 'Page ' + (idx + 1) + ' of ' + pages.length;
-      const labelWidth = bodyFont.widthOfTextAtSize(label, 8);
-      p.drawText(label, { x: PAGE_WIDTH - MARGIN_X - labelWidth, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN });
+
+      p.drawText('SEN SUPPORT', { x: MARGIN_X, y: textTop, size: 7.5, font: bodyBoldFont, color: GREEN });
+      p.drawText('STUDIO', { x: MARGIN_X, y: textBottom, size: 7.5, font: bodyBoldFont, color: GREEN });
+
+      const dividerX = MARGIN_X + 68;
+      p.drawLine({
+        start: { x: dividerX, y: textTop + 8 },
+        end: { x: dividerX, y: textBottom - 1 },
+        thickness: 0.75, color: MUTED_GREEN
+      });
+
+      const taglineX = dividerX + 12;
+      p.drawText('STRONG ROOTS,', { x: taglineX, y: textTop, size: 7, font: bodyBoldFont, color: MUTED_GREEN });
+      p.drawText('SPACE TO FLOURISH', { x: taglineX, y: textBottom, size: 7, font: bodyBoldFont, color: MUTED_GREEN });
+
+      p.drawImage(treeIcon, {
+        x: PAGE_WIDTH - MARGIN_X - iconW,
+        y: textBottom - 2,
+        width: iconW,
+        height: iconH
+      });
+
+      if (pages.length > 1) {
+        const label = 'Page ' + (idx + 1) + ' of ' + pages.length;
+        const labelWidth = bodyFont.widthOfTextAtSize(label, 7.5);
+        p.drawText(label, {
+          x: PAGE_WIDTH - MARGIN_X - iconW - labelWidth - 12,
+          y: textBottom,
+          size: 7.5, font: bodyFont, color: MUTED_GREEN
+        });
+      }
     });
   }
 
