@@ -1555,6 +1555,42 @@ img {
   margin-top: 10px;
 }
 
+.skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-green);
+}
+
+.skill-row:last-child {
+  border-bottom: none;
+}
+
+.skill-row .skill-label {
+  font-size: 14px;
+  color: var(--text);
+  flex: 1 1 220px;
+}
+
+.skill-row .toggle-row {
+  flex: 0 0 auto;
+  width: 280px;
+}
+
+.skill-row .toggle-row .pill-option {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
 /* ---------- Book In page ---------- */
 
 .book-hero {

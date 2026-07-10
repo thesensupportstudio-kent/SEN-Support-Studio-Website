@@ -1,4 +1,4 @@
-import { buildReportPdf, bytesToBase64 } from './_lib/pdf.js';
+import { buildReportPdf, buildChildPagesPdf, bytesToBase64 } from './_lib/pdf.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -23,6 +23,9 @@ function safeFileName(str) {
 
 function buildEmailHtml(data) {
   const greeting = data.recipientName ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Dear ' + escapeHtml(data.recipientName) + ',</p>' : '';
+  const perChildNote = data.perChild
+    ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Each pupil has their own page in the attached PDF, ready to save into their individual file.</p>'
+    : '';
   return (
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
@@ -30,6 +33,7 @@ function buildEmailHtml(data) {
         '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Thank you for booking your ' + escapeHtml(data.service) + '</h1>' +
         greeting +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Thank you for booking your ' + escapeHtml(data.service.toLowerCase()) + ' with SEN Support Studio. Please find your full report from the ' + escapeHtml(formatDate(data.sessionDate)) + ' session attached as a PDF.</p>' +
+        perChildNote +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">We hope it offers useful insight, and we look forward to continuing to build strong roots and space to flourish, together.</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 20px;">If you have any questions about this report, simply reply to this email.</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">Warm wishes,<br>SEN Support Studio</p>' +
@@ -58,11 +62,12 @@ export async function onRequestPost(context) {
     const sessionDate = (body.sessionDate || '').trim();
     const title = (body.title || 'Session Report').trim();
     const sections = Array.isArray(body.sections) ? body.sections : [];
+    const childPages = Array.isArray(body.childPages) ? body.childPages : [];
     const service = (body.service || 'Session').trim();
     const recipientName = (body.recipientName || clientName).trim();
     const clientLabel = (body.clientLabel || 'Client').trim();
 
-    if (!clientName || !clientEmail || !sessionDate || sections.length === 0) {
+    if (!clientName || !clientEmail || !sessionDate || (sections.length === 0 && childPages.length === 0)) {
       return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -86,7 +91,10 @@ export async function onRequestPost(context) {
     const to = [clientEmail];
     if (ccEmail) to.push(ccEmail);
 
-    const pdfBytes = await buildReportPdf({ title, clientName, clientLabel, sessionDate, sections });
+    const isPerChild = childPages.length > 0;
+    const pdfBytes = isPerChild
+      ? await buildChildPagesPdf({ title, clientName, clientLabel, sessionDate, childPages })
+      : await buildReportPdf({ title, clientName, clientLabel, sessionDate, sections });
     const pdfBase64 = bytesToBase64(pdfBytes);
     const pdfFileName = safeFileName(title + '-' + clientName) + '.pdf';
 
@@ -95,7 +103,7 @@ export async function onRequestPost(context) {
       to: to,
       bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
       subject: title + ' — ' + clientName + ' — ' + sessionDate,
-      html: buildEmailHtml({ service, recipientName, sessionDate }),
+      html: buildEmailHtml({ service, recipientName, sessionDate, perChild: isPerChild }),
       attachments: [{ filename: pdfFileName, content: pdfBase64 }]
     };
 

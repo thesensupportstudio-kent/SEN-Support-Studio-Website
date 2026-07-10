@@ -52,7 +52,7 @@ function contentToLines(font, size, maxWidth, text) {
   return lines;
 }
 
-export async function buildReportPdf(data) {
+async function createPdfContext(data) {
   const doc = await PDFDocument.create();
   doc.setTitle(data.title + ' - ' + data.clientName);
   doc.setProducer('SEN Support Studio');
@@ -70,30 +70,25 @@ export async function buildReportPdf(data) {
     p.drawRectangle({ x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT, color: CREAM });
   }
 
-  function addFirstPage() {
-    page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-    pages.push(page);
-    paintBackground(page);
-    page.drawRectangle({ x: 0, y: PAGE_HEIGHT - HEADER_HEIGHT, width: PAGE_WIDTH, height: HEADER_HEIGHT, color: GREEN });
-
+  function drawHeaderBand(p) {
+    p.drawRectangle({ x: 0, y: PAGE_HEIGHT - HEADER_HEIGHT, width: PAGE_WIDTH, height: HEADER_HEIGHT, color: GREEN });
     const logoW = 260;
     const logoH = logoW * (logoImage.height / logoImage.width);
-    page.drawImage(logoImage, {
+    p.drawImage(logoImage, {
       x: (PAGE_WIDTH - logoW) / 2,
       y: PAGE_HEIGHT - HEADER_HEIGHT + (HEADER_HEIGHT - logoH) / 2,
       width: logoW,
       height: logoH
     });
+  }
 
+  function addFullHeaderPage() {
+    page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+    pages.push(page);
+    paintBackground(page);
+    drawHeaderBand(page);
     y = PAGE_HEIGHT - HEADER_HEIGHT - 42;
-
-    page.drawText(data.title, { x: MARGIN_X, y, size: 19, font: headingFont, color: GREEN });
-    y -= 26;
-
-    page.drawText(data.clientLabel + ':  ' + data.clientName, { x: MARGIN_X, y, size: 11, font: bodyBoldFont, color: INK });
-    y -= 15;
-    page.drawText('Session date:  ' + data.sessionDate, { x: MARGIN_X, y, size: 11, font: bodyFont, color: INK });
-    y -= 28;
+    return page;
   }
 
   function addContinuationPage() {
@@ -108,35 +103,88 @@ export async function buildReportPdf(data) {
     if (y - needed < BOTTOM_MARGIN) addContinuationPage();
   }
 
-  addFirstPage();
+  function drawSection(heading, content) {
+    ensureSpace(18 + 14);
+    page.drawText(heading, { x: MARGIN_X, y, size: 13, font: headingFont, color: GREEN });
+    y -= 18;
+
+    const lines = contentToLines(bodyFont, 10.5, CONTENT_WIDTH, content);
+    lines.forEach(function (line) {
+      ensureSpace(14);
+      if (line) page.drawText(line, { x: MARGIN_X, y, size: 10.5, font: bodyFont, color: INK });
+      y -= 14;
+    });
+    y -= 12;
+  }
+
+  function drawFooters() {
+    pages.forEach(function (p, idx) {
+      p.drawText('SEN Support Studio  ·  Strong Roots, Space to Flourish', {
+        x: MARGIN_X, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN
+      });
+      const label = 'Page ' + (idx + 1) + ' of ' + pages.length;
+      const labelWidth = bodyFont.widthOfTextAtSize(label, 8);
+      p.drawText(label, { x: PAGE_WIDTH - MARGIN_X - labelWidth, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN });
+    });
+  }
+
+  return {
+    doc, headingFont, bodyFont, bodyBoldFont,
+    getY: function () { return y; },
+    setY: function (val) { y = val; },
+    getPage: function () { return page; },
+    addFullHeaderPage, addContinuationPage, ensureSpace, drawSection, drawFooters
+  };
+}
+
+export async function buildReportPdf(data) {
+  const ctx = await createPdfContext(data);
+  ctx.addFullHeaderPage();
+
+  ctx.getPage().drawText(data.title, { x: MARGIN_X, y: ctx.getY(), size: 19, font: ctx.headingFont, color: GREEN });
+  ctx.setY(ctx.getY() - 26);
+
+  ctx.getPage().drawText(data.clientLabel + ':  ' + data.clientName, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyBoldFont, color: INK });
+  ctx.setY(ctx.getY() - 15);
+  ctx.getPage().drawText('Session date:  ' + data.sessionDate, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+  ctx.setY(ctx.getY() - 28);
 
   data.sections
     .filter(function (s) { return s && s.content; })
     .forEach(function (section) {
-      ensureSpace(18 + 14);
-      page.drawText(section.heading, { x: MARGIN_X, y, size: 13, font: headingFont, color: GREEN });
-      y -= 18;
+      ctx.drawSection(section.heading, section.content);
+    });
 
-      const lines = contentToLines(bodyFont, 10.5, CONTENT_WIDTH, section.content);
-      lines.forEach(function (line) {
-        ensureSpace(14);
-        if (line) page.drawText(line, { x: MARGIN_X, y, size: 10.5, font: bodyFont, color: INK });
-        y -= 14;
+  ctx.drawFooters();
+  return ctx.doc.save();
+}
+
+export async function buildChildPagesPdf(data) {
+  const ctx = await createPdfContext(data);
+
+  data.childPages.forEach(function (child) {
+    ctx.addFullHeaderPage();
+
+    ctx.getPage().drawText(data.title, { x: MARGIN_X, y: ctx.getY(), size: 19, font: ctx.headingFont, color: GREEN });
+    ctx.setY(ctx.getY() - 26);
+
+    ctx.getPage().drawText(data.clientLabel + ':  ' + data.clientName, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+    ctx.setY(ctx.getY() - 15);
+    ctx.getPage().drawText('Session date:  ' + data.sessionDate, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+    ctx.setY(ctx.getY() - 24);
+
+    ctx.getPage().drawText('Pupil:  ' + child.pupilName, { x: MARGIN_X, y: ctx.getY(), size: 15, font: ctx.headingFont, color: GREEN });
+    ctx.setY(ctx.getY() - 30);
+
+    (child.sections || [])
+      .filter(function (s) { return s && s.content; })
+      .forEach(function (section) {
+        ctx.drawSection(section.heading, section.content);
       });
-      y -= 12;
-    });
-
-  pages.forEach(function (p, idx) {
-    p.drawText('SEN Support Studio  ·  Strong Roots, Space to Flourish', {
-      x: MARGIN_X, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN
-    });
-    const label = 'Page ' + (idx + 1) + ' of ' + pages.length;
-    const labelWidth = bodyFont.widthOfTextAtSize(label, 8);
-    p.drawText(label, { x: PAGE_WIDTH - MARGIN_X - labelWidth, y: 30, size: 8, font: bodyFont, color: MUTED_GREEN });
   });
 
-  const pdfBytes = await doc.save();
-  return pdfBytes;
+  ctx.drawFooters();
+  return ctx.doc.save();
 }
 
 export function bytesToBase64(bytes) {
