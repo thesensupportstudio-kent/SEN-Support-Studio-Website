@@ -12,7 +12,7 @@
       role: 'parent', label: 'Sensory Profile Builder',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/parent-support-sessions-clone',
       options: [
-        { id: 'single', label: 'One profile', price: '£80 (questionnaire, 1hr chat & report)' }
+        { id: 'single', label: 'One profile', price: '£100 (initial chat, questionnaire, findings call & report)' }
       ]
     },
     'support': {
@@ -34,8 +34,8 @@
       role: 'school', label: 'Sensory Profile Builder',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/sensory-profile-builder-parents-carers-clone',
       options: [
-        { id: 'single', label: 'Single profile', price: '£80 / hour' },
-        { id: 'pack', label: 'Pack of 5 profiles', price: '£380 total (5% off)' }
+        { id: 'single', label: 'Single profile', price: '£100 per profile' },
+        { id: 'pack', label: 'Pack of 5 profiles', price: '£475 total (5% off)' }
       ]
     },
     'sentence-steps': {
