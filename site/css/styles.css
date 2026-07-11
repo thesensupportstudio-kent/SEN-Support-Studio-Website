@@ -571,6 +571,23 @@ img {
   text-decoration: none;
 }
 
+.pay-now-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 2px;
+}
+
+.audience-card.light .btn-pay-now {
+  font-size: 13px;
+  color: var(--muted-green);
+}
+
+.audience-card.dark .btn-pay-now {
+  font-size: 13px;
+  color: var(--text-on-green-light);
+}
+
 .audience-card.light .btn-primary {
   color: var(--offwhite);
 }
