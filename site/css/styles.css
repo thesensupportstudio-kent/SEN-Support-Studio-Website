@@ -1878,6 +1878,10 @@ img {
   flex-wrap: wrap;
 }
 
+.payment-buttons .btn {
+  flex: 1 1 220px;
+}
+
 .btn-disabled {
   flex: 1 1 220px;
   font-family: var(--font-body);

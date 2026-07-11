@@ -69,8 +69,61 @@
     summaryName: document.getElementById('summary-name'),
     summaryPrice: document.getElementById('summary-price'),
     calendlyHint: document.getElementById('calendly-hint'),
-    calendlyWidget: document.getElementById('calendly-widget')
+    calendlyWidget: document.getElementById('calendly-widget'),
+    paymentHint: document.getElementById('payment-hint'),
+    paymentButtons: document.getElementById('payment-buttons')
   };
+
+  function paymentKeyFor(serviceSlug, optionId) {
+    return optionId === 'pack' ? serviceSlug + '-pack' : serviceSlug;
+  }
+
+  function updatePayment(svc, chosenOption) {
+    if (!els.paymentButtons) return;
+
+    els.paymentButtons.innerHTML = '';
+
+    if (!svc || !chosenOption) {
+      els.paymentButtons.classList.add('hidden');
+      els.paymentHint.textContent = 'Select a service above to see payment options.';
+      return;
+    }
+
+    var key = paymentKeyFor(state.serviceSlug, chosenOption.id);
+    var links = window.PAYMENT_LINKS || {};
+    var invoiceServices = window.INVOICE_SERVICES || {};
+    var payUrl = links[key];
+    var canInvoice = !!invoiceServices[key];
+    var buttons = [];
+
+    if (payUrl) {
+      var payLink = document.createElement('a');
+      payLink.href = payUrl;
+      payLink.target = '_blank';
+      payLink.rel = 'noopener';
+      payLink.className = 'btn btn-primary';
+      payLink.textContent = 'Pay by card (Tide) →';
+      buttons.push(payLink);
+    }
+
+    if (canInvoice) {
+      var invoiceLink = document.createElement('a');
+      invoiceLink.href = 'request-invoice.html?service=' + encodeURIComponent(key);
+      invoiceLink.className = 'btn btn-outline';
+      invoiceLink.textContent = 'Request an Invoice →';
+      buttons.push(invoiceLink);
+    }
+
+    if (buttons.length === 0) {
+      els.paymentButtons.classList.add('hidden');
+      els.paymentHint.textContent = 'Payment links are being set up for this service — we’ll be in touch to arrange payment before your session.';
+      return;
+    }
+
+    els.paymentHint.textContent = 'Pay online now to secure your place, or get in touch if you’d rather arrange it another way.';
+    buttons.forEach(function (btn) { els.paymentButtons.appendChild(btn); });
+    els.paymentButtons.classList.remove('hidden');
+  }
 
   var CALENDLY_BRAND_PARAMS = 'background_color=fbfaf5&text_color=2d5439&primary_color=a0daad';
 
@@ -183,6 +236,8 @@
       els.summaryName.textContent = svc.label + ' — ' + chosenOption.label;
       els.summaryPrice.textContent = chosenOption.price;
     }
+
+    updatePayment(svc, chosenOption);
   }
 
   els.roleParent.addEventListener('click', function () { selectRole('parent'); });
