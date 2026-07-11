@@ -94,7 +94,6 @@
     var invoiceServices = window.INVOICE_SERVICES || {};
     var payUrl = links[key];
     var canInvoice = !!invoiceServices[key];
-    var buttons = [];
 
     if (payUrl) {
       var payLink = document.createElement('a');
@@ -103,7 +102,14 @@
       payLink.rel = 'noopener';
       payLink.className = 'btn btn-primary';
       payLink.textContent = 'Pay by card (Tide) →';
-      buttons.push(payLink);
+      els.paymentButtons.appendChild(payLink);
+    } else {
+      var payPlaceholder = document.createElement('button');
+      payPlaceholder.type = 'button';
+      payPlaceholder.className = 'btn-disabled';
+      payPlaceholder.disabled = true;
+      payPlaceholder.textContent = 'Pay by card (coming soon)';
+      els.paymentButtons.appendChild(payPlaceholder);
     }
 
     if (canInvoice) {
@@ -111,17 +117,12 @@
       invoiceLink.href = 'request-invoice.html?service=' + encodeURIComponent(key);
       invoiceLink.className = 'btn btn-outline';
       invoiceLink.textContent = 'Request an Invoice →';
-      buttons.push(invoiceLink);
+      els.paymentButtons.appendChild(invoiceLink);
     }
 
-    if (buttons.length === 0) {
-      els.paymentButtons.classList.add('hidden');
-      els.paymentHint.textContent = 'Payment links are being set up for this service — we’ll be in touch to arrange payment before your session.';
-      return;
-    }
-
-    els.paymentHint.textContent = 'Pay online now to secure your place, or get in touch if you’d rather arrange it another way.';
-    buttons.forEach(function (btn) { els.paymentButtons.appendChild(btn); });
+    els.paymentHint.textContent = payUrl
+      ? 'Pay online now to secure your place, or get in touch if you’d rather arrange it another way.'
+      : 'Card payments are being set up for this service — in the meantime, get in touch' + (canInvoice ? ', or request an invoice below' : '') + '.';
     els.paymentButtons.classList.remove('hidden');
   }
 
