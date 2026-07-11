@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Request an Invoice | SEN Support Studio</title>
+<meta name="description" content="Request a formal invoice for a school package from SEN Support Studio.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=1783807429">
+</head>
+<body>
+<div class="page">
+
+  <div class="announcement-bar">Launching September 2026. Get in touch now to secure your place.</div>
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>SEN Support<br>Studio</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="services.html" class="nav-link active">Services</a>
+      <a href="blog.html" class="nav-link">Resources</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <a href="book.html" class="btn-book">Book In</a>
+  </nav>
+
+  <section class="page-hero">
+    <h1>Request an Invoice</h1>
+    <p class="lede" id="invoice-service-lede">Tell us a few details and we'll email over a formal invoice, with card and bank transfer payment options.</p>
+  </section>
+
+  <section class="contact-section">
+    <div class="contact-info-col">
+      <div class="contact-info-card">
+        <div class="contact-info-item">
+          <span class="label">Requesting</span>
+          <span class="value" id="invoice-service-name">—</span>
+        </div>
+        <div class="contact-info-item">
+          <span class="label">Price</span>
+          <span class="value" id="invoice-service-price">—</span>
+        </div>
+      </div>
+      <p class="contact-radius-note">We'll aim to send your invoice within one working day of receiving this request. Prefer to pay by card straight away instead? Head back to the service page for a direct payment link.</p>
+      <img src="assets/img/vector-beige.png" alt="Tree symbol">
+    </div>
+
+    <div class="contact-form-col">
+      <form id="invoice-form">
+        <div id="invoice-error" class="form-error hidden"></div>
+        <div class="form-field">
+          <label for="school-name">School / organisation name</label>
+          <input type="text" id="school-name" name="schoolName" required placeholder="e.g. Riverside Primary School">
+        </div>
+        <div class="form-field">
+          <label for="contact-name">Contact name</label>
+          <input type="text" id="contact-name" name="contactName" required placeholder="Your name">
+        </div>
+        <div class="form-field">
+          <label for="contact-email">Contact email</label>
+          <input type="email" id="contact-email" name="contactEmail" required placeholder="you@school.sch.uk">
+        </div>
+        <div class="form-field">
+          <label for="po-number">PO number (optional)</label>
+          <input type="text" id="po-number" name="poNumber" placeholder="If your school requires one">
+        </div>
+        <div class="form-field">
+          <label for="invoice-notes">Anything else we should know? (optional)</label>
+          <textarea id="invoice-notes" name="notes" rows="4" placeholder="e.g. billing address, department, timing"></textarea>
+        </div>
+        <button type="submit" class="form-submit">Request Invoice</button>
+      </form>
+      <div id="invoice-success" class="form-success hidden">
+        <h3>Request received</h3>
+        <p>Thank you — we'll be in touch with your invoice shortly.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo-link">
+          <img src="assets/img/mini-logo-green.png" alt="SEN Support Studio" />
+          <span class="footer-brand-name">SEN Support<br>Studio</span>
+        </a>
+        <p class="footer-tagline">Strong roots, space to flourish.</p>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Explore</span>
+        <a href="about.html">About</a>
+        <a href="services.html">Services & Pricing</a>
+        <a href="blog.html">Resources</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Studio</span>
+        <a href="book.html">Book In</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Get in touch</span>
+        <a href="mailto:hello@sensupportstudio.com">hello@sensupportstudio.com</a>
+        <a href="https://wa.me/447568294253" target="_blank" rel="noopener">07568 294253 (WhatsApp)</a>
+        <span>Serving Kent, UK</span>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SEN Support Studio. All rights reserved.</div>
+  </footer>
+
+</div>
+<script src="js/service-labels.js?v=1783900000"></script>
+<script src="js/request-invoice.js?v=1783900000"></script>
+</body>
+</html>
