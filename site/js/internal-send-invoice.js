@@ -6,8 +6,15 @@
   var submitBtn = document.getElementById('invoice-send-submit');
   var resetBtn = document.getElementById('invoice-send-reset');
   var fileInput = document.getElementById('invoice-file');
+  var serviceSelect = document.getElementById('invoice-service');
+  var serviceOtherWrap = document.getElementById('service-other-wrap');
+  var serviceOtherDetail = document.getElementById('service-other-detail');
 
   if (!form) return;
+
+  serviceSelect.addEventListener('change', function () {
+    serviceOtherWrap.classList.toggle('hidden', serviceSelect.value !== 'other');
+  });
 
   var MAX_FILE_BYTES = 8 * 1024 * 1024; // 8MB
 
@@ -42,6 +49,15 @@
       return;
     }
 
+    var service = serviceSelect.value === 'other'
+      ? serviceOtherDetail.value.trim()
+      : serviceSelect.value;
+
+    if (!service) {
+      showError('Please choose or describe the service this invoice is for.');
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
 
@@ -52,10 +68,7 @@
         var payload = {
           recipientName: document.getElementById('recipient-name').value.trim(),
           recipientEmail: recipientEmail,
-          ccEmail: document.getElementById('cc-email').value.trim(),
-          subject: document.getElementById('invoice-subject').value.trim(),
-          message: document.getElementById('invoice-message').value.trim(),
-          paymentInstructions: document.getElementById('payment-instructions').value.trim(),
+          service: service,
           fileName: file.name,
           fileBase64: base64
         };

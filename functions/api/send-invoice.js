@@ -1,5 +1,9 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Update this once real business bank details are available - it's the
+// only thing that needs to change to put them on every future invoice.
+const BANK_DETAILS = '';
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -13,14 +17,21 @@ function nl2br(str) {
   return escapeHtml(str).replace(/\n/g, '<br>');
 }
 
+function buildPaymentBlock() {
+  if (BANK_DETAILS) {
+    return 'Bank transfer details:<br>' + nl2br(BANK_DETAILS);
+  }
+  return 'Bank transfer details will follow separately - in the meantime, please don’t hesitate to get in touch with any questions.';
+}
+
 function buildEmailHtml(data) {
   return (
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
         '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
         '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Invoice from SEN Support Studio</h1>' +
-        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">' + nl2br(data.message || 'Please find your invoice attached.') + '</p>' +
-        (data.paymentInstructions ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">' + nl2br(data.paymentInstructions) + '</p>' : '') +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Thank you for booking in with SEN Support Studio. Please find your invoice attached, along with our bank details for payment below.</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">' + buildPaymentBlock() + '</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">If you have any questions about this invoice, simply reply to this email.</p>' +
       '</div>' +
     '</div>'
@@ -42,20 +53,19 @@ export async function onRequestPost(context) {
 
   const recipientName = (body.recipientName || '').trim();
   const recipientEmail = (body.recipientEmail || '').trim();
-  const ccEmail = (body.ccEmail || '').trim();
-  const subject = (body.subject || 'Invoice from SEN Support Studio').trim();
+  const service = (body.service || '').trim();
   const fileName = (body.fileName || 'invoice.pdf').trim();
   const fileBase64 = body.fileBase64 || '';
 
-  if (!recipientName || !recipientEmail || !fileBase64) {
+  if (!recipientName || !recipientEmail || !service || !fileBase64) {
     return new Response(JSON.stringify({ error: 'Please fill in the required fields and attach a PDF.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
-  if (!EMAIL_RE.test(recipientEmail) || (ccEmail && !EMAIL_RE.test(ccEmail))) {
-    return new Response(JSON.stringify({ error: 'Please check the email address(es) entered.' }), {
+  if (!EMAIL_RE.test(recipientEmail)) {
+    return new Response(JSON.stringify({ error: 'Please check the email address entered.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
@@ -68,14 +78,11 @@ export async function onRequestPost(context) {
     });
   }
 
-  const to = [recipientEmail];
-  if (ccEmail) to.push(ccEmail);
-
   const emailPayload = {
     from: env.INVOICE_FROM_EMAIL || 'SEN Support Studio Invoices <invoices@sensupportstudio.com>',
-    to: to,
+    to: [recipientEmail],
     bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
-    subject: subject,
+    subject: 'Invoice — ' + service,
     html: buildEmailHtml(body),
     attachments: [{ filename: fileName, content: fileBase64 }]
   };

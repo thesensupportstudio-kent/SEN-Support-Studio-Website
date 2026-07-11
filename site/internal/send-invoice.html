@@ -23,7 +23,7 @@
 
   <section class="internal-section">
     <h1>Send Invoice</h1>
-    <p class="lede">Attach a school's invoice PDF and send it straight from invoices@sensupportstudio.com, with a copy to your own inbox.</p>
+    <p class="lede">Attach a school's invoice PDF and send it straight from invoices@sensupportstudio.com, with a standard covering message and a copy to your own inbox.</p>
 
     <div class="internal-card">
       <div id="invoice-send-error" class="form-error hidden"></div>
@@ -31,34 +31,38 @@
       <form id="invoice-send-form">
         <div class="internal-form-row">
           <div class="form-field">
-            <label for="recipient-name">School / contact name</label>
+            <label for="recipient-name">School name</label>
             <input type="text" id="recipient-name" name="recipientName" required placeholder="e.g. Riverside Primary School">
           </div>
           <div class="form-field">
-            <label for="recipient-email">Recipient email</label>
+            <label for="recipient-email">School email address</label>
             <input type="email" id="recipient-email" name="recipientEmail" required placeholder="finance@school.sch.uk">
           </div>
         </div>
 
-        <div class="internal-form-row">
-          <div class="form-field">
-            <label for="cc-email">CC email (optional)</label>
-            <input type="email" id="cc-email" name="ccEmail" placeholder="e.g. school office">
-          </div>
-          <div class="form-field">
-            <label for="invoice-subject">Subject</label>
-            <input type="text" id="invoice-subject" name="subject" required value="Invoice from SEN Support Studio">
-          </div>
+        <div class="form-field">
+          <label for="invoice-service">Service</label>
+          <select id="invoice-service" name="service" required>
+            <option value="" disabled selected>Choose a service…</option>
+            <option value="1:1 Tuition (Parents/Carers) — 1 session — £50">1:1 Tuition (Parents/Carers) — 1 session — £50</option>
+            <option value="1:1 Tuition (Parents/Carers) — Monthly pack (4 sessions) — £190">1:1 Tuition (Parents/Carers) — Monthly pack (4 sessions) — £190</option>
+            <option value="1:1 Pupil Tuition (Schools) — 1 session — £60">1:1 Pupil Tuition (Schools) — 1 session — £60</option>
+            <option value="1:1 Pupil Tuition (Schools) — Term pack (7 sessions) — £399">1:1 Pupil Tuition (Schools) — Term pack (7 sessions) — £399</option>
+            <option value="Sensory Profile Builder (Parents/Carers) — £100">Sensory Profile Builder (Parents/Carers) — £100</option>
+            <option value="Sensory Profile Builder (Schools) — 1 profile — £100">Sensory Profile Builder (Schools) — 1 profile — £100</option>
+            <option value="Sensory Profile Builder (Schools) — Pack of 5 profiles — £475">Sensory Profile Builder (Schools) — Pack of 5 profiles — £475</option>
+            <option value="Support Sessions (Parents/Carers) — £50">Support Sessions (Parents/Carers) — £50</option>
+            <option value="Sentence Steps Intervention (Schools) — 1 session — £100">Sentence Steps Intervention (Schools) — 1 session — £100</option>
+            <option value="Sentence Steps Intervention (Schools) — Term pack (7 sessions) — £665">Sentence Steps Intervention (Schools) — Term pack (7 sessions) — £665</option>
+            <option value="Build Buddies Intervention (Schools) — 1 session — £100">Build Buddies Intervention (Schools) — 1 session — £100</option>
+            <option value="Build Buddies Intervention (Schools) — Term pack (7 sessions) — £665">Build Buddies Intervention (Schools) — Term pack (7 sessions) — £665</option>
+            <option value="other">Other (describe below)</option>
+          </select>
         </div>
 
-        <div class="form-field">
-          <label for="invoice-message">Covering message</label>
-          <textarea id="invoice-message" name="message" rows="4">Please find your invoice attached. Payment can be made by card or bank transfer using the details below.</textarea>
-        </div>
-
-        <div class="form-field">
-          <label for="payment-instructions">Payment instructions</label>
-          <textarea id="payment-instructions" name="paymentInstructions" rows="3" placeholder="Paste the Tide payment link for this invoice, and/or your bank transfer details"></textarea>
+        <div class="form-field hidden" id="service-other-wrap">
+          <label for="service-other-detail">Describe the service</label>
+          <input type="text" id="service-other-detail" placeholder="What is this invoice for?">
         </div>
 
         <div class="form-field">
