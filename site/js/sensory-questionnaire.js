@@ -33,6 +33,7 @@
       var heading = el('div', 'book-step-heading');
       heading.appendChild(el('h2', null, cat.title));
       card.appendChild(heading);
+      if (cat.subtitle) card.appendChild(el('p', 'checklist-note', cat.subtitle));
 
       if (cat.type === 'single') {
         if (cat.note) card.appendChild(el('p', 'checklist-note', cat.note));
@@ -54,6 +55,20 @@
           columnsWrap.appendChild(colNode);
         });
         card.appendChild(columnsWrap);
+      }
+
+      if (cat.extraField) {
+        var extraFieldWrap = el('div', 'form-field');
+        var extraId = 'cat-extra-' + ci;
+        var extraLabel = el('label', null, cat.extraField.label);
+        extraLabel.setAttribute('for', extraId);
+        var extraTextarea = document.createElement('textarea');
+        extraTextarea.id = extraId;
+        extraTextarea.rows = 2;
+        extraTextarea.placeholder = 'Optional';
+        extraFieldWrap.appendChild(extraLabel);
+        extraFieldWrap.appendChild(extraTextarea);
+        card.appendChild(extraFieldWrap);
       }
 
       categoriesRoot.appendChild(card);
@@ -86,15 +101,23 @@
 
   function collectCategories() {
     return DATA.categories.map(function (cat, ci) {
+      var extra = '';
+      if (cat.extraField) {
+        var extraField = document.getElementById('cat-extra-' + ci);
+        if (extraField) extra = extraField.value.trim();
+      }
+
       if (cat.type === 'single') {
-        return { title: cat.title, type: 'single', selected: collectChecked('cat' + ci) };
+        return { title: cat.title, type: 'single', selected: collectChecked('cat' + ci), extra: extra, extraLabel: cat.extraField ? cat.extraField.label : '' };
       }
       return {
         title: cat.title,
         type: 'double',
         columns: cat.columns.map(function (col, coli) {
           return { label: col.label, selected: collectChecked('cat' + ci + '_col' + coli) };
-        })
+        }),
+        extra: extra,
+        extraLabel: cat.extraField ? cat.extraField.label : ''
       };
     });
   }
@@ -134,7 +157,6 @@
         contactEmail: document.getElementById('contact-email').value.trim()
       },
       categories: collectCategories(),
-      limitedDiet: document.getElementById('limited-diet').value.trim(),
       adl: collectAdl(),
       harm: document.getElementById('harm-behaviours').value.trim()
     };

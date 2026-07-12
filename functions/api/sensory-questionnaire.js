@@ -25,11 +25,16 @@ function renderList(items) {
 }
 
 function renderCategory(cat) {
+  var extraHtml = cat.extra
+    ? '<p style="font-size:14px;color:#3f5943;line-height:1.5;margin:8px 0 0;"><strong>' + escapeHtml(cat.extraLabel || 'Notes') + ':</strong> ' + nl2br(cat.extra) + '</p>'
+    : '';
+
   if (cat.type === 'single') {
-    if (!cat.selected || !cat.selected.length) return '';
+    if ((!cat.selected || !cat.selected.length) && !extraHtml) return '';
     return (
       '<h3 style="font-family:Georgia,serif;font-weight:400;font-size:17px;color:#2D5439;margin:20px 0 4px;">' + escapeHtml(cat.title) + '</h3>' +
-      renderList(cat.selected)
+      renderList(cat.selected) +
+      extraHtml
     );
   }
 
@@ -41,11 +46,12 @@ function renderCategory(cat) {
     );
   }).join('');
 
-  if (!colsHtml) return '';
+  if (!colsHtml && !extraHtml) return '';
 
   return (
     '<h3 style="font-family:Georgia,serif;font-weight:400;font-size:17px;color:#2D5439;margin:20px 0 4px;">' + escapeHtml(cat.title) + '</h3>' +
-    colsHtml
+    colsHtml +
+    extraHtml
   );
 }
 
@@ -73,11 +79,6 @@ function buildEmailHtml(data) {
       }).join('')
     : '';
 
-  var limitedDietHtml = data.limitedDiet
-    ? '<h3 style="font-family:Georgia,serif;font-weight:400;font-size:17px;color:#2D5439;margin:20px 0 4px;">Limited diet</h3>' +
-      '<p style="font-size:14px;color:#3f5943;line-height:1.5;margin:0;">' + nl2br(data.limitedDiet) + '</p>'
-    : '';
-
   var harmHtml = data.harm
     ? '<h3 style="font-family:Georgia,serif;font-weight:400;font-size:17px;color:#2D5439;margin:20px 0 4px;">Behaviours that cause harm</h3>' +
       '<p style="font-size:14px;color:#3f5943;line-height:1.5;margin:0;">' + nl2br(data.harm) + '</p>'
@@ -90,7 +91,6 @@ function buildEmailHtml(data) {
         '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">New Sensory Profile Questionnaire</h1>' +
         childRows +
         categoriesHtml +
-        limitedDietHtml +
         adlHtml +
         harmHtml +
       '</div>' +
@@ -147,7 +147,6 @@ export async function onRequestPost(context) {
       html: buildEmailHtml({
         child: child,
         categories: Array.isArray(body.categories) ? body.categories : [],
-        limitedDiet: (body.limitedDiet || '').trim(),
         adl: body.adl || {},
         harm: (body.harm || '').trim()
       })
