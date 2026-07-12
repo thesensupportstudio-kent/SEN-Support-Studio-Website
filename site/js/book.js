@@ -33,6 +33,7 @@
     'sensory-school': {
       role: 'school', label: 'Sensory Profile Builder',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/sensory-profile-builder-parents-carers-clone',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1j5Sw5vHALvL4lUI6nTSijEanCKYruOTMmW6RANHI4597a_MScCawb8jwaE-wnpqBGUsf_pe_t?gv=true',
       options: [
         { id: 'single', label: 'Single profile', price: '£100 per profile' },
         { id: 'pack', label: 'Pack of 5 profiles', price: '£475 total (5% off)' }
