@@ -49,6 +49,7 @@
     'build-buddies': {
       role: 'school', label: 'Build Buddies Intervention',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-tuition-schools-clone',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/AcZssZ1VVcjc9sLchWThU2bNG7O99FDydTmXkrJ3-Qk=?gv=true',
       options: [
         { id: 'single', label: 'Single hour (2 sessions, up to 3 pupils)', price: '£100 / hour' },
         { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
@@ -144,11 +145,32 @@
   function updateCalendly(svc) {
     if (!els.calendlyWidget) return;
 
-    if (!svc || !svc.calendlyUrl) {
+    if (!svc || (!svc.bookingUrl && !svc.calendlyUrl)) {
       els.calendlyHint.classList.remove('hidden');
       els.calendlyWidget.classList.add('hidden');
       els.calendlyWidget.innerHTML = '';
       els.calendlyWidget.removeAttribute('data-current-url');
+      return;
+    }
+
+    if (svc.bookingUrl) {
+      if (els.calendlyWidget.getAttribute('data-current-url') === svc.bookingUrl) return;
+
+      els.calendlyHint.classList.add('hidden');
+      els.calendlyWidget.classList.remove('hidden');
+      els.calendlyWidget.setAttribute('data-current-url', svc.bookingUrl);
+      els.calendlyWidget.style.minWidth = '';
+      els.calendlyWidget.style.width = '';
+      els.calendlyWidget.style.height = '';
+      els.calendlyWidget.innerHTML = '';
+
+      var iframe = document.createElement('iframe');
+      iframe.src = svc.bookingUrl;
+      iframe.style.border = '0';
+      iframe.width = '100%';
+      iframe.height = '700';
+      iframe.setAttribute('frameborder', '0');
+      els.calendlyWidget.appendChild(iframe);
       return;
     }
 
