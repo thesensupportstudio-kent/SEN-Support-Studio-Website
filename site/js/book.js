@@ -2,7 +2,7 @@
   var SERVICES = {
     'tuition-parent': {
       role: 'parent', label: '1:1 Tuition',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1QQAWPlvnyI-P7qXkC3OrahQ7AecXLdalpERksWmPN8XRittye6fZQtMbakte-bgaayZUFZzWt?gv=true',
       options: [
         { id: 'single', label: 'Single session', price: '£50 / hour' },
         { id: 'pack', label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
@@ -10,7 +10,6 @@
     },
     'sensory-parent': {
       role: 'parent', label: 'Sensory Profile Builder',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/parent-support-sessions-clone',
       bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ06EqqpvHUaXI5CozeOcVMUMoX4YKtSouygGVPFEdKHIT--nwbI4pochLagX0oPf9AeyyGpmEhV?gv=true',
       options: [
         { id: 'single', label: 'One profile', price: '£100 (initial chat, questionnaire, findings call & report)' }
@@ -18,7 +17,6 @@
     },
     'support': {
       role: 'parent', label: 'Support Sessions',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone',
       bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2YMKZnUKxlUHv3pB_3qb3CTqttezkIBJIauYrYYdUAeCejJW0JgOgpjU7WKPOgtYW5T2FRlcE5?gv=true',
       options: [
         { id: 'single', label: 'Single hour', price: '£50 / hour, in person or online' }
@@ -26,7 +24,6 @@
     },
     'tuition-school': {
       role: 'school', label: '1:1 Pupil Tuition',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone-1',
       bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2vUJ5ZnDaU7-h8wRRovDAmKYdr_v_Vxfi368blbPFs18KZgH5DfgtFbudTsuWmUTwzfmTETvtL?gv=true',
       options: [
         { id: 'single', label: 'Single session', price: '£60 / hour' },
@@ -35,7 +32,6 @@
     },
     'sensory-school': {
       role: 'school', label: 'Sensory Profile Builder',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/sensory-profile-builder-parents-carers-clone',
       bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1j5Sw5vHALvL4lUI6nTSijEanCKYruOTMmW6RANHI4597a_MScCawb8jwaE-wnpqBGUsf_pe_t?gv=true',
       options: [
         { id: 'single', label: 'Single profile', price: '£100 per profile' },
@@ -44,7 +40,7 @@
     },
     'sentence-steps': {
       role: 'school', label: 'Sentence Steps Intervention',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/brick-buddies-intervention-schools-clone',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0MLvzESXaoEszq-4-PrukOsDnO1-SNonMlz0pEOfxQe9iair91CCM1EZIYWcrSpZjNvg4mfYp3?gv=true',
       options: [
         { id: 'single', label: 'Single hour (2 sessions, up to 4 pupils)', price: '£100 / hour' },
         { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
@@ -52,7 +48,6 @@
     },
     'build-buddies': {
       role: 'school', label: 'Build Buddies Intervention',
-      calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-tuition-schools-clone',
       bookingUrl: 'https://calendar.google.com/calendar/appointments/AcZssZ1VVcjc9sLchWThU2bNG7O99FDydTmXkrJ3-Qk=?gv=true',
       options: [
         { id: 'single', label: 'Single hour (2 sessions, up to 3 pupils)', price: '£100 / hour' },
@@ -131,25 +126,10 @@
     els.paymentButtons.classList.remove('hidden');
   }
 
-  var CALENDLY_BRAND_PARAMS = 'background_color=fbfaf5&text_color=2d5439&primary_color=a0daad';
-
-  function brandedCalendlyUrl(url) {
-    return url + (url.indexOf('?') === -1 ? '?' : '&') + CALENDLY_BRAND_PARAMS;
-  }
-
-  function waitForCalendly(callback, attemptsLeft) {
-    if (window.Calendly) {
-      callback();
-      return;
-    }
-    if (attemptsLeft <= 0) return;
-    setTimeout(function () { waitForCalendly(callback, attemptsLeft - 1); }, 150);
-  }
-
-  function updateCalendly(svc) {
+  function updateBooking(svc) {
     if (!els.calendlyWidget) return;
 
-    if (!svc || (!svc.bookingUrl && !svc.calendlyUrl)) {
+    if (!svc || !svc.bookingUrl) {
       els.calendlyHint.classList.remove('hidden');
       els.calendlyWidget.classList.add('hidden');
       els.calendlyWidget.innerHTML = '';
@@ -157,43 +137,20 @@
       return;
     }
 
-    if (svc.bookingUrl) {
-      if (els.calendlyWidget.getAttribute('data-current-url') === svc.bookingUrl) return;
-
-      els.calendlyHint.classList.add('hidden');
-      els.calendlyWidget.classList.remove('hidden');
-      els.calendlyWidget.setAttribute('data-current-url', svc.bookingUrl);
-      els.calendlyWidget.style.minWidth = '';
-      els.calendlyWidget.style.width = '';
-      els.calendlyWidget.style.height = '';
-      els.calendlyWidget.innerHTML = '';
-
-      var iframe = document.createElement('iframe');
-      iframe.src = svc.bookingUrl;
-      iframe.style.border = '0';
-      iframe.width = '100%';
-      iframe.height = '700';
-      iframe.setAttribute('frameborder', '0');
-      els.calendlyWidget.appendChild(iframe);
-      return;
-    }
-
-    if (els.calendlyWidget.getAttribute('data-current-url') === svc.calendlyUrl) return;
+    if (els.calendlyWidget.getAttribute('data-current-url') === svc.bookingUrl) return;
 
     els.calendlyHint.classList.add('hidden');
     els.calendlyWidget.classList.remove('hidden');
-    els.calendlyWidget.setAttribute('data-current-url', svc.calendlyUrl);
-    els.calendlyWidget.style.minWidth = '320px';
-    els.calendlyWidget.style.width = '100%';
-    els.calendlyWidget.style.height = '950px';
+    els.calendlyWidget.setAttribute('data-current-url', svc.bookingUrl);
     els.calendlyWidget.innerHTML = '';
 
-    waitForCalendly(function () {
-      window.Calendly.initInlineWidget({
-        url: brandedCalendlyUrl(svc.calendlyUrl),
-        parentElement: els.calendlyWidget
-      });
-    }, 40);
+    var iframe = document.createElement('iframe');
+    iframe.src = svc.bookingUrl;
+    iframe.style.border = '0';
+    iframe.width = '100%';
+    iframe.height = '700';
+    iframe.setAttribute('frameborder', '0');
+    els.calendlyWidget.appendChild(iframe);
   }
 
   function selectRole(role) {
@@ -235,7 +192,7 @@
     });
 
     var svc = state.serviceSlug ? SERVICES[state.serviceSlug] : null;
-    updateCalendly(svc);
+    updateBooking(svc);
     var showBookingType = !!(svc && svc.options.length > 1);
 
     els.typeField.classList.toggle('hidden', !showBookingType);
