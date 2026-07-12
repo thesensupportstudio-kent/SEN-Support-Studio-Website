@@ -19,6 +19,7 @@
     'support': {
       role: 'parent', label: 'Support Sessions',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2YMKZnUKxlUHv3pB_3qb3CTqttezkIBJIauYrYYdUAeCejJW0JgOgpjU7WKPOgtYW5T2FRlcE5?gv=true',
       options: [
         { id: 'single', label: 'Single hour', price: '£50 / hour, in person or online' }
       ]
@@ -26,6 +27,7 @@
     'tuition-school': {
       role: 'school', label: '1:1 Pupil Tuition',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/1-1-parent-tuition-clone-1',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2vUJ5ZnDaU7-h8wRRovDAmKYdr_v_Vxfi368blbPFs18KZgH5DfgtFbudTsuWmUTwzfmTETvtL?gv=true',
       options: [
         { id: 'single', label: 'Single session', price: '£60 / hour' },
         { id: 'pack', label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
