@@ -49,43 +49,43 @@ export async function onRequestPost(context) {
     });
   }
 
-  const name = (body.name || '').trim();
-  const email = (body.email || '').trim();
-  const role = (body.role || '').trim();
-  const message = (body.message || '').trim();
-
-  if (!name || !email || !message) {
-    return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  if (!EMAIL_RE.test(email)) {
-    return new Response(JSON.stringify({ error: 'Please check the email address entered.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  if (!env.RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  const notifyTo = env.CONTACT_TO_EMAIL || 'hello@sensupportstudio.com';
-
-  const emailPayload = {
-    from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
-    to: [notifyTo],
-    reply_to: email,
-    subject: 'Website enquiry from ' + name,
-    html: buildEmailHtml({ name, email, role, message })
-  };
-
   try {
+    const name = (body.name || '').trim();
+    const email = (body.email || '').trim();
+    const role = (body.role || '').trim();
+    const message = (body.message || '').trim();
+
+    if (!name || !email || !message) {
+      return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!EMAIL_RE.test(email)) {
+      return new Response(JSON.stringify({ error: 'Please check the email address entered.' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!env.RESEND_API_KEY) {
+      return new Response(JSON.stringify({ error: 'Email sending is not configured yet.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const notifyTo = env.CONTACT_TO_EMAIL || 'hello@sensupportstudio.com';
+
+    const emailPayload = {
+      from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+      to: [notifyTo],
+      reply_to: email,
+      subject: 'Website enquiry from ' + name,
+      html: buildEmailHtml({ name, email, role, message })
+    };
+
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
