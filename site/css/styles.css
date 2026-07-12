@@ -1712,15 +1712,15 @@ img {
 .checklist-columns {
   display: flex;
   flex-wrap: wrap;
-  gap: 28px;
+  gap: 28px 36px;
 }
 
 .checklist-column {
-  flex: 1 1 260px;
-  min-width: 220px;
+  flex: 1 1 280px;
+  min-width: 240px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
 }
 
 .checklist-column h3 {
@@ -1728,25 +1728,46 @@ img {
   font-weight: 400;
   font-size: 16px;
   color: var(--green);
-  margin: 0 0 4px;
+  margin: 0 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-green);
 }
 
 .checklist-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   font-size: 14px;
   color: var(--green);
-  line-height: 1.4;
+  line-height: 1.45;
   cursor: pointer;
+  padding: 9px 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.checklist-item:hover {
+  background: var(--border-green);
+}
+
+.checklist-item:has(input:checked) {
+  background: rgba(160, 218, 173, 0.28);
 }
 
 .checklist-item input[type="checkbox"] {
   margin-top: 3px;
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   accent-color: var(--green);
+  cursor: pointer;
+}
+
+@media (min-width: 720px) {
+  .checklist-columns > .checklist-column + .checklist-column {
+    border-left: 1px solid var(--border-green);
+    padding-left: 32px;
+  }
 }
 
 .book-field > .label {
