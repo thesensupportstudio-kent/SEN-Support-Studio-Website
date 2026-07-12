@@ -11,6 +11,7 @@
     'sensory-parent': {
       role: 'parent', label: 'Sensory Profile Builder',
       calendlyUrl: 'https://calendly.com/thesensupportstudio/parent-support-sessions-clone',
+      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ06EqqpvHUaXI5CozeOcVMUMoX4YKtSouygGVPFEdKHIT--nwbI4pochLagX0oPf9AeyyGpmEhV?gv=true',
       options: [
         { id: 'single', label: 'One profile', price: '£100 (initial chat, questionnaire, findings call & report)' }
       ]
