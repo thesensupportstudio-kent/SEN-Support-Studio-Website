@@ -1703,6 +1703,52 @@ img {
   gap: 10px;
 }
 
+.checklist-note {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: -8px 0 4px;
+}
+
+.checklist-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.checklist-column {
+  flex: 1 1 260px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checklist-column h3 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--green);
+  margin: 0 0 4px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--green);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.checklist-item input[type="checkbox"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+}
+
 .book-field > .label {
   font-weight: 700;
   font-size: 13px;
