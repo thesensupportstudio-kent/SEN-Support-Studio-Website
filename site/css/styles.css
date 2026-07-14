@@ -288,6 +288,15 @@ img {
   color: #a9c3ae;
 }
 
+.footer-bottom a {
+  color: #a9c3ae;
+  text-decoration: underline;
+}
+
+.footer-bottom a:hover {
+  color: var(--offwhite);
+}
+
 /* ---------- Shared layout helpers ---------- */
 
 .container {
@@ -771,6 +780,79 @@ img {
   font-size: 16px;
   line-height: 1.75;
   color: var(--text);
+  margin: 0;
+}
+
+/* ---------- Legal / policy pages ---------- */
+
+.legal-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 8px 48px 96px;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-meta {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-light);
+  margin: 0 0 28px;
+}
+
+.legal-section h2 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 23px;
+  color: var(--green);
+  margin: 36px 0 10px;
+}
+
+.legal-section h2:first-of-type {
+  margin-top: 0;
+}
+
+.legal-section h3 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--green);
+  margin: 20px 0 6px;
+}
+
+.legal-section p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-light);
+  margin: 0 0 12px;
+}
+
+.legal-section ul {
+  padding-left: 22px;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legal-section li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+
+.legal-section a {
+  color: var(--green);
+}
+
+.legal-callout {
+  background: var(--offwhite);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 8px 0 24px;
+}
+
+.legal-callout p {
   margin: 0;
 }
 
