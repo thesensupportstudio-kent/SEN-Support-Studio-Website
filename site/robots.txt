@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /internal/
+Disallow: /sensory-questionnaire.html
+
+Sitemap: https://sensupportstudio.com/sitemap.xml
