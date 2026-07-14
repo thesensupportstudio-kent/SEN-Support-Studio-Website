@@ -79,11 +79,6 @@ function buildEmailHtml(data) {
       }).join('')
     : '';
 
-  var harmHtml = data.harm
-    ? '<h3 style="font-family:Georgia,serif;font-weight:400;font-size:17px;color:#2D5439;margin:20px 0 4px;">Behaviours that cause harm</h3>' +
-      '<p style="font-size:14px;color:#3f5943;line-height:1.5;margin:0;">' + nl2br(data.harm) + '</p>'
-    : '';
-
   return (
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:600px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
@@ -92,7 +87,6 @@ function buildEmailHtml(data) {
         childRows +
         categoriesHtml +
         adlHtml +
-        harmHtml +
       '</div>' +
     '</div>'
   );
@@ -147,8 +141,7 @@ export async function onRequestPost(context) {
       html: buildEmailHtml({
         child: child,
         categories: Array.isArray(body.categories) ? body.categories : [],
-        adl: body.adl || {},
-        harm: (body.harm || '').trim()
+        adl: body.adl || {}
       })
     };
 

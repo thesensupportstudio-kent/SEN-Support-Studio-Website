@@ -1809,6 +1809,12 @@ img {
   margin: -8px 0 4px;
 }
 
+#adl-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .checklist-columns {
   display: flex;
   flex-wrap: wrap;

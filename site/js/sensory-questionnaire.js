@@ -157,8 +157,7 @@
         contactEmail: document.getElementById('contact-email').value.trim()
       },
       categories: collectCategories(),
-      adl: collectAdl(),
-      harm: document.getElementById('harm-behaviours').value.trim()
+      adl: collectAdl()
     };
 
     fetch('/api/sensory-questionnaire', {
