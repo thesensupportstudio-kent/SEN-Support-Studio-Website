@@ -110,6 +110,24 @@ img {
   flex-wrap: wrap;
 }
 
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 6px;
+  margin-left: auto;
+  color: var(--green);
+  cursor: pointer;
+}
+
+.nav-toggle svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
 .nav-link {
   font-size: 15px;
   text-decoration: none;
@@ -2059,6 +2077,44 @@ img {
 
 /* ---------- Responsive ---------- */
 
+@media (max-width: 860px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 2px;
+    order: 3;
+  }
+
+  .navbar .btn-book {
+    display: none;
+    order: 4;
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .navbar.nav-open .nav-links,
+  .navbar.nav-open .btn-book {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border-green);
+  }
+
+  .nav-link.active {
+    border-bottom: 1px solid var(--border-green);
+  }
+}
+
 @media (max-width: 640px) {
   .navbar {
     padding: 16px 20px;
@@ -2070,7 +2126,8 @@ img {
   .section-white,
   .services-section,
   .page-hero,
-  .section-intro {
+  .section-intro,
+  .book-section {
     padding-left: 20px;
     padding-right: 20px;
   }
@@ -2090,5 +2147,15 @@ img {
 
   .site-footer {
     padding: 48px 20px 24px;
+  }
+
+  .book-card {
+    padding: 24px 20px;
+  }
+
+  #calendly-widget {
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
   }
 }
