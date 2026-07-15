@@ -1,8 +1,8 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Update this once real business bank details are available - it's the
+// Update this if the business bank details ever change - it's the
 // only thing that needs to change to put them on every future invoice.
-const BANK_DETAILS = '';
+const BANK_DETAILS = 'Account name: SEN Support Studio LTD\nAccount number: 32734135\nSort code: 04-06-05';
 
 function escapeHtml(str) {
   return String(str)
