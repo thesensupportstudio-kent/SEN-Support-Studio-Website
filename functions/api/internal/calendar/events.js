@@ -61,8 +61,11 @@ export async function onRequestGet(context) {
     if (!resp.ok) {
       const detail = await resp.text().catch(function () { return ''; });
       console.log('Google Calendar API error: ' + resp.status + ' ' + detail);
+      // Stay in the 4xx range - Cloudflare swaps a generic branded page in
+      // for any 5xx response, which would hide the real reason from the UI.
+      const status = resp.status >= 400 && resp.status < 500 ? resp.status : 422;
       return new Response(JSON.stringify({ error: 'Could not load your calendar.', detail: detail }), {
-        status: 502,
+        status: status,
         headers: { 'Content-Type': 'application/json' }
       });
     }

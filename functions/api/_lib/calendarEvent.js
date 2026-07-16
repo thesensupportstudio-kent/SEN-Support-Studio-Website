@@ -92,7 +92,11 @@ export async function callGoogle(env, url, options) {
       if (parsed && parsed.error && parsed.error.message) message = parsed.error.message;
     } catch (e) {}
     const err = new Error(message);
-    err.status = 502;
+    // Stay in the 4xx range even though this is really an upstream failure -
+    // Cloudflare silently swaps in its own generic branded page for any 5xx
+    // response, which would hide the real reason (and Google's own error
+    // codes are 4xx here anyway: auth/scope/validation problems).
+    err.status = resp.status >= 400 && resp.status < 500 ? resp.status : 422;
     err.detail = detail;
     throw err;
   }
