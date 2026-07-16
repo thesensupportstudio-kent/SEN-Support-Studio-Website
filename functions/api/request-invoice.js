@@ -65,7 +65,7 @@ export async function onRequestPost(context) {
     });
   }
 
-  const notifyTo = env.INVOICE_NOTIFY_EMAIL || env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com';
+  const notifyTo = env.INVOICE_NOTIFY_EMAIL || 'invoices@sensupportstudio.com';
 
   const emailPayload = {
     from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
