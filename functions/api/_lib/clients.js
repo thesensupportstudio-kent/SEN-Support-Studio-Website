@@ -29,10 +29,10 @@ async function findOrCreateClient(env, { parentName, parentEmail, parentPhone, c
   return result.meta.last_row_id;
 }
 
-async function recordInteraction(env, clientId, type, summary, detail) {
+async function recordInteraction(env, clientId, type, summary, detail, fileKey) {
   await env.DB.prepare(
-    'INSERT INTO interactions (client_id, type, summary, detail) VALUES (?, ?, ?, ?)'
-  ).bind(clientId, type, summary, detail ? JSON.stringify(detail) : null).run();
+    'INSERT INTO interactions (client_id, type, summary, detail, file_key) VALUES (?, ?, ?, ?, ?)'
+  ).bind(clientId, type, summary, detail ? JSON.stringify(detail) : null, fileKey || null).run();
 }
 
 async function setClientStatus(env, clientId, status) {
@@ -44,7 +44,7 @@ async function setClientStatus(env, clientId, status) {
 // If clientId is supplied (dashboard-initiated sends), it's used directly
 // instead of matching by email — falls back to email matching if that
 // client no longer exists.
-export async function logInteraction(env, { clientId, parentName, parentEmail, parentPhone, childName, school, type, summary, detail, status }) {
+export async function logInteraction(env, { clientId, parentName, parentEmail, parentPhone, childName, school, type, summary, detail, status, fileKey }) {
   if (!env.DB) return;
   try {
     let id = clientId ? Number(clientId) : null;
@@ -63,7 +63,7 @@ export async function logInteraction(env, { clientId, parentName, parentEmail, p
     }
 
     if (!id) return;
-    await recordInteraction(env, id, type, summary, detail);
+    await recordInteraction(env, id, type, summary, detail, fileKey);
     if (status) await setClientStatus(env, id, status);
   } catch (err) {
     console.log('logInteraction failed: ' + String(err && err.message));

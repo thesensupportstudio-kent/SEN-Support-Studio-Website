@@ -128,6 +128,16 @@
     dateEl.textContent = formatDateTime(item.created_at);
     div.appendChild(dateEl);
 
+    if (item.file_key) {
+      var dl = document.createElement('a');
+      dl.className = 'timeline-download';
+      dl.href = '/api/internal/file?key=' + encodeURIComponent(item.file_key);
+      dl.target = '_blank';
+      dl.rel = 'noopener';
+      dl.textContent = 'Download PDF';
+      div.appendChild(dl);
+    }
+
     var detailObj = parseDetail(item);
     if (detailObj && Object.keys(detailObj).length) {
       var details = document.createElement('details');

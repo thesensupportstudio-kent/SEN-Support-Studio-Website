@@ -99,6 +99,17 @@ export async function onRequestPost(context) {
     const pdfBase64 = bytesToBase64(pdfBytes);
     const pdfFileName = safeFileName(title + '-' + clientName) + '.pdf';
 
+    let fileKey = null;
+    if (env.FILES) {
+      try {
+        fileKey = 'reports/' + Date.now() + '-' + pdfFileName;
+        await env.FILES.put(fileKey, pdfBytes, { httpMetadata: { contentType: 'application/pdf' } });
+      } catch (err) {
+        console.log('R2 upload failed in send-report: ' + String(err && err.message));
+        fileKey = null;
+      }
+    }
+
     const emailPayload = {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: to,
@@ -134,7 +145,8 @@ export async function onRequestPost(context) {
       type: 'session_report',
       summary: title + ' sent for ' + clientName + ' (' + sessionDate + ')',
       detail: { title, service, sessionDate, clientLabel },
-      status: 'active'
+      status: 'active',
+      fileKey: fileKey
     });
 
     return new Response(JSON.stringify({ ok: true }), {

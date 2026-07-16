@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS interactions (
   type TEXT NOT NULL,
   summary TEXT NOT NULL,
   detail TEXT,
+  file_key TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -19,6 +19,17 @@ function nl2br(str) {
   return escapeHtml(str).replace(/\n/g, '<br>');
 }
 
+function safeFileName(str) {
+  return String(str).replace(/[^a-z0-9.]+/gi, '-').replace(/^-+|-+$/g, '').slice(0, 100);
+}
+
+function base64ToBytes(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
 function buildPaymentBlock() {
   if (BANK_DETAILS) {
     return 'Bank transfer details:<br>' + nl2br(BANK_DETAILS);
@@ -80,6 +91,17 @@ export async function onRequestPost(context) {
     });
   }
 
+  let fileKey = null;
+  if (env.FILES) {
+    try {
+      fileKey = 'invoices/' + Date.now() + '-' + safeFileName(fileName);
+      await env.FILES.put(fileKey, base64ToBytes(fileBase64), { httpMetadata: { contentType: 'application/pdf' } });
+    } catch (err) {
+      console.log('R2 upload failed in send-invoice: ' + String(err && err.message));
+      fileKey = null;
+    }
+  }
+
   const emailPayload = {
     from: env.INVOICE_FROM_EMAIL || 'SEN Support Studio Invoices <invoices@sensupportstudio.com>',
     to: [recipientEmail],
@@ -115,7 +137,8 @@ export async function onRequestPost(context) {
       type: 'invoice_sent',
       summary: 'Invoice sent for ' + service,
       detail: { service, fileName },
-      status: 'active'
+      status: 'active',
+      fileKey: fileKey
     });
 
     return new Response(JSON.stringify({ ok: true }), {

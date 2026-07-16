@@ -2371,6 +2371,19 @@ img {
   color: var(--text-light);
 }
 
+.timeline-download {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.timeline-download:hover {
+  text-decoration: underline;
+}
+
 .client-context-banner {
   display: flex;
   align-items: center;
