@@ -338,7 +338,8 @@
       clientEmail: state.session.clientEmail.trim(),
       ccEmail: state.session.ccEmail.trim(),
       sessionDate: state.session.sessionDate,
-      childPages: result.pages
+      childPages: result.pages,
+      clientId: (window.SENClientContext && window.SENClientContext.clientId) || undefined
     };
 
     var submitBtn = document.getElementById('wizard-submit');
@@ -388,4 +389,15 @@
   }
 
   render();
+
+  if (window.SENClientContext && window.SENClientContext.clientId) {
+    window.SENClientContext.ready.then(function (client) {
+      if (!client) return;
+      window.SENClientContext.showBanner(client);
+      if (client.school || client.parent_name) state.session.schoolName = client.school || client.parent_name;
+      if (client.parent_email) state.session.clientEmail = client.parent_email;
+      if (client.child_name) state.pupils[0].pupilName = client.child_name;
+      if (state.step === 0) render();
+    });
+  }
 })();

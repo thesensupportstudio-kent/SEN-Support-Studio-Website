@@ -127,8 +127,10 @@ export async function onRequestPost(context) {
     }
 
     await logInteraction(env, {
+      clientId: body.clientId || null,
       parentName: recipientName,
       parentEmail: clientEmail,
+      childName: isPerChild ? null : clientName,
       type: 'session_report',
       summary: title + ' sent for ' + clientName + ' (' + sessionDate + ')',
       detail: { title, service, sessionDate, clientLabel },

@@ -22,6 +22,15 @@
 
   if (dateInput && !dateInput.value) dateInput.value = todayIso();
 
+  if (window.SENClientContext && window.SENClientContext.clientId) {
+    window.SENClientContext.ready.then(function (client) {
+      if (!client) return;
+      window.SENClientContext.showBanner(client);
+      if (client.parent_name) document.getElementById('client-name').value = client.parent_name;
+      if (client.parent_email) document.getElementById('client-email').value = client.parent_email;
+    });
+  }
+
   if (areaOtherCheck) {
     areaOtherCheck.addEventListener('change', function () {
       areaOtherWrap.classList.toggle('hidden', !areaOtherCheck.checked);
@@ -79,7 +88,8 @@
       clientEmail: clientEmail,
       ccEmail: form.ccEmail.value.trim(),
       sessionDate: sessionDate,
-      sections: sections
+      sections: sections,
+      clientId: (window.SENClientContext && window.SENClientContext.clientId) || undefined
     };
 
     submitBtn.disabled = true;

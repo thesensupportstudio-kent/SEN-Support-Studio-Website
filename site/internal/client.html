@@ -32,34 +32,58 @@
           <p class="client-detail-meta" id="client-child"></p>
           <p class="client-detail-meta" id="client-contact"></p>
         </div>
-      </div>
-
-      <div class="client-status-row">
-        <label for="client-status-select"><strong>Status</strong></label>
-        <select id="client-status-select">
-          <option value="enquiry">Enquiry</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="lapsed">Lapsed</option>
-        </select>
-        <span id="status-save-status" class="notes-save-status"></span>
-      </div>
-
-      <div class="internal-card">
-        <div class="form-field">
-          <label for="client-notes">Notes</label>
-          <textarea id="client-notes" rows="4" placeholder="Anything worth remembering about this family…"></textarea>
+        <div class="client-actions">
+          <div class="client-action-dropdown">
+            <button type="button" class="form-submit form-submit-outline" id="send-report-btn">Send Report &#9662;</button>
+            <div class="client-action-menu hidden" id="send-report-menu">
+              <a href="reports-tuition.html">1:1 Tuition Report (Parents/Carers)</a>
+              <a href="reports-tuition-school.html">1:1 Pupil Tuition Report (Schools)</a>
+              <a href="reports-sensory.html">Sensory Profile Builder</a>
+              <a href="reports-support.html">Support Session Summary</a>
+              <a href="reports-build-buddies.html">Build Buddies Report (Schools)</a>
+              <a href="reports-sentence-steps.html">Sentence Steps Report (Schools)</a>
+            </div>
+          </div>
+          <a href="send-invoice.html" id="send-invoice-btn" class="form-submit">Send Invoice</a>
         </div>
-        <button type="button" class="notes-save-btn" id="notes-save-btn">Save notes</button>
-        <span id="notes-save-status" class="notes-save-status"></span>
       </div>
 
-      <h2 style="font-family:var(--font-heading);font-weight:400;font-size:22px;color:var(--green);margin:32px 0 16px;">History</h2>
-      <div class="timeline" id="client-timeline"></div>
+      <div class="client-tabs" id="client-tabs">
+        <button type="button" class="client-tab active" data-tab="overview">Overview</button>
+        <button type="button" class="client-tab" data-tab="forms">Forms</button>
+        <button type="button" class="client-tab" data-tab="reports">Reports</button>
+        <button type="button" class="client-tab" data-tab="invoices">Invoices</button>
+      </div>
+
+      <div id="tab-overview" class="client-tab-panel">
+        <div class="client-status-row">
+          <label for="client-status-select"><strong>Status</strong></label>
+          <select id="client-status-select">
+            <option value="enquiry">Enquiry</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="lapsed">Lapsed</option>
+          </select>
+          <span id="status-save-status" class="notes-save-status"></span>
+        </div>
+
+        <div class="internal-card">
+          <div class="form-field">
+            <label for="client-notes">Notes</label>
+            <textarea id="client-notes" rows="4" placeholder="Anything worth remembering about this family…"></textarea>
+          </div>
+          <button type="button" class="notes-save-btn" id="notes-save-btn">Save notes</button>
+          <span id="notes-save-status" class="notes-save-status"></span>
+        </div>
+      </div>
+
+      <div id="tab-forms" class="client-tab-panel hidden"></div>
+      <div id="tab-reports" class="client-tab-panel hidden"></div>
+      <div id="tab-invoices" class="client-tab-panel hidden"></div>
     </div>
   </section>
 
 </div>
-<script src="../js/internal-client.js?v=1784000000"></script>
+<script src="../js/internal-client.js?v=1784100000"></script>
 </body>
 </html>

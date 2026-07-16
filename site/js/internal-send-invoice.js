@@ -16,6 +16,15 @@
     serviceOtherWrap.classList.toggle('hidden', serviceSelect.value !== 'other');
   });
 
+  if (window.SENClientContext && window.SENClientContext.clientId) {
+    window.SENClientContext.ready.then(function (client) {
+      if (!client) return;
+      window.SENClientContext.showBanner(client);
+      if (client.school || client.parent_name) document.getElementById('recipient-name').value = client.school || client.parent_name;
+      if (client.parent_email) document.getElementById('recipient-email').value = client.parent_email;
+    });
+  }
+
   var MAX_FILE_BYTES = 8 * 1024 * 1024; // 8MB
 
   function showError(message) {
@@ -70,7 +79,8 @@
           recipientEmail: recipientEmail,
           service: service,
           fileName: file.name,
-          fileBase64: base64
+          fileBase64: base64,
+          clientId: (window.SENClientContext && window.SENClientContext.clientId) || undefined
         };
 
         return fetch('/api/send-invoice', {

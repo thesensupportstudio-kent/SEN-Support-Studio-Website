@@ -109,6 +109,7 @@ export async function onRequestPost(context) {
     }
 
     await logInteraction(env, {
+      clientId: body.clientId || null,
       parentName: recipientName,
       parentEmail: recipientEmail,
       type: 'invoice_sent',

@@ -2370,3 +2370,130 @@ img {
   font-size: 12px;
   color: var(--text-light);
 }
+
+.client-context-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--cream-dark);
+  border: 1px solid var(--border-green-strong);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--green-dark);
+}
+
+.client-context-banner a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.client-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.client-actions .form-submit {
+  width: auto;
+  margin-top: 0;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.client-action-dropdown {
+  position: relative;
+}
+
+.client-action-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 10;
+  background: var(--offwhite);
+  border: 1px solid var(--border-green);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 240px;
+  box-shadow: 0 8px 24px rgba(31, 61, 41, 0.12);
+}
+
+.client-action-menu a {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.client-action-menu a:hover {
+  background: var(--cream);
+  color: var(--green);
+}
+
+.client-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-green);
+  margin: 24px 0;
+}
+
+.client-tab {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-light);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.client-tab.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.client-tab-panel .timeline {
+  margin-top: 4px;
+}
+
+.timeline-item details {
+  margin-top: 10px;
+}
+
+.timeline-item summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.detail-row {
+  font-size: 13px;
+  color: var(--text);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.detail-row strong {
+  color: var(--green-dark);
+}
+
+.detail-subheading {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 14px 0 2px;
+}

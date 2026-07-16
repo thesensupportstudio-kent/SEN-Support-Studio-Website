@@ -664,7 +664,8 @@
       clientEmail: state.client.clientEmail.trim(),
       ccEmail: state.client.ccEmail.trim(),
       sessionDate: state.client.sessionDate,
-      sections: sections
+      sections: sections,
+      clientId: (window.SENClientContext && window.SENClientContext.clientId) || undefined
     };
 
     var submitBtn = document.getElementById('wizard-submit');
@@ -713,4 +714,14 @@
 
   state.client.sessionDate = todayIso();
   render();
+
+  if (window.SENClientContext && window.SENClientContext.clientId) {
+    window.SENClientContext.ready.then(function (client) {
+      if (!client) return;
+      window.SENClientContext.showBanner(client);
+      if (client.parent_name) state.client.clientName = client.parent_name;
+      if (client.parent_email) state.client.clientEmail = client.parent_email;
+      if (state.step === 0) render();
+    });
+  }
 })();
