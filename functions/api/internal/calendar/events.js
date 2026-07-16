@@ -1,4 +1,5 @@
 import { getValidAccessToken, isConnected } from '../../_lib/google.js';
+import { buildEventBody, callGoogle, errorResponse, EVENTS_URL } from '../../_lib/calendarEvent.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -90,5 +91,41 @@ export async function onRequestGet(context) {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  if (!env.DB) {
+    return new Response(JSON.stringify({ error: 'Database is not configured yet.' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Invalid request body.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  try {
+    const eventBody = buildEventBody(body);
+    const created = await callGoogle(env, EVENTS_URL, {
+      method: 'POST',
+      body: JSON.stringify(eventBody)
+    });
+    return new Response(JSON.stringify({ ok: true, id: created.id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (err) {
+    console.log('Unhandled error creating calendar event: ' + String(err && err.message));
+    return errorResponse(err);
   }
 }

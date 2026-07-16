@@ -279,7 +279,7 @@
     }
 
     var id = eventIdField.value;
-    var url = id ? '/api/internal/calendar/event?id=' + encodeURIComponent(id) : '/api/internal/calendar/event';
+    var url = id ? '/api/internal/calendar/events/' + encodeURIComponent(id) : '/api/internal/calendar/events';
     var method = id ? 'PATCH' : 'POST';
 
     saveBtn.disabled = true;
@@ -317,7 +317,7 @@
     if (!window.confirm('Delete this event from your Google Calendar?')) return;
 
     deleteBtn.disabled = true;
-    fetch('/api/internal/calendar/event?id=' + encodeURIComponent(id), { method: 'DELETE' })
+    fetch('/api/internal/calendar/events/' + encodeURIComponent(id), { method: 'DELETE' })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {
         if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not delete this event.');
