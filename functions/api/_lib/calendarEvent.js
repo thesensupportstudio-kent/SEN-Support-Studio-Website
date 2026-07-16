@@ -8,26 +8,30 @@ function addDays(dateStr, days) {
   return d.toISOString().slice(0, 10);
 }
 
+// UK clocks go forward 1am UTC on the last Sunday of March, and back 1am UTC
+// on the last Sunday of October. This app only ever runs for a UK practice,
+// so BST/GMT is worked out with plain date arithmetic rather than Intl -
+// Cloudflare's production Workers runtime has known gaps in IANA timezone
+// data that don't always show up in local dev, and a hard crash there isn't
+// worth it just to support timezones this app never uses.
+function lastSundayUtcMs(year, monthIndex) {
+  const d = new Date(Date.UTC(year, monthIndex + 1, 0));
+  d.setUTCDate(d.getUTCDate() - d.getUTCDay());
+  return d.getTime();
+}
+
+function isBst(dateStr, timeStr) {
+  const naiveUtc = new Date(dateStr + 'T' + timeStr + ':00Z').getTime();
+  const year = new Date(naiveUtc).getUTCFullYear();
+  const bstStart = lastSundayUtcMs(year, 2) + 60 * 60000; // last Sunday of March, 01:00 UTC
+  const bstEnd = lastSundayUtcMs(year, 9) + 60 * 60000; // last Sunday of October, 01:00 UTC
+  return naiveUtc >= bstStart && naiveUtc < bstEnd;
+}
+
 // Google Calendar rejects dateTime values that omit a UTC offset, even when
-// timeZone is also set, so work out the real offset for this zone/moment.
+// timeZone is also set, so work out the real offset for this moment.
 function offsetString(timeZone, dateStr, timeStr) {
-  const naiveUtc = new Date(dateStr + 'T' + timeStr + ':00Z');
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: timeZone,
-    hour12: false,
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  }).formatToParts(naiveUtc);
-  const map = {};
-  parts.forEach(function (p) { map[p.type] = p.value; });
-  const hour = map.hour === '24' ? 0 : Number(map.hour);
-  const asUtc = Date.UTC(Number(map.year), Number(map.month) - 1, Number(map.day), hour, Number(map.minute), Number(map.second));
-  const diffMinutes = Math.round((asUtc - naiveUtc.getTime()) / 60000);
-  const sign = diffMinutes >= 0 ? '+' : '-';
-  const abs = Math.abs(diffMinutes);
-  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
-  const mm = String(abs % 60).padStart(2, '0');
-  return sign + hh + ':' + mm;
+  return isBst(dateStr, timeStr) ? '+01:00' : '+00:00';
 }
 
 export function buildEventBody(body) {
