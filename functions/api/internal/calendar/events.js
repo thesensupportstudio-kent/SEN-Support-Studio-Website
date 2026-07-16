@@ -1,0 +1,93 @@
+import { getValidAccessToken, isConnected } from '../../_lib/google.js';
+
+export async function onRequestGet(context) {
+  const { request, env } = context;
+
+  if (!env.DB) {
+    return new Response(JSON.stringify({ error: 'Database is not configured yet.' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  const connected = await isConnected(env);
+  if (!connected) {
+    return new Response(JSON.stringify({ connected: false }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  let accessToken;
+  try {
+    accessToken = await getValidAccessToken(env);
+  } catch (err) {
+    console.log('Could not get valid Google access token: ' + String(err && err.message));
+    return new Response(JSON.stringify({ connected: false, error: 'Could not refresh Google access - try reconnecting.' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (!accessToken) {
+    return new Response(JSON.stringify({ connected: false }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  const url = new URL(request.url);
+  const daysParam = parseInt(url.searchParams.get('days') || '14', 10);
+  const days = Math.min(Math.max(daysParam || 14, 1), 60);
+
+  const now = new Date();
+  const timeMin = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const timeMax = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days).toISOString();
+
+  const calendarUrl = 'https://www.googleapis.com/calendar/v3/calendars/primary/events?' + new URLSearchParams({
+    timeMin: timeMin,
+    timeMax: timeMax,
+    singleEvents: 'true',
+    orderBy: 'startTime',
+    maxResults: '250'
+  });
+
+  try {
+    const resp = await fetch(calendarUrl, {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+
+    if (!resp.ok) {
+      const detail = await resp.text().catch(function () { return ''; });
+      console.log('Google Calendar API error: ' + resp.status + ' ' + detail);
+      return new Response(JSON.stringify({ error: 'Could not load your calendar.', detail: detail }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const data = await resp.json();
+    const events = (data.items || []).map(function (item) {
+      return {
+        id: item.id,
+        title: item.summary || '(No title)',
+        start: item.start ? (item.start.dateTime || item.start.date) : null,
+        end: item.end ? (item.end.dateTime || item.end.date) : null,
+        allDay: !!(item.start && item.start.date && !item.start.dateTime),
+        location: item.location || '',
+        htmlLink: item.htmlLink || ''
+      };
+    });
+
+    return new Response(JSON.stringify({ connected: true, events: events }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (err) {
+    console.log('Unhandled error in internal/calendar/events: ' + String(err && err.message));
+    return new Response(JSON.stringify({ error: 'Unexpected server error.', detail: String(err && err.message) }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}

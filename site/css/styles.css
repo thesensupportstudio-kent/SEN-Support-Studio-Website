@@ -2735,3 +2735,74 @@ img {
     padding-top: 8px;
   }
 }
+
+/* ---------- Internal: calendar ---------- */
+
+.calendar-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.calendar-disconnect-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.calendar-day-group {
+  margin-bottom: 28px;
+}
+
+.calendar-day-heading {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--green);
+  margin: 0 0 10px;
+}
+
+.calendar-event-row {
+  display: flex;
+  gap: 16px;
+  background: var(--offwhite);
+  border: 1px solid var(--border-green);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+}
+
+.calendar-event-time {
+  flex: 0 0 76px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.calendar-event-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.calendar-event-title {
+  font-size: 15px;
+  color: var(--green-dark);
+  font-weight: 600;
+  margin: 0;
+}
+
+.calendar-event-location {
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 4px 0 0;
+}
+
+@media (max-width: 640px) {
+  .calendar-event-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
