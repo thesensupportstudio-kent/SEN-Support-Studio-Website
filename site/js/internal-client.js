@@ -301,7 +301,7 @@
         var assignments = result.data.assignments || [];
 
         nameEl.textContent = client.parent_name || client.parent_email;
-        childEl.textContent = client.child_name ? 'Child: ' + client.child_name + (client.school ? ' — ' + client.school : '') : (client.school || '');
+        childEl.textContent = client.child_name ? 'Child: ' + client.child_name + (client.school ? ' - ' + client.school : '') : (client.school || '');
         contactEl.textContent = [client.parent_email, client.parent_phone].filter(Boolean).join(' · ');
         statusSelect.value = client.status || 'enquiry';
         notesField.value = client.notes || '';

@@ -32,7 +32,7 @@
       '<td class="client-name-cell">' + escapeHtml(client.parent_name || client.parent_email) +
         '<span class="client-sub">' + escapeHtml(client.parent_email) + '</span>' +
       '</td>' +
-      '<td>' + escapeHtml(client.child_name || '—') +
+      '<td>' + escapeHtml(client.child_name || '-') +
         (client.school ? '<span class="client-sub">' + escapeHtml(client.school) + '</span>' : '') +
       '</td>' +
       '<td><span class="status-pill status-' + escapeHtml(client.status) + '">' + escapeHtml(client.status) + '</span></td>' +

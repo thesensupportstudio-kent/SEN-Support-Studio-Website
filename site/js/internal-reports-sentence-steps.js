@@ -4,18 +4,18 @@
     'Understands and responds to "wh-" questions relevant to the current stage (who / what / where / when / why)',
     'Engages with the colour-coded visual system (cards, symbols or colour dots) to construct a sentence',
     'Takes turns during a structured sentence-building activity',
-    'Uses a built sentence functionally — to communicate a want, need, comment or idea, not just as an exercise',
+    'Uses a built sentence functionally - to communicate a want, need, comment or idea, not just as an exercise',
     'Self-corrects or self-checks word order with reducing adult support'
   ];
 
   var STAGES = [
     {
       id: 'stage1',
-      label: 'Stage 1 — Building the core sentence',
+      label: 'Stage 1 - Building the core sentence',
       colors: 'Orange = Who     Yellow = What doing',
       skills: [
         'Identifies "who" in a picture or scene (points to / selects / names the person or character)',
-        'Identifies "what doing" — the action being carried out',
+        'Identifies "what doing" - the action being carried out',
         'Answers "who" and "what doing" questions when asked directly',
         'Sequences Who before What doing in the correct spoken word order',
         'Builds and says a complete 2-element sentence (e.g. "boy jumping") using the colour cue cards',
@@ -24,10 +24,10 @@
     },
     {
       id: 'stage2',
-      label: 'Stage 2 — Adding the object',
+      label: 'Stage 2 - Adding the object',
       colors: '+ Green = What',
       skills: [
-        'Identifies "what" — the object involved in the action',
+        'Identifies "what" - the object involved in the action',
         'Answers "who / what doing / what" questions',
         'Sequences all three elements in the correct order independently',
         'Builds and says a complete 3-element sentence using the colour cue cards',
@@ -37,10 +37,10 @@
     },
     {
       id: 'stage3',
-      label: 'Stage 3 — Elaborating the sentence',
+      label: 'Stage 3 - Elaborating the sentence',
       colors: '+ Blue = Where',
       skills: [
-        'Identifies "where" — the location of the action',
+        'Identifies "where" - the location of the action',
         'Answers "where" questions',
         'Builds and says a complete 4-element sentence (Who + What doing + What + Where)',
         'Uses a preposition correctly (in, on, under, behind, next to)',
@@ -50,12 +50,12 @@
     },
     {
       id: 'stage4',
-      label: 'Stage 4 — Extending the sentence',
+      label: 'Stage 4 - Extending the sentence',
       colors: 'Brown/Pink = When     Purple = What like     Red = Why',
       skills: [
-        'Identifies "when" — the time an action happened or happens',
-        'Identifies "what like" — a descriptive word or quality (adjective)',
-        'Identifies "why" — the reason for the action',
+        'Identifies "when" - the time an action happened or happens',
+        'Identifies "what like" - a descriptive word or quality (adjective)',
+        'Identifies "why" - the reason for the action',
         'Builds and says an elaborated sentence including one or more extension elements',
         'Uses a causal connective correctly ("because", "so") to join two ideas',
         'Uses a coordinating connective correctly ("and", "but") to build a compound sentence',
@@ -133,7 +133,7 @@
 
     var row1 = el('div', { class: 'internal-form-row' });
     var schoolField = el('div', { class: 'form-field' }, [el('label', { text: 'School / recipient name', for: 'school-name' })]);
-    var schoolInput = el('input', { type: 'text', id: 'school-name', placeholder: 'e.g. Oakwood Primary — SENCO' });
+    var schoolInput = el('input', { type: 'text', id: 'school-name', placeholder: 'e.g. Oakwood Primary - SENCO' });
     schoolInput.value = state.session.schoolName;
     schoolInput.addEventListener('input', function () { state.session.schoolName = schoolInput.value; });
     schoolField.appendChild(schoolInput);
@@ -173,7 +173,7 @@
     var pupil = state.pupils[index];
     var wrap = el('div', {});
     wrap.appendChild(el('h2', { text: 'Pupil ' + (index + 1), class: 'step-title' }));
-    wrap.appendChild(el('p', { text: 'Leave the name blank if this pupil wasn\'t in this session — their page will be left out of the report.', class: 'step-subtitle' }));
+    wrap.appendChild(el('p', { text: 'Leave the name blank if this pupil wasn\'t in this session - their page will be left out of the report.', class: 'step-subtitle' }));
 
     var nameField = el('div', { class: 'form-field' });
     nameField.appendChild(el('label', { text: 'Pupil name', for: 'pupil-name-' + index }));
@@ -233,7 +233,7 @@
     root.innerHTML = '';
     var content = state.step === 0 ? renderSessionStep() : renderPupilStep(state.step - 1);
     root.appendChild(content);
-    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' — ' + stepLabel(state.step);
+    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' - ' + stepLabel(state.step);
 
     document.getElementById('wizard-back').disabled = state.step === 0;
     var nextBtn = document.getElementById('wizard-next');
@@ -296,7 +296,7 @@
 
         var foundLines = [];
         FOUNDATIONAL_SKILLS.forEach(function (skill) {
-          if (pupil.foundational[skill]) foundLines.push(skill + ' — ' + pupil.foundational[skill]);
+          if (pupil.foundational[skill]) foundLines.push(skill + ' - ' + pupil.foundational[skill]);
         });
         if (foundLines.length) sections.push({ heading: 'Foundational skills', content: foundLines.join('\n') });
 
@@ -305,7 +305,7 @@
 
           var stageLines = [];
           currentStage.skills.forEach(function (skill) {
-            if (pupil.stageSkills[skill]) stageLines.push(skill + ' — ' + pupil.stageSkills[skill]);
+            if (pupil.stageSkills[skill]) stageLines.push(skill + ' - ' + pupil.stageSkills[skill]);
           });
           if (stageLines.length) sections.push({ heading: currentStage.label + ' skills', content: stageLines.join('\n') });
         }

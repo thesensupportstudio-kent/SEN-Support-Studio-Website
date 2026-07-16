@@ -106,7 +106,7 @@ export async function onRequestPost(context) {
     from: env.INVOICE_FROM_EMAIL || 'SEN Support Studio Invoices <invoices@sensupportstudio.com>',
     to: [recipientEmail],
     bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
-    subject: 'Invoice — ' + service,
+    subject: 'Invoice - ' + service,
     html: buildEmailHtml(body),
     attachments: [{ filename: fileName, content: fileBase64 }]
   };

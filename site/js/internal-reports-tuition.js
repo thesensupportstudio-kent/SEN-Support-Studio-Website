@@ -74,7 +74,7 @@
       {
         heading: 'Homework / practice set',
         content: homeworkEl
-          ? (homeworkEl.value === 'yes' ? 'Yes — ' + (homeworkDetail.value.trim() || 'set, see above') : 'No')
+          ? (homeworkEl.value === 'yes' ? 'Yes - ' + (homeworkDetail.value.trim() || 'set, see above') : 'No')
           : ''
       },
       { heading: 'Next steps', content: form.nextSteps.value.trim() }

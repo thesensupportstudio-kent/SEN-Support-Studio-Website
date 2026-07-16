@@ -18,7 +18,7 @@ function buildEmailHtml(data) {
         '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
         '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">New invoice request</h1>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>Service:</strong> ' + escapeHtml(data.serviceLabel || data.service || 'Not specified') + '</p>' +
-        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>Price:</strong> ' + escapeHtml(data.servicePrice || '—') + '</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>Price:</strong> ' + escapeHtml(data.servicePrice || '-') + '</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>School:</strong> ' + escapeHtml(data.schoolName) + '</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>Contact:</strong> ' + escapeHtml(data.contactName) + ' &lt;' + escapeHtml(data.contactEmail) + '&gt;</p>' +
         (data.poNumber ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>PO number:</strong> ' + escapeHtml(data.poNumber) + '</p>' : '') +
@@ -73,7 +73,7 @@ export async function onRequestPost(context) {
     from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
     to: [notifyTo],
     reply_to: contactEmail,
-    subject: 'Invoice request — ' + schoolName,
+    subject: 'Invoice request - ' + schoolName,
     html: buildEmailHtml(body)
   };
 
@@ -101,7 +101,7 @@ export async function onRequestPost(context) {
       parentEmail: contactEmail,
       school: schoolName,
       type: 'invoice_request',
-      summary: 'Invoice requested for ' + (body.serviceLabel || body.service || 'a service') + ' — ' + schoolName,
+      summary: 'Invoice requested for ' + (body.serviceLabel || body.service || 'a service') + ' - ' + schoolName,
       detail: body
     });
 

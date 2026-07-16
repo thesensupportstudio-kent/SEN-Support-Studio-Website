@@ -2164,6 +2164,14 @@ img {
     margin-right: -20px;
     width: calc(100% + 40px);
   }
+
+  .toggle-row {
+    flex-direction: column;
+  }
+
+  .toggle-row .pill-option {
+    justify-content: flex-start;
+  }
 }
 
 /* ---------- Internal: client dashboard ---------- */

@@ -1,10 +1,14 @@
+// Applies newly-submitted fields to an existing client record. A non-empty
+// value always wins over what's stored (the latest form a family fills in
+// is the most likely to be accurate) - an empty/missing value on the new
+// submission never erases something already on file.
 async function fillMissingFields(env, existing, { parentName, parentPhone, childName, school }) {
   const updates = [];
   const values = [];
-  if (parentName && !existing.parent_name) { updates.push('parent_name = ?'); values.push(parentName); }
-  if (parentPhone && !existing.parent_phone) { updates.push('parent_phone = ?'); values.push(parentPhone); }
-  if (childName && !existing.child_name) { updates.push('child_name = ?'); values.push(childName); }
-  if (school && !existing.school) { updates.push('school = ?'); values.push(school); }
+  if (parentName && parentName !== existing.parent_name) { updates.push('parent_name = ?'); values.push(parentName); }
+  if (parentPhone && parentPhone !== existing.parent_phone) { updates.push('parent_phone = ?'); values.push(parentPhone); }
+  if (childName && childName !== existing.child_name) { updates.push('child_name = ?'); values.push(childName); }
+  if (school && school !== existing.school) { updates.push('school = ?'); values.push(school); }
   if (!updates.length) return;
   updates.push("updated_at = datetime('now')");
   values.push(existing.id);
@@ -42,7 +46,7 @@ async function setClientStatus(env, clientId, status) {
 // Best-effort logging: never throws, so a database issue (or D1 not yet
 // configured) can never break the email-sending flow that already works.
 // If clientId is supplied (dashboard-initiated sends), it's used directly
-// instead of matching by email — falls back to email matching if that
+// instead of matching by email - falls back to email matching if that
 // client no longer exists.
 export async function logInteraction(env, { clientId, parentName, parentEmail, parentPhone, childName, school, type, summary, detail, status, fileKey }) {
   if (!env.DB) return;

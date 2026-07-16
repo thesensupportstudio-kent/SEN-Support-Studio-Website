@@ -63,7 +63,7 @@
 
     var row1 = el('div', { class: 'internal-form-row' });
     var schoolField = el('div', { class: 'form-field' }, [el('label', { text: 'School / recipient name', for: 'school-name' })]);
-    var schoolInput = el('input', { type: 'text', id: 'school-name', placeholder: 'e.g. Oakwood Primary — SENCO' });
+    var schoolInput = el('input', { type: 'text', id: 'school-name', placeholder: 'e.g. Oakwood Primary - SENCO' });
     schoolInput.value = state.session.schoolName;
     schoolInput.addEventListener('input', function () { state.session.schoolName = schoolInput.value; });
     schoolField.appendChild(schoolInput);
@@ -103,7 +103,7 @@
     var pupil = state.pupils[index];
     var wrap = el('div', {});
     wrap.appendChild(el('h2', { text: 'Pupil ' + (index + 1), class: 'step-title' }));
-    wrap.appendChild(el('p', { text: 'Leave the name blank if this pupil wasn\'t in this session — their page will be left out of the report.', class: 'step-subtitle' }));
+    wrap.appendChild(el('p', { text: 'Leave the name blank if this pupil wasn\'t in this session - their page will be left out of the report.', class: 'step-subtitle' }));
 
     var nameField = el('div', { class: 'form-field' });
     nameField.appendChild(el('label', { text: 'Pupil name', for: 'pupil-name-' + index }));
@@ -166,7 +166,7 @@
     root.innerHTML = '';
     var content = state.step === 0 ? renderSessionStep() : renderPupilStep(state.step - 1);
     root.appendChild(content);
-    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' — ' + stepLabel(state.step);
+    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' - ' + stepLabel(state.step);
 
     document.getElementById('wizard-back').disabled = state.step === 0;
     var nextBtn = document.getElementById('wizard-next');
@@ -226,7 +226,7 @@
 
         var skillLines = [];
         SKILLS.forEach(function (skill) {
-          if (pupil.skills[skill]) skillLines.push(skill + ' — ' + pupil.skills[skill]);
+          if (pupil.skills[skill]) skillLines.push(skill + ' - ' + pupil.skills[skill]);
         });
         if (skillLines.length) sections.push({ heading: 'Build Buddies skills', content: skillLines.join('\n') });
 

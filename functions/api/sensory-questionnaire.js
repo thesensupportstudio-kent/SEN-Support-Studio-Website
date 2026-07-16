@@ -139,7 +139,7 @@ export async function onRequestPost(context) {
     const emailPayload = {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: [notifyTo],
-      subject: 'Sensory Profile Questionnaire — ' + childName,
+      subject: 'Sensory Profile Questionnaire - ' + childName,
       html: buildEmailHtml({
         child: child,
         categories: Array.isArray(body.categories) ? body.categories : [],

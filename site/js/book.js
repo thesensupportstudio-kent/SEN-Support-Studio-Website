@@ -122,7 +122,7 @@
 
     els.paymentHint.textContent = payUrl
       ? 'Pay online now to secure your place, or get in touch if you’d rather arrange it another way.'
-      : 'Card payments are being set up for this service — in the meantime, get in touch' + (canInvoice ? ', or request an invoice below' : '') + '.';
+      : 'Card payments are being set up for this service - in the meantime, get in touch' + (canInvoice ? ', or request an invoice below' : '') + '.';
     els.paymentButtons.classList.remove('hidden');
   }
 
@@ -217,7 +217,7 @@
 
     els.summary.classList.toggle('hidden', !hasFullSelection);
     if (hasFullSelection) {
-      els.summaryName.textContent = svc.label + ' — ' + chosenOption.label;
+      els.summaryName.textContent = svc.label + ' - ' + chosenOption.label;
       els.summaryPrice.textContent = chosenOption.price;
     }
 

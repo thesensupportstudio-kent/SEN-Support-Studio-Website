@@ -491,7 +491,7 @@
     wrap.appendChild(el('h2', { text: domain.label, class: 'step-title' }));
     wrap.appendChild(el('p', { text: domain.subtitle, class: 'step-subtitle' }));
     if (domain.draft) {
-      wrap.appendChild(el('p', { class: 'form-error', text: 'Draft section — no source checklist existed for Interoception, please review these items carefully.' }));
+      wrap.appendChild(el('p', { class: 'form-error', text: 'Draft section - no source checklist existed for Interoception, please review these items carefully.' }));
     }
 
     // Classification
@@ -519,15 +519,15 @@
 
     // Behaviours checklist
     if (domain.behaviours.over && domain.behaviours.over.length) {
-      wrap.appendChild(checklistGroup('Observed behaviours — over responsive', domain.behaviours.over, data.behaviours, domain.key + '-over'));
+      wrap.appendChild(checklistGroup('Observed behaviours - over responsive', domain.behaviours.over, data.behaviours, domain.key + '-over'));
     }
     if (domain.behaviours.under && domain.behaviours.under.length) {
-      wrap.appendChild(checklistGroup('Observed behaviours — under responsive', domain.behaviours.under, data.behaviours, domain.key + '-under'));
+      wrap.appendChild(checklistGroup('Observed behaviours - under responsive', domain.behaviours.under, data.behaviours, domain.key + '-under'));
     }
 
     // Strategies
-    wrap.appendChild(checklistGroup('Strategies suggested — avoiding (calming/reducing input)', domain.strategies.avoiding, data.avoiding, domain.key + '-avoid'));
-    wrap.appendChild(checklistGroup('Strategies suggested — seeking (alerting/providing input)', domain.strategies.seeking, data.seeking, domain.key + '-seek'));
+    wrap.appendChild(checklistGroup('Strategies suggested - avoiding (calming/reducing input)', domain.strategies.avoiding, data.avoiding, domain.key + '-avoid'));
+    wrap.appendChild(checklistGroup('Strategies suggested - seeking (alerting/providing input)', domain.strategies.seeking, data.seeking, domain.key + '-seek'));
 
     if (domain.extraField) {
       var extraField = el('div', { class: 'form-field' });
@@ -577,7 +577,7 @@
     else if (state.step === TOTAL_STEPS - 1) content = renderFinalStep();
     else content = renderDomainStep(DOMAINS[state.step - 1]);
     root.appendChild(content);
-    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' — ' + stepLabel(state.step);
+    progressEl.textContent = 'Step ' + (state.step + 1) + ' of ' + TOTAL_STEPS + ' - ' + stepLabel(state.step);
 
     document.getElementById('wizard-back').disabled = state.step === 0;
     var nextBtn = document.getElementById('wizard-next');
@@ -635,7 +635,7 @@
     DOMAINS.forEach(function (d) {
       var data = state.domainData[d.key];
       var lines = [];
-      var classification = data.classification === 'Other' ? ('Other — ' + (data.otherText || '')) : data.classification;
+      var classification = data.classification === 'Other' ? ('Other - ' + (data.otherText || '')) : data.classification;
       if (classification) lines.push('Response type: ' + classification);
       if (data.behaviours.length) lines.push('Observed behaviours: ' + data.behaviours.join(', '));
       if (data.avoiding.length) lines.push('Strategies suggested (avoiding): ' + data.avoiding.join(', '));

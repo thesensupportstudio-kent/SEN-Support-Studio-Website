@@ -61,7 +61,7 @@
     textWrap.className = 'target-text-wrap';
     var textInput = document.createElement('input');
     textInput.type = 'text';
-    textInput.placeholder = 'Target ' + idx + ' — e.g. Blend CVC words independently';
+    textInput.placeholder = 'Target ' + idx + ' - e.g. Blend CVC words independently';
     textInput.className = 'target-text';
     textWrap.appendChild(textInput);
 
@@ -126,7 +126,7 @@
       var text = row.querySelector('.target-text').value.trim();
       var progressEl = row.querySelector('input[type="radio"]:checked');
       if (text) {
-        targetLines.push(text + (progressEl ? ' — ' + progressEl.value : ' — no progress rating selected'));
+        targetLines.push(text + (progressEl ? ' - ' + progressEl.value : ' - no progress rating selected'));
       }
     });
 
@@ -143,7 +143,7 @@
       {
         heading: 'Session delivered as planned',
         content: deliveredEl
-          ? (deliveredEl.value === 'no' ? 'No — ' + (deliveredDetail.value.trim() || 'see notes') : 'Yes')
+          ? (deliveredEl.value === 'no' ? 'No - ' + (deliveredDetail.value.trim() || 'see notes') : 'Yes')
           : ''
       },
       { heading: 'Engagement today', content: engagementEl ? engagementEl.value : '' },

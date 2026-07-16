@@ -16,7 +16,7 @@
     ledeEl.textContent = 'Requesting an invoice for: ' + svc.label + '.';
   } else {
     nameEl.textContent = 'Not specified';
-    priceEl.textContent = '—';
+    priceEl.textContent = '-';
   }
 
   if (!form) return;

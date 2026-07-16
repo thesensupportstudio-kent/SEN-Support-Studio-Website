@@ -42,7 +42,7 @@ function buildEmailHtml(data) {
     '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
       '<div style="max-width:600px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
         '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
-        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Client Agreement — ' + escapeHtml(child.childName) + '</h1>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Client Agreement - ' + escapeHtml(child.childName) + '</h1>' +
 
         heading('Parent / carer') +
         row('Name', parent.parentName) +
@@ -137,7 +137,7 @@ export async function onRequestPost(context) {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: [notifyTo],
       reply_to: parentEmail,
-      subject: 'Client Agreement — ' + childName,
+      subject: 'Client Agreement - ' + childName,
       html: buildEmailHtml({
         parent: parent,
         child: child,
