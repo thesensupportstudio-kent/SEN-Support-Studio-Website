@@ -1,3 +1,5 @@
+import { logInteraction } from './_lib/clients.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function escapeHtml(str) {
@@ -164,6 +166,18 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: parentName,
+      parentEmail: parentEmail,
+      parentPhone: parentPhone,
+      childName: childName,
+      school: (child.school || '').trim(),
+      type: 'client_agreement',
+      summary: 'Client Agreement signed by ' + signatureName,
+      detail: body,
+      status: 'active'
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

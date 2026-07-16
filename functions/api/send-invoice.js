@@ -1,3 +1,5 @@
+import { logInteraction } from './_lib/clients.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Update this if the business bank details ever change - it's the
@@ -105,6 +107,15 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: recipientName,
+      parentEmail: recipientEmail,
+      type: 'invoice_sent',
+      summary: 'Invoice sent for ' + service,
+      detail: { service, fileName },
+      status: 'active'
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

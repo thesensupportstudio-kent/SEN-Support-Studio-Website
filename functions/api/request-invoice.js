@@ -1,3 +1,5 @@
+import { logInteraction } from './_lib/clients.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function escapeHtml(str) {
@@ -93,6 +95,15 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: contactName,
+      parentEmail: contactEmail,
+      school: schoolName,
+      type: 'invoice_request',
+      summary: 'Invoice requested for ' + (body.serviceLabel || body.service || 'a service') + ' — ' + schoolName,
+      detail: body
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

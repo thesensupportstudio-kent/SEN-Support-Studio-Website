@@ -1,3 +1,5 @@
+import { logInteraction } from './_lib/clients.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ROLE_LABELS = {
@@ -103,6 +105,14 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: name,
+      parentEmail: email,
+      type: 'contact_enquiry',
+      summary: 'Website enquiry (' + (ROLE_LABELS[role] || role || 'not specified') + ')',
+      detail: { role, message }
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

@@ -1,4 +1,5 @@
 import { buildReportPdf, buildChildPagesPdf, bytesToBase64 } from './_lib/pdf.js';
+import { logInteraction } from './_lib/clients.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -124,6 +125,15 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: recipientName,
+      parentEmail: clientEmail,
+      type: 'session_report',
+      summary: title + ' sent for ' + clientName + ' (' + sessionDate + ')',
+      detail: { title, service, sessionDate, clientLabel },
+      status: 'active'
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

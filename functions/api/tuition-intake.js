@@ -1,3 +1,5 @@
+import { logInteraction } from './_lib/clients.js';
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function escapeHtml(str) {
@@ -147,6 +149,17 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    await logInteraction(env, {
+      parentName: parentName,
+      parentEmail: parentEmail,
+      parentPhone: (parent.parentPhone || '').trim(),
+      childName: childName,
+      school: (child.school || '').trim(),
+      type: 'tuition_intake',
+      summary: 'Getting to Know ' + childName + ' form completed',
+      detail: body
+    });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
