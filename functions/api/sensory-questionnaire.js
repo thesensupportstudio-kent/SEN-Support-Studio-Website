@@ -1,4 +1,4 @@
-import { logInteraction } from './_lib/clients.js';
+import { logInteraction, resolveAssignmentClient, completeAssignment } from './_lib/clients.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -167,7 +167,11 @@ export async function onRequestPost(context) {
       });
     }
 
+    const token = (body.token || '').trim();
+    const assignedClientId = token ? await resolveAssignmentClient(env, token) : null;
+
     await logInteraction(env, {
+      clientId: assignedClientId,
       parentName: completedBy,
       parentEmail: contactEmail,
       childName: childName,
@@ -176,6 +180,8 @@ export async function onRequestPost(context) {
       summary: 'Sensory Profile Questionnaire completed for ' + childName,
       detail: body
     });
+
+    if (assignedClientId) await completeAssignment(env, token);
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

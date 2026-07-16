@@ -88,7 +88,8 @@
       signature: {
         name: document.getElementById('signature-name').value.trim(),
         date: document.getElementById('signature-date').value
-      }
+      },
+      token: new URLSearchParams(window.location.search).get('token') || undefined
     };
 
     if (!payload.agreements.emergency || !payload.agreements.cancellation || !payload.agreements.privacy || !payload.agreements.safeguarding) {

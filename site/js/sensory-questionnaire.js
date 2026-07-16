@@ -157,7 +157,8 @@
         contactEmail: document.getElementById('contact-email').value.trim()
       },
       categories: collectCategories(),
-      adl: collectAdl()
+      adl: collectAdl(),
+      token: new URLSearchParams(window.location.search).get('token') || undefined
     };
 
     fetch('/api/sensory-questionnaire', {

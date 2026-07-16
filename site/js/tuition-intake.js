@@ -111,7 +111,8 @@
         attention: collectRadio('attention'),
         bigNos: document.getElementById('big-nos').value.trim(),
         anythingElse: document.getElementById('anything-else').value.trim()
-      }
+      },
+      token: new URLSearchParams(window.location.search).get('token') || undefined
     };
 
     fetch('/api/tuition-intake', {

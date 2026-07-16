@@ -32,7 +32,11 @@ export async function onRequestGet(context) {
       'SELECT id, type, summary, detail, file_key, created_at FROM interactions WHERE client_id = ? ORDER BY created_at DESC'
     ).bind(id).all();
 
-    return new Response(JSON.stringify({ client, interactions: interactionResult.results }), {
+    const assignmentResult = await env.DB.prepare(
+      'SELECT id, form_type, status, sent_at, completed_at FROM assignments WHERE client_id = ? ORDER BY sent_at DESC'
+    ).bind(id).all();
+
+    return new Response(JSON.stringify({ client, interactions: interactionResult.results, assignments: assignmentResult.results }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });

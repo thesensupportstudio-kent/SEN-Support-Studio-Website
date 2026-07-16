@@ -69,3 +69,26 @@ export async function logInteraction(env, { clientId, parentName, parentEmail, p
     console.log('logInteraction failed: ' + String(err && err.message));
   }
 }
+
+// Resolves an assign-link token to the client it was sent for, so a public
+// form submission can attach directly to the right client without relying
+// on the parent's email matching exactly. Never throws.
+export async function resolveAssignmentClient(env, token) {
+  if (!env.DB || !token) return null;
+  try {
+    const row = await env.DB.prepare('SELECT client_id FROM assignments WHERE token = ?').bind(token).first();
+    return row ? row.client_id : null;
+  } catch (err) {
+    console.log('resolveAssignmentClient failed: ' + String(err && err.message));
+    return null;
+  }
+}
+
+export async function completeAssignment(env, token) {
+  if (!env.DB || !token) return;
+  try {
+    await env.DB.prepare("UPDATE assignments SET status = 'completed', completed_at = datetime('now') WHERE token = ?").bind(token).run();
+  } catch (err) {
+    console.log('completeAssignment failed: ' + String(err && err.message));
+  }
+}

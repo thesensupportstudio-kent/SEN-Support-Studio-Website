@@ -2384,6 +2384,35 @@ img {
   text-decoration: underline;
 }
 
+.client-action-menu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  min-width: 260px;
+}
+
+.client-action-menu-form .pill-option {
+  justify-content: flex-start;
+  text-align: left;
+  background: var(--cream);
+}
+
+.client-action-menu-form .form-submit {
+  width: auto;
+  margin-top: 4px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.overview-subheading {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--green);
+  margin: 28px 0 12px;
+}
+
 .client-context-banner {
   display: flex;
   align-items: center;

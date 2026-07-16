@@ -13,13 +13,19 @@
   var sendReportBtn = document.getElementById('send-report-btn');
   var sendReportMenu = document.getElementById('send-report-menu');
   var sendInvoiceBtn = document.getElementById('send-invoice-btn');
+  var sendLinksBtn = document.getElementById('send-links-btn');
+  var sendLinksMenu = document.getElementById('send-links-menu');
+  var sendLinksSubmit = document.getElementById('send-links-submit');
+  var sendLinksStatus = document.getElementById('send-links-status');
+  var assignmentsWrap = document.getElementById('assignments-wrap');
+  var assignmentsList = document.getElementById('assignments-list');
   var tabsBar = document.getElementById('client-tabs');
 
   if (!detail) return;
 
   var clientId = new URLSearchParams(window.location.search).get('id');
 
-  var FORM_TYPES = ['contact_enquiry', 'sensory_questionnaire', 'tuition_intake', 'client_agreement'];
+  var FORM_TYPES = ['contact_enquiry', 'sensory_questionnaire', 'tuition_intake', 'client_agreement', 'links_sent'];
   var REPORT_TYPES = ['session_report'];
   var INVOICE_TYPES = ['invoice_request', 'invoice_sent'];
 
@@ -30,7 +36,8 @@
     client_agreement: 'Client Agreement',
     invoice_request: 'Invoice requested',
     invoice_sent: 'Invoice sent',
-    session_report: 'Session report sent'
+    session_report: 'Session report sent',
+    links_sent: 'Forms assigned'
   };
 
   function escapeHtml(str) {
@@ -165,6 +172,39 @@
     panelEl.appendChild(wrap);
   }
 
+  function renderAssignments(assignments) {
+    if (!assignmentsWrap || !assignmentsList) return;
+    if (!assignments || !assignments.length) {
+      assignmentsWrap.classList.add('hidden');
+      return;
+    }
+    assignmentsList.innerHTML = '';
+    assignments.forEach(function (a) {
+      var div = document.createElement('div');
+      div.className = 'timeline-item';
+      var label = TYPE_LABELS[a.form_type] || a.form_type;
+      var completed = a.status === 'completed';
+
+      var typeEl = document.createElement('p');
+      typeEl.className = 'timeline-type';
+      typeEl.textContent = label;
+      div.appendChild(typeEl);
+
+      var pill = document.createElement('span');
+      pill.className = 'status-pill ' + (completed ? 'status-active' : 'status-enquiry');
+      pill.textContent = completed ? 'Completed' : 'Sent, not yet completed';
+      div.appendChild(pill);
+
+      var dateEl = document.createElement('p');
+      dateEl.className = 'timeline-date';
+      dateEl.textContent = 'Sent ' + formatDateTime(a.sent_at) + (completed ? ' · Completed ' + formatDateTime(a.completed_at) : '');
+      div.appendChild(dateEl);
+
+      assignmentsList.appendChild(div);
+    });
+    assignmentsWrap.classList.remove('hidden');
+  }
+
   function showError(message) {
     loading.classList.add('hidden');
     errorBox.textContent = message;
@@ -176,13 +216,61 @@
     return;
   }
 
-  if (sendReportBtn) {
-    sendReportBtn.addEventListener('click', function (e) {
+  function closeMenus() {
+    if (sendReportMenu) sendReportMenu.classList.add('hidden');
+    if (sendLinksMenu) sendLinksMenu.classList.add('hidden');
+  }
+
+  function toggleMenu(btn, menu) {
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      sendReportMenu.classList.toggle('hidden');
+      var willOpen = menu.classList.contains('hidden');
+      closeMenus();
+      if (willOpen) menu.classList.remove('hidden');
     });
-    document.addEventListener('click', function () {
-      sendReportMenu.classList.add('hidden');
+    menu.addEventListener('click', function (e) { e.stopPropagation(); });
+  }
+
+  toggleMenu(sendReportBtn, sendReportMenu);
+  toggleMenu(sendLinksBtn, sendLinksMenu);
+  document.addEventListener('click', closeMenus);
+
+  if (sendLinksSubmit) {
+    sendLinksSubmit.addEventListener('click', function () {
+      var checked = Array.prototype.slice.call(sendLinksMenu.querySelectorAll('input[type="checkbox"]:checked'))
+        .map(function (c) { return c.value; });
+
+      if (!checked.length) {
+        sendLinksStatus.textContent = 'Choose at least one.';
+        return;
+      }
+
+      sendLinksStatus.textContent = 'Sending…';
+      sendLinksSubmit.disabled = true;
+
+      fetch('/api/internal/send-links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: clientId, forms: checked })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not send.');
+          sendLinksStatus.textContent = 'Sent!';
+          Array.prototype.forEach.call(sendLinksMenu.querySelectorAll('input[type="checkbox"]'), function (c) { c.checked = false; });
+          loadClient();
+          setTimeout(function () {
+            sendLinksStatus.textContent = '';
+            sendLinksMenu.classList.add('hidden');
+          }, 1200);
+        })
+        .catch(function (err) {
+          sendLinksStatus.textContent = err.message || 'Could not send.';
+        })
+        .finally(function () {
+          sendLinksSubmit.disabled = false;
+        });
     });
   }
 
@@ -201,44 +289,50 @@
     });
   }
 
-  fetch('/api/internal/client?id=' + encodeURIComponent(clientId))
-    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
-    .then(function (result) {
-      if (!result.ok) {
-        throw new Error((result.data && result.data.error) || 'Could not load this client.');
-      }
-      var client = result.data.client;
-      var interactions = result.data.interactions || [];
+  function loadClient() {
+    return fetch('/api/internal/client?id=' + encodeURIComponent(clientId))
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) {
+          throw new Error((result.data && result.data.error) || 'Could not load this client.');
+        }
+        var client = result.data.client;
+        var interactions = result.data.interactions || [];
+        var assignments = result.data.assignments || [];
 
-      nameEl.textContent = client.parent_name || client.parent_email;
-      childEl.textContent = client.child_name ? 'Child: ' + client.child_name + (client.school ? ' — ' + client.school : '') : (client.school || '');
-      contactEl.textContent = [client.parent_email, client.parent_phone].filter(Boolean).join(' · ');
-      statusSelect.value = client.status || 'enquiry';
-      notesField.value = client.notes || '';
+        nameEl.textContent = client.parent_name || client.parent_email;
+        childEl.textContent = client.child_name ? 'Child: ' + client.child_name + (client.school ? ' — ' + client.school : '') : (client.school || '');
+        contactEl.textContent = [client.parent_email, client.parent_phone].filter(Boolean).join(' · ');
+        statusSelect.value = client.status || 'enquiry';
+        notesField.value = client.notes || '';
 
-      if (sendReportMenu) {
-        Array.prototype.forEach.call(sendReportMenu.querySelectorAll('a'), function (a) {
-          a.setAttribute('href', a.getAttribute('href').split('?')[0] + '?clientId=' + encodeURIComponent(clientId));
-        });
-      }
-      if (sendInvoiceBtn) {
-        sendInvoiceBtn.setAttribute('href', 'send-invoice.html?clientId=' + encodeURIComponent(clientId));
-      }
+        if (sendReportMenu) {
+          Array.prototype.forEach.call(sendReportMenu.querySelectorAll('a'), function (a) {
+            a.setAttribute('href', a.getAttribute('href').split('?')[0] + '?clientId=' + encodeURIComponent(clientId));
+          });
+        }
+        if (sendInvoiceBtn) {
+          sendInvoiceBtn.setAttribute('href', 'send-invoice.html?clientId=' + encodeURIComponent(clientId));
+        }
 
-      var formItems = interactions.filter(function (i) { return FORM_TYPES.indexOf(i.type) !== -1; });
-      var reportItems = interactions.filter(function (i) { return REPORT_TYPES.indexOf(i.type) !== -1; });
-      var invoiceItems = interactions.filter(function (i) { return INVOICE_TYPES.indexOf(i.type) !== -1; });
+        var formItems = interactions.filter(function (i) { return FORM_TYPES.indexOf(i.type) !== -1; });
+        var reportItems = interactions.filter(function (i) { return REPORT_TYPES.indexOf(i.type) !== -1; });
+        var invoiceItems = interactions.filter(function (i) { return INVOICE_TYPES.indexOf(i.type) !== -1; });
 
-      renderTabPanel(document.getElementById('tab-forms'), formItems, 'No forms submitted yet.');
-      renderTabPanel(document.getElementById('tab-reports'), reportItems, 'No reports sent yet.');
-      renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
+        renderTabPanel(document.getElementById('tab-forms'), formItems, 'No forms submitted yet.');
+        renderTabPanel(document.getElementById('tab-reports'), reportItems, 'No reports sent yet.');
+        renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
+        renderAssignments(assignments);
 
-      loading.classList.add('hidden');
-      detail.classList.remove('hidden');
-    })
-    .catch(function (err) {
-      showError(err.message || 'Could not load this client.');
-    });
+        loading.classList.add('hidden');
+        detail.classList.remove('hidden');
+      })
+      .catch(function (err) {
+        showError(err.message || 'Could not load this client.');
+      });
+  }
+
+  loadClient();
 
   function saveUpdate(payload, statusEl, savedLabel) {
     statusEl.textContent = 'Saving…';

@@ -56,6 +56,16 @@
             </div>
           </div>
           <a href="send-invoice.html" id="send-invoice-btn" class="form-submit">Send Invoice</a>
+          <div class="client-action-dropdown">
+            <button type="button" class="form-submit form-submit-outline" id="send-links-btn">Send Links &#9662;</button>
+            <div class="client-action-menu client-action-menu-form hidden" id="send-links-menu">
+              <label class="pill-option"><input type="checkbox" value="client_agreement"> Client Agreement</label>
+              <label class="pill-option"><input type="checkbox" value="sensory_questionnaire"> Sensory Profile Questionnaire</label>
+              <label class="pill-option"><input type="checkbox" value="tuition_intake"> Getting to Know You</label>
+              <button type="button" class="form-submit" id="send-links-submit">Send</button>
+              <span id="send-links-status" class="notes-save-status"></span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -86,6 +96,11 @@
           <button type="button" class="notes-save-btn" id="notes-save-btn">Save notes</button>
           <span id="notes-save-status" class="notes-save-status"></span>
         </div>
+
+        <div id="assignments-wrap" class="hidden">
+          <h3 class="overview-subheading">Assigned forms</h3>
+          <div id="assignments-list" class="timeline"></div>
+        </div>
       </div>
 
           <div id="tab-forms" class="client-tab-panel hidden"></div>
@@ -97,6 +112,6 @@
   </div>
 
 </div>
-<script src="../js/internal-client.js?v=1784300000"></script>
+<script src="../js/internal-client.js?v=1784400000"></script>
 </body>
 </html>

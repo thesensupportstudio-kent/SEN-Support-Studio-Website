@@ -1,4 +1,4 @@
-import { logInteraction } from './_lib/clients.js';
+import { logInteraction, resolveAssignmentClient, completeAssignment } from './_lib/clients.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -167,7 +167,11 @@ export async function onRequestPost(context) {
       });
     }
 
+    const token = (body.token || '').trim();
+    const assignedClientId = token ? await resolveAssignmentClient(env, token) : null;
+
     await logInteraction(env, {
+      clientId: assignedClientId,
       parentName: parentName,
       parentEmail: parentEmail,
       parentPhone: parentPhone,
@@ -178,6 +182,8 @@ export async function onRequestPost(context) {
       detail: body,
       status: 'active'
     });
+
+    if (assignedClientId) await completeAssignment(env, token);
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
