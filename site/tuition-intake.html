@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Getting to Know Your Child | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=1784057589">
+</head>
+<body>
+<div class="page">
+
+  <div class="announcement-bar">Launching September 2026. Get in touch now to secure your place.</div>
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>SEN Support<br>Studio</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="services.html" class="nav-link">Services</a>
+      <a href="blog.html" class="nav-link">Resources</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <a href="book.html" class="btn-book">Book In</a>
+    <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+
+  <section class="page-hero">
+    <h1>Getting to Know Your Child</h1>
+    <p class="lede">Before we start tuition, this helps me understand your child properly — their diagnosis, what you'd like us to work on, and what makes them, them. There's no need to have all the answers, and everything you share is treated confidentially in line with our <a href="privacy.html">Privacy Notice</a>.</p>
+  </section>
+
+  <section class="book-section">
+    <form id="intake-form">
+      <div id="intake-error" class="form-error hidden"></div>
+
+      <div class="book-card">
+        <div class="book-step-heading">
+          <h2>Child's details</h2>
+        </div>
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="child-name">Child's name</label>
+            <input type="text" id="child-name" name="childName" required placeholder="Child's full name">
+          </div>
+          <div class="form-field">
+            <label for="child-dob">Date of birth</label>
+            <input type="date" id="child-dob" name="dob">
+          </div>
+        </div>
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="child-school">School (if applicable)</label>
+            <input type="text" id="child-school" name="school" placeholder="e.g. Riverside Primary School">
+          </div>
+          <div class="form-field">
+            <label for="child-year">Year group</label>
+            <input type="text" id="child-year" name="yearGroup" placeholder="e.g. Year 5">
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-step-heading">
+          <h2>Your details</h2>
+        </div>
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="parent-name">Your name</label>
+            <input type="text" id="parent-name" name="parentName" required placeholder="Your full name">
+          </div>
+          <div class="form-field">
+            <label for="parent-relationship">Relationship to child</label>
+            <select id="parent-relationship" name="relationship">
+              <option value="Parent">Parent</option>
+              <option value="Carer">Carer</option>
+              <option value="Guardian">Guardian</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="parent-email">Your email</label>
+            <input type="email" id="parent-email" name="parentEmail" required placeholder="you@example.com">
+          </div>
+          <div class="form-field">
+            <label for="parent-phone">Your phone number</label>
+            <input type="tel" id="parent-phone" name="parentPhone" placeholder="07... ">
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-step-heading">
+          <h2>Diagnosis &amp; support</h2>
+        </div>
+        <div class="form-field">
+          <label>Does your child have any diagnosed or suspected conditions? Tick all that apply</label>
+          <div class="checklist-columns">
+            <div class="checklist-column" id="diagnosis-checklist"></div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="diagnosis-other">Other diagnosis or condition (optional)</label>
+          <input type="text" id="diagnosis-other" name="diagnosisOther" placeholder="Optional">
+        </div>
+        <div class="form-field">
+          <label>Does your child have an EHCP or SEN Support at school?</label>
+          <div class="toggle-row" id="ehcp-toggle"></div>
+        </div>
+        <div class="form-field">
+          <label for="diagnosis-notes">Anything else about their diagnosis or support we should know?</label>
+          <textarea id="diagnosis-notes" name="diagnosisNotes" rows="3" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-step-heading">
+          <h2>Goals &amp; targets</h2>
+        </div>
+        <div class="form-field">
+          <label for="goals-focus">What would you like us to focus on?</label>
+          <textarea id="goals-focus" name="goalsFocus" rows="3" required placeholder="e.g. reading confidence, maths fluency, spelling, organisation..."></textarea>
+        </div>
+        <div class="form-field">
+          <label for="goals-targets">Any specific targets from school or an EHCP we should be aware of?</label>
+          <textarea id="goals-targets" name="goalsTargets" rows="3" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-step-heading">
+          <h2>Getting to know them</h2>
+        </div>
+        <div class="form-field">
+          <label for="interests">What does your child enjoy, or what motivates them?</label>
+          <textarea id="interests" name="interests" rows="3" placeholder="Hobbies, favourite things, what gets them engaged..."></textarea>
+        </div>
+        <div class="form-field">
+          <label>Are they verbal, non-verbal, or somewhere in between?</label>
+          <div class="toggle-row" id="verbal-toggle"></div>
+        </div>
+        <div class="form-field">
+          <label>How would you describe their current attention span?</label>
+          <div class="toggle-row" id="attention-toggle"></div>
+        </div>
+        <div class="form-field">
+          <label for="big-nos">Their "big no's" — things to avoid, strong dislikes, or triggers</label>
+          <textarea id="big-nos" name="bigNos" rows="3" placeholder="Optional, but really helpful for us to know"></textarea>
+        </div>
+        <div class="form-field">
+          <label for="anything-else">Anything else that would help us understand your child better?</label>
+          <textarea id="anything-else" name="anythingElse" rows="3" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="form-submit">Submit</button>
+    </form>
+    <div id="intake-success" class="form-success hidden">
+      <h3>Thank you!</h3>
+      <p>This has been submitted. We'll use it to shape your child's sessions from the very start.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo-link">
+          <img src="assets/img/mini-logo-green.png" alt="SEN Support Studio" />
+          <span class="footer-brand-name">SEN Support<br>Studio</span>
+        </a>
+        <p class="footer-tagline">Strong roots, space to flourish.</p>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Explore</span>
+        <a href="about.html">About</a>
+        <a href="services.html">Services & Pricing</a>
+        <a href="blog.html">Resources</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Studio</span>
+        <a href="book.html">Book In</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Get in touch</span>
+        <a href="mailto:hello@sensupportstudio.com">hello@sensupportstudio.com</a>
+        <a href="https://wa.me/447568294253" target="_blank" rel="noopener">07568 294253 (WhatsApp)</a>
+        <a href="https://www.instagram.com/sensupportstudio" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/share/1DxQad9Ezo/" target="_blank" rel="noopener">Facebook</a>
+        <span>Serving Kent, UK</span>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SEN Support Studio. All rights reserved. &middot; <a href="privacy.html">Privacy Notice</a> &middot; <a href="safeguarding-policy.html">Safeguarding Policy</a></div>
+  </footer>
+
+</div>
+<script src="js/nav-toggle.js?v=1784020297"></script>
+<script src="js/tuition-intake.js?v=1784100000"></script>
+</body>
+</html>
