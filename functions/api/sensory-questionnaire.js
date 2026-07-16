@@ -132,7 +132,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    const notifyTo = env.SENSORY_NOTIFY_EMAIL || env.CONTACT_TO_EMAIL || 'hello@sensupportstudio.com';
+    const notifyTo = env.SENSORY_NOTIFY_EMAIL || 'admin@sensupportstudio.com';
 
     const emailPayload = {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
