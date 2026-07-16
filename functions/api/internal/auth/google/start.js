@@ -1,7 +1,9 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
 
-  if (!env.GOOGLE_CLIENT_ID) {
+  const clientId = (env.GOOGLE_CLIENT_ID || '').trim();
+
+  if (!clientId) {
     return new Response('Google Calendar is not configured yet (missing GOOGLE_CLIENT_ID).', { status: 503 });
   }
 
@@ -9,7 +11,7 @@ export async function onRequestGet(context) {
   const redirectUri = origin + '/api/internal/auth/google/callback';
 
   const params = new URLSearchParams({
-    client_id: env.GOOGLE_CLIENT_ID,
+    client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'https://www.googleapis.com/auth/calendar.readonly',

@@ -1,5 +1,14 @@
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 
+// Cloudflare env vars are easy to accidentally save with a trailing space
+// or newline when copy-pasted - trim defensively so that never breaks auth.
+function credentials(env) {
+  return {
+    clientId: (env.GOOGLE_CLIENT_ID || '').trim(),
+    clientSecret: (env.GOOGLE_CLIENT_SECRET || '').trim()
+  };
+}
+
 async function getStoredAuth(env) {
   return env.DB.prepare('SELECT * FROM google_auth ORDER BY id DESC LIMIT 1').first();
 }
@@ -26,12 +35,13 @@ async function saveAuth(env, { accessToken, refreshToken, expiresAt, scope }) {
 }
 
 async function refreshAccessToken(env, refreshToken) {
+  const { clientId, clientSecret } = credentials(env);
   const resp = await fetch(TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       refresh_token: refreshToken,
       grant_type: 'refresh_token'
     })
@@ -49,7 +59,8 @@ async function refreshAccessToken(env, refreshToken) {
 }
 
 export async function getValidAccessToken(env) {
-  if (!env.DB || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) return null;
+  const { clientId, clientSecret } = credentials(env);
+  if (!env.DB || !clientId || !clientSecret) return null;
   const auth = await getStoredAuth(env);
   if (!auth) return null;
 
@@ -61,12 +72,13 @@ export async function getValidAccessToken(env) {
 }
 
 export async function exchangeCodeForTokens(env, code, redirectUri) {
+  const { clientId, clientSecret } = credentials(env);
   const resp = await fetch(TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       code: code,
       redirect_uri: redirectUri,
       grant_type: 'authorization_code'
