@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=1784236000">
+<link rel="stylesheet" href="../css/styles.css?v=1784570000">
 </head>
 <body>
 <div class="page">
@@ -36,6 +36,17 @@
         <h1>Welcome back, Emma</h1>
         <p class="lede">Everything for running the studio day to day - not linked from the public site.</p>
 
+        <div class="glance-grid" id="glance-grid">
+          <div class="internal-card glance-card">
+            <h3 class="glance-card-title">Next session</h3>
+            <div id="glance-next-session" class="glance-loading">Loading...</div>
+          </div>
+          <div class="internal-card glance-card">
+            <h3 class="glance-card-title">New since your last visit</h3>
+            <div id="glance-submissions" class="glance-loading">Loading...</div>
+          </div>
+        </div>
+
         <div class="internal-links">
           <a href="clients.html" class="internal-link-card">
             <span class="title">Clients</span>
@@ -55,5 +66,6 @@
   </div>
 
 </div>
+<script src="../js/internal-home.js?v=1784560000"></script>
 </body>
 </html>

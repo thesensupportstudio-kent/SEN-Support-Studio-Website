@@ -1613,6 +1613,103 @@ img {
   gap: 12px;
 }
 
+.glance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.glance-card {
+  padding: 28px;
+}
+
+.glance-card-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--green);
+  margin: 0 0 14px;
+}
+
+.glance-loading,
+.glance-empty {
+  color: var(--text-light);
+  font-size: 14px;
+  margin: 0;
+}
+
+.glance-empty a {
+  color: var(--green-dark);
+}
+
+.glance-session {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.glance-session-when {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.glance-session-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+.glance-session-location {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.glance-submission-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.glance-submission-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.glance-submission-label {
+  font-size: 14px;
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.glance-submission-name {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+@media (max-width: 640px) {
+  .glance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .glance-submission-list a {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
 .internal-link-card {
   display: flex;
   flex-direction: column;
