@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=1784226000">
+<link rel="stylesheet" href="../css/styles.css?v=1784236000">
 </head>
 <body>
 <div class="page">
@@ -36,17 +36,64 @@
         <div class="calendar-page-header">
           <div>
             <h1>Calendar</h1>
-            <p class="lede">Your Google Calendar, read-only, at a glance.</p>
+            <p class="lede">Your Google Calendar, at a glance.</p>
           </div>
-          <button type="button" class="form-submit form-submit-outline calendar-disconnect-btn hidden" id="calendar-disconnect-btn">Disconnect</button>
+          <div class="calendar-header-actions">
+            <button type="button" class="form-submit calendar-new-event-btn hidden" id="calendar-new-event-btn">+ New Event</button>
+            <button type="button" class="form-submit form-submit-outline calendar-disconnect-btn hidden" id="calendar-disconnect-btn">Disconnect</button>
+          </div>
         </div>
 
         <div id="calendar-banner" class="form-error hidden"></div>
 
         <div id="calendar-connect" class="internal-card hidden">
           <h3 class="overview-subheading" style="margin-top:0;">Connect your Google Calendar</h3>
-          <p class="lede" style="margin-bottom:20px;">See today and the days ahead without leaving this page. Read-only - nothing here can create or change events in your calendar.</p>
+          <p class="lede" style="margin-bottom:20px;">See today and the days ahead, and create or edit events without leaving this page.</p>
           <a href="/api/internal/auth/google/start" class="form-submit" style="width:auto;display:inline-block;padding:12px 24px;">Connect Google Calendar</a>
+        </div>
+
+        <div id="calendar-event-form-wrap" class="internal-card hidden">
+          <h3 class="overview-subheading" style="margin-top:0;" id="calendar-event-form-title">New event</h3>
+          <div id="calendar-event-error" class="form-error hidden"></div>
+          <form id="calendar-event-form">
+            <input type="hidden" id="event-id" value="">
+            <div class="form-field">
+              <label for="event-title">Title</label>
+              <input type="text" id="event-title" required placeholder="e.g. Sensory session - Sam Test">
+            </div>
+            <div class="internal-form-row">
+              <div class="form-field">
+                <label for="event-date">Date</label>
+                <input type="date" id="event-date" required>
+              </div>
+              <div class="form-field">
+                <label class="calendar-allday-label"><input type="checkbox" id="event-allday"> All day</label>
+              </div>
+            </div>
+            <div class="internal-form-row" id="event-time-row">
+              <div class="form-field">
+                <label for="event-start-time">Start time</label>
+                <input type="time" id="event-start-time">
+              </div>
+              <div class="form-field">
+                <label for="event-end-time">End time</label>
+                <input type="time" id="event-end-time">
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="event-location">Location (optional)</label>
+              <input type="text" id="event-location">
+            </div>
+            <div class="form-field">
+              <label for="event-description">Notes (optional)</label>
+              <textarea id="event-description" rows="3"></textarea>
+            </div>
+            <div class="calendar-event-form-actions">
+              <button type="submit" class="form-submit" id="event-save-btn" style="width:auto;">Save event</button>
+              <button type="button" class="form-submit form-submit-outline" id="event-cancel-btn" style="width:auto;">Cancel</button>
+              <button type="button" class="calendar-delete-btn hidden" id="event-delete-btn">Delete event</button>
+            </div>
+          </form>
         </div>
 
         <div id="calendar-loading" class="clients-loading">Loading your calendar…</div>
@@ -56,6 +103,6 @@
   </div>
 
 </div>
-<script src="../js/internal-calendar.js?v=1784300000"></script>
+<script src="../js/internal-calendar.js?v=1784500000"></script>
 </body>
 </html>

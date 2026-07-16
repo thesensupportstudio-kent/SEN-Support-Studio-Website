@@ -75,6 +75,7 @@ export async function onRequestGet(context) {
         end: item.end ? (item.end.dateTime || item.end.date) : null,
         allDay: !!(item.start && item.start.date && !item.start.dateTime),
         location: item.location || '',
+        description: item.description || '',
         htmlLink: item.htmlLink || ''
       };
     });
