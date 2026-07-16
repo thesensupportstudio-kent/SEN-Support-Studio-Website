@@ -2497,3 +2497,191 @@ img {
   color: var(--text-muted);
   margin: 14px 0 2px;
 }
+
+/* ---------- Internal: app shell (sidebar layout) ---------- */
+
+.app-shell {
+  display: flex;
+  align-items: flex-start;
+}
+
+.app-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  min-height: calc(100vh - 40px);
+  background: var(--offwhite);
+  border-right: 1px solid var(--border-green);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+}
+
+.app-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 24px;
+  text-decoration: none;
+}
+
+.app-sidebar-brand img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.app-sidebar-brand span {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--green);
+  line-height: 1.2;
+}
+
+.app-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.app-nav a svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.app-nav a:hover {
+  background: var(--cream);
+}
+
+.app-nav a.active {
+  background: var(--green);
+  color: var(--text-on-green);
+}
+
+.app-nav a.active svg {
+  color: var(--text-on-green);
+}
+
+.app-sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-green);
+}
+
+.app-sidebar-footer a {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 8px 10px;
+}
+
+.app-sidebar-footer a:hover {
+  color: var(--green);
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-main .internal-section {
+  margin: 0;
+}
+
+.report-tabs {
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.report-tabs a {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 4px;
+  margin-right: 20px;
+}
+
+.report-tabs a:hover {
+  color: var(--green);
+}
+
+.report-tabs a.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.home-hero {
+  margin-bottom: 32px;
+}
+
+.breadcrumb-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+
+.breadcrumb-link:hover {
+  color: var(--green);
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    min-height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border-green);
+    padding: 16px;
+  }
+
+  .app-sidebar-brand {
+    padding-bottom: 12px;
+  }
+
+  .app-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 4px;
+  }
+
+  .app-nav a {
+    white-space: nowrap;
+  }
+
+  .app-sidebar-footer {
+    display: none;
+  }
+
+  .app-main {
+    padding-top: 8px;
+  }
+}

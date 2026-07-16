@@ -13,40 +13,52 @@
 <div class="page">
 
   <div class="internal-bar">Staff Only</div>
-  <header class="internal-header">
-    <a href="index.html" class="nav-logo">
-      <img src="../assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
-      <span>Internal Tools</span>
-    </a>
-    <a href="index.html" class="internal-exit">&larr; Internal Tools</a>
-  </header>
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <a href="index.html" class="app-sidebar-brand">
+        <img src="../assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+        <span>Internal Tools</span>
+      </a>
+      <nav class="app-nav">
+        <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Home</a>
+        <a href="clients.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c2.3.4 4 2.4 4.5 5.8"/></svg>Clients</a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6M9 8h2"/></svg>Reports</a>
+        <a href="send-invoice.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Invoices</a>
+      </nav>
+      <div class="app-sidebar-footer">
+        <a href="../index.html">&larr; Back to live site</a>
+      </div>
+    </aside>
 
-  <section class="internal-section clients-section">
-    <h1>Clients</h1>
-    <p class="lede">Every parent, carer or school who has enquired, been assigned a form, signed an agreement, or received an invoice or report — all in one place.</p>
+    <main class="app-main">
+      <section class="internal-section clients-section">
+        <h1>Clients</h1>
+        <p class="lede">Every parent, carer or school who has enquired, been assigned a form, signed an agreement, or received an invoice or report — all in one place.</p>
 
-    <div class="clients-search">
-      <input type="search" id="clients-search-input" placeholder="Search by name, email, child or school…">
-    </div>
+        <div class="clients-search">
+          <input type="search" id="clients-search-input" placeholder="Search by name, email, child or school…">
+        </div>
 
-    <div id="clients-error" class="form-error hidden"></div>
+        <div id="clients-error" class="form-error hidden"></div>
 
-    <div class="clients-table-wrap">
-      <table class="clients-table" id="clients-table">
-        <thead>
-          <tr>
-            <th>Parent / carer</th>
-            <th>Child</th>
-            <th>Status</th>
-            <th>Last activity</th>
-          </tr>
-        </thead>
-        <tbody id="clients-table-body"></tbody>
-      </table>
-      <div id="clients-loading" class="clients-loading">Loading clients…</div>
-      <div id="clients-empty" class="clients-empty hidden">No clients found yet.</div>
-    </div>
-  </section>
+        <div class="clients-table-wrap">
+          <table class="clients-table" id="clients-table">
+            <thead>
+              <tr>
+                <th>Parent / carer</th>
+                <th>Child</th>
+                <th>Status</th>
+                <th>Last activity</th>
+              </tr>
+            </thead>
+            <tbody id="clients-table-body"></tbody>
+          </table>
+          <div id="clients-loading" class="clients-loading">Loading clients…</div>
+          <div id="clients-empty" class="clients-empty hidden">No clients found yet.</div>
+        </div>
+      </section>
+    </main>
+  </div>
 
 </div>
 <script src="../js/internal-clients.js?v=1784000000"></script>
