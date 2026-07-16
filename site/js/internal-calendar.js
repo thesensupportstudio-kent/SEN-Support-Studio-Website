@@ -292,7 +292,11 @@
     })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {
-        if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not save this event.');
+        if (!result.ok) {
+          var msg = (result.data && result.data.error) || 'Could not save this event.';
+          if (result.data && result.data.detail) msg += ' (' + result.data.detail + ')';
+          throw new Error(msg);
+        }
         closeForm();
         showBanner(id ? 'Event updated.' : 'Event created.', true);
         load();
