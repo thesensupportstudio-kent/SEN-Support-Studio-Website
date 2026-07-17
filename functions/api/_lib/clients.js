@@ -23,14 +23,14 @@ async function findOrCreateClient(env, { parentName, parentEmail, parentPhone, c
 
   if (existing) {
     await fillMissingFields(env, existing, { parentName, parentPhone, childName, school });
-    return existing.id;
+    return { id: existing.id, created: false };
   }
 
   const result = await env.DB.prepare(
     'INSERT INTO clients (parent_name, parent_email, parent_phone, child_name, school) VALUES (?, ?, ?, ?, ?)'
   ).bind(parentName || null, email, parentPhone || null, childName || null, school || null).run();
 
-  return result.meta.last_row_id;
+  return { id: result.meta.last_row_id, created: true };
 }
 
 async function recordInteraction(env, clientId, type, summary, detail, fileKey) {
@@ -63,7 +63,8 @@ export async function logInteraction(env, { clientId, parentName, parentEmail, p
     }
 
     if (!id) {
-      id = await findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school });
+      const found = await findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school });
+      id = found ? found.id : null;
     }
 
     if (!id) return;
@@ -72,6 +73,21 @@ export async function logInteraction(env, { clientId, parentName, parentEmail, p
   } catch (err) {
     console.log('logInteraction failed: ' + String(err && err.message));
   }
+}
+
+// Adds (or updates) a client from the internal dashboard directly, e.g. for
+// someone who got in touch on another platform. Unlike logInteraction this
+// throws on a real problem, since a staff-initiated action should surface
+// the error rather than fail silently.
+export async function createClient(env, { parentName, parentEmail, parentPhone, childName, school }) {
+  if (!env.DB) throw new Error('Database is not configured yet.');
+
+  const result = await findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school });
+  if (!result) throw new Error('Please enter an email address.');
+
+  await recordInteraction(env, result.id, 'manual_add', result.created ? 'Added manually' : 'Details updated manually');
+
+  return result;
 }
 
 // Resolves an assign-link token to the client it was sent for, so a public

@@ -33,8 +33,51 @@
 
     <main class="app-main">
       <section class="internal-section clients-section">
-        <h1>Clients</h1>
-        <p class="lede">Every parent, carer or school who has enquired, been assigned a form, signed an agreement, or received an invoice or report - all in one place.</p>
+        <div class="calendar-page-header">
+          <div>
+            <h1>Clients</h1>
+            <p class="lede">Every parent, carer or school who has enquired, been assigned a form, signed an agreement, or received an invoice or report - all in one place.</p>
+          </div>
+          <div class="calendar-header-actions">
+            <button type="button" class="form-submit clients-add-btn" id="clients-add-btn">+ Add Client</button>
+          </div>
+        </div>
+
+        <div id="clients-add-form-wrap" class="internal-card hidden">
+          <h3 class="overview-subheading" style="margin-top:0;">Add a client</h3>
+          <p class="lede" style="margin-bottom:20px;">For someone who's got in touch outside the website - add their details, then send onboarding forms from their profile.</p>
+          <div id="clients-add-error" class="form-error hidden"></div>
+          <form id="clients-add-form">
+            <div class="internal-form-row">
+              <div class="form-field">
+                <label for="add-parent-name">Parent / carer name</label>
+                <input type="text" id="add-parent-name" placeholder="e.g. Jane Smith">
+              </div>
+              <div class="form-field">
+                <label for="add-parent-email">Parent / carer email</label>
+                <input type="email" id="add-parent-email" required placeholder="parent@example.com">
+              </div>
+            </div>
+            <div class="internal-form-row">
+              <div class="form-field">
+                <label for="add-parent-phone">Phone (optional)</label>
+                <input type="tel" id="add-parent-phone">
+              </div>
+              <div class="form-field">
+                <label for="add-child-name">Child's name (optional)</label>
+                <input type="text" id="add-child-name">
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="add-school">School (optional)</label>
+              <input type="text" id="add-school">
+            </div>
+            <div class="calendar-event-form-actions">
+              <button type="submit" class="form-submit" id="clients-add-save-btn" style="width:auto;">Add client</button>
+              <button type="button" class="form-submit form-submit-outline" id="clients-add-cancel-btn" style="width:auto;">Cancel</button>
+            </div>
+          </form>
+        </div>
 
         <div class="clients-search">
           <input type="search" id="clients-search-input" placeholder="Search by name, email, child or school…">

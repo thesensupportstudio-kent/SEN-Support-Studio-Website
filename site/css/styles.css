@@ -2850,7 +2850,8 @@ img {
 }
 
 .calendar-disconnect-btn,
-.calendar-new-event-btn {
+.calendar-new-event-btn,
+.clients-add-btn {
   width: auto;
   margin-top: 0;
   padding: 8px 16px;
