@@ -2349,6 +2349,59 @@ img {
   font-weight: 400;
 }
 
+@media (max-width: 640px) {
+  .clients-table-wrap {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
+  }
+
+  .clients-table thead {
+    display: none;
+  }
+
+  .clients-table,
+  .clients-table tbody,
+  .clients-table tr,
+  .clients-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .clients-table tr.client-row {
+    background: var(--offwhite);
+    border: 1px solid var(--border-green);
+    border-radius: 12px;
+    padding: 6px 16px;
+    margin-bottom: 10px;
+  }
+
+  .clients-table tr.client-row:hover td {
+    background: none;
+  }
+
+  .clients-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-green);
+  }
+
+  .clients-table td:last-child {
+    border-bottom: none;
+  }
+
+  .clients-table td[data-label]::before {
+    content: attr(data-label);
+    display: inline-block;
+    min-width: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 8px;
+  }
+}
+
 .status-pill {
   display: inline-block;
   font-size: 12px;
