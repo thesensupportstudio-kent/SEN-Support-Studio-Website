@@ -723,5 +723,82 @@
       if (client.parent_email) state.client.clientEmail = client.parent_email;
       if (state.step === 0) render();
     });
+
+    // Pre-fill from the family's most recently completed Sensory Profile
+    // Questionnaire, if there is one - same wording is used for each
+    // behaviour in both, so items tick themselves once matched by text.
+    var CATEGORY_TO_DOMAIN_KEY = {
+      'auditory': 'auditory',
+      'visual': 'visual',
+      'tactile': 'tactile',
+      'oral': 'oral',
+      'olfactory (smell)': 'olfactory',
+      'proprioception': 'proprioception',
+      'vestibular': 'vestibular',
+      'interoception': 'interoception'
+    };
+
+    function findColumn(columns, labelMatch) {
+      var match = (columns || []).filter(function (c) { return labelMatch.test(c.label || ''); });
+      return match[0] || null;
+    }
+
+    function applyQuestionnairePrefill(categories) {
+      var appliedAny = false;
+      categories.forEach(function (cat) {
+        var key = CATEGORY_TO_DOMAIN_KEY[String(cat.title || '').trim().toLowerCase()];
+        if (!key || !state.domainData[key]) return;
+        var data = state.domainData[key];
+
+        if (cat.type === 'single') {
+          var selected = cat.selected || [];
+          if (selected.length) {
+            data.behaviours = selected.slice();
+            data.classification = 'Under responsive';
+            appliedAny = true;
+          }
+        } else {
+          var overCol = findColumn(cat.columns, /over/i);
+          var underCol = findColumn(cat.columns, /under/i);
+          var overSelected = (overCol && overCol.selected) || [];
+          var underSelected = (underCol && underCol.selected) || [];
+          if (overSelected.length || underSelected.length) {
+            data.behaviours = overSelected.concat(underSelected);
+            if (overSelected.length > underSelected.length) data.classification = 'Over responsive';
+            else if (underSelected.length > overSelected.length) data.classification = 'Under responsive';
+            else data.classification = 'Mixed';
+            appliedAny = true;
+          }
+        }
+
+        if (cat.extra) { data.extra = cat.extra; appliedAny = true; }
+      });
+      return appliedAny;
+    }
+
+    fetch('/api/internal/client?id=' + encodeURIComponent(window.SENClientContext.clientId))
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data || !Array.isArray(data.interactions)) return;
+        var latest = data.interactions.filter(function (i) { return i.type === 'sensory_questionnaire'; })[0];
+        if (!latest || !latest.detail) return;
+        var parsed;
+        try { parsed = JSON.parse(latest.detail); } catch (e) { return; }
+        if (!parsed || !Array.isArray(parsed.categories)) return;
+
+        var applied = applyQuestionnairePrefill(parsed.categories);
+        if (!applied) return;
+
+        var banner = document.getElementById('client-context-banner');
+        if (banner) {
+          var note = document.createElement('p');
+          note.style.margin = '4px 0 0';
+          note.textContent = 'Also pre-filled from their Sensory Profile Questionnaire - please review each section, the response type is a suggestion based on which column had more ticks.';
+          banner.appendChild(note);
+          banner.classList.remove('hidden');
+        }
+        if (state.step === 0) render();
+      })
+      .catch(function () {});
   }
 })();
