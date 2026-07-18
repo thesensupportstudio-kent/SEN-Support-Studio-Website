@@ -8,7 +8,7 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const key = url.searchParams.get('key') || '';
 
-  if (!/^(reports|invoices)\/[A-Za-z0-9._-]+$/.test(key)) {
+  if (!/^(reports|invoices|documents)\/[A-Za-z0-9._-]+$/.test(key)) {
     return new Response('Invalid file key.', { status: 400 });
   }
 

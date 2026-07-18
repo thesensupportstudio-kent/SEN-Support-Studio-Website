@@ -2600,6 +2600,35 @@ img {
   text-decoration: underline;
 }
 
+.document-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.document-label {
+  font-size: 15px;
+  color: var(--green);
+  font-weight: 600;
+  margin: 0;
+}
+
+.document-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.document-actions-row .timeline-download {
+  margin-top: 0;
+}
+
+#tab-documents .internal-card {
+  margin-bottom: 24px;
+}
+
 .client-action-menu-form {
   display: flex;
   flex-direction: column;
@@ -2719,6 +2748,17 @@ img {
 .client-tab.active {
   color: var(--green);
   border-bottom-color: var(--green);
+}
+
+@media (max-width: 640px) {
+  .client-tabs {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .client-tab {
+    margin-right: 12px;
+  }
 }
 
 .client-tab-panel .timeline {

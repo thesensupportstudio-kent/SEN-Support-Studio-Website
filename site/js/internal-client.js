@@ -28,6 +28,7 @@
   var FORM_TYPES = ['contact_enquiry', 'sensory_questionnaire', 'tuition_intake', 'client_agreement', 'links_sent'];
   var REPORT_TYPES = ['session_report'];
   var INVOICE_TYPES = ['invoice_request', 'invoice_sent'];
+  var DOCUMENT_TYPES = ['document_uploaded'];
 
   var TYPE_LABELS = {
     contact_enquiry: 'Website enquiry',
@@ -37,7 +38,8 @@
     invoice_request: 'Invoice requested',
     invoice_sent: 'Invoice sent',
     session_report: 'Session report sent',
-    links_sent: 'Forms assigned'
+    links_sent: 'Forms assigned',
+    document_uploaded: 'Document uploaded'
   };
 
   function escapeHtml(str) {
@@ -248,6 +250,82 @@
     assignmentsWrap.classList.remove('hidden');
   }
 
+  var documentsList = document.getElementById('documents-list');
+
+  function renderDocuments(items) {
+    if (!documentsList) return;
+    documentsList.innerHTML = '';
+    if (!items.length) {
+      documentsList.innerHTML = '<p class="clients-empty">No documents uploaded yet.</p>';
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'timeline';
+    items.forEach(function (item) {
+      var detailObj = parseDetail(item) || {};
+      var div = document.createElement('div');
+      div.className = 'timeline-item';
+
+      var row = document.createElement('div');
+      row.className = 'document-row-top';
+      var badge = document.createElement('span');
+      badge.className = 'status-pill status-enquiry';
+      badge.textContent = detailObj.category || 'Other';
+      row.appendChild(badge);
+      var labelEl = document.createElement('p');
+      labelEl.className = 'document-label';
+      labelEl.textContent = item.summary;
+      row.appendChild(labelEl);
+      div.appendChild(row);
+
+      var dateEl = document.createElement('p');
+      dateEl.className = 'timeline-date';
+      dateEl.textContent = 'Uploaded ' + formatDateTime(item.created_at);
+      div.appendChild(dateEl);
+
+      var actionsRow = document.createElement('div');
+      actionsRow.className = 'document-actions-row';
+
+      if (item.file_key) {
+        var dl = document.createElement('a');
+        dl.className = 'timeline-download';
+        dl.href = '/api/internal/file?key=' + encodeURIComponent(item.file_key);
+        dl.target = '_blank';
+        dl.rel = 'noopener';
+        dl.textContent = 'Download';
+        actionsRow.appendChild(dl);
+      }
+
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'invoice-paid-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', function () {
+        if (!window.confirm('Delete "' + item.summary + '"? This cannot be undone.')) return;
+        deleteBtn.disabled = true;
+        fetch('/api/internal/delete-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ interactionId: item.id })
+        })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (result) {
+            if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not delete this document.');
+            loadClient();
+          })
+          .catch(function (err) {
+            deleteBtn.disabled = false;
+            window.alert(err.message || 'Could not delete this document.');
+          });
+      });
+      actionsRow.appendChild(deleteBtn);
+
+      div.appendChild(actionsRow);
+      wrap.appendChild(div);
+    });
+    documentsList.appendChild(wrap);
+  }
+
   function showError(message) {
     loading.classList.add('hidden');
     errorBox.textContent = message;
@@ -325,7 +403,7 @@
         t.classList.toggle('active', t === btn);
       });
       var tab = btn.dataset.tab;
-      ['overview', 'forms', 'reports', 'invoices'].forEach(function (name) {
+      ['overview', 'forms', 'reports', 'invoices', 'documents'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.classList.toggle('hidden', name !== tab);
       });
@@ -361,10 +439,12 @@
         var formItems = interactions.filter(function (i) { return FORM_TYPES.indexOf(i.type) !== -1; });
         var reportItems = interactions.filter(function (i) { return REPORT_TYPES.indexOf(i.type) !== -1; });
         var invoiceItems = interactions.filter(function (i) { return INVOICE_TYPES.indexOf(i.type) !== -1; });
+        var documentItems = interactions.filter(function (i) { return DOCUMENT_TYPES.indexOf(i.type) !== -1; });
 
         renderTabPanel(document.getElementById('tab-forms'), formItems, 'No forms submitted yet.');
         renderTabPanel(document.getElementById('tab-reports'), reportItems, 'No reports sent yet.');
         renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
+        renderDocuments(documentItems);
         renderAssignments(assignments);
 
         loading.classList.add('hidden');
@@ -376,6 +456,73 @@
   }
 
   loadClient();
+
+  var documentUploadForm = document.getElementById('document-upload-form');
+  var documentUploadError = document.getElementById('document-upload-error');
+  var documentUploadSubmit = document.getElementById('document-upload-submit');
+  var MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
+
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result.split(',')[1]); };
+      reader.onerror = function () { reject(new Error('Could not read the selected file.')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (documentUploadForm) {
+    documentUploadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      documentUploadError.classList.add('hidden');
+
+      var fileInput = document.getElementById('document-file');
+      var file = fileInput.files[0];
+      if (!file) {
+        documentUploadError.textContent = 'Please choose a file to upload.';
+        documentUploadError.classList.remove('hidden');
+        return;
+      }
+      if (file.size > MAX_DOCUMENT_BYTES) {
+        documentUploadError.textContent = 'That file is too large (max 8MB).';
+        documentUploadError.classList.remove('hidden');
+        return;
+      }
+
+      documentUploadSubmit.disabled = true;
+      documentUploadSubmit.textContent = 'Uploading…';
+
+      fileToBase64(file)
+        .then(function (base64) {
+          return fetch('/api/internal/upload-document', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId: clientId,
+              label: document.getElementById('document-label').value.trim(),
+              category: document.getElementById('document-category').value,
+              fileName: file.name,
+              contentType: file.type,
+              fileBase64: base64
+            })
+          });
+        })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not upload this document.');
+          documentUploadForm.reset();
+          loadClient();
+        })
+        .catch(function (err) {
+          documentUploadError.textContent = err.message || 'Could not upload this document.';
+          documentUploadError.classList.remove('hidden');
+        })
+        .finally(function () {
+          documentUploadSubmit.disabled = false;
+          documentUploadSubmit.textContent = 'Upload document';
+        });
+    });
+  }
 
   function saveUpdate(payload, statusEl, savedLabel) {
     statusEl.textContent = 'Saving…';

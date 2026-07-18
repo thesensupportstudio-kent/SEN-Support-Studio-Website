@@ -90,6 +90,19 @@ export async function createClient(env, { parentName, parentEmail, parentPhone, 
   return result;
 }
 
+// Attaches a general document (EHCP copy, assessment, school letter, etc) to
+// a client's timeline. Unlike logInteraction this throws on a real problem,
+// since a staff-initiated upload should surface the error rather than fail
+// silently and leave the staff member thinking it worked.
+export async function addClientDocument(env, { clientId, label, category, fileKey }) {
+  if (!env.DB) throw new Error('Database is not configured yet.');
+
+  const client = await env.DB.prepare('SELECT id FROM clients WHERE id = ?').bind(clientId).first();
+  if (!client) throw new Error('Client not found.');
+
+  await recordInteraction(env, clientId, 'document_uploaded', label, { category: category }, fileKey);
+}
+
 // Resolves an assign-link token to the client it was sent for, so a public
 // form submission can attach directly to the right client without relying
 // on the parent's email matching exactly. Never throws.

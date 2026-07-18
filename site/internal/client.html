@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=1784620000">
+<link rel="stylesheet" href="../css/styles.css?v=1784630000">
 </head>
 <body>
 <div class="page">
@@ -75,6 +75,7 @@
         <button type="button" class="client-tab" data-tab="forms">Forms</button>
         <button type="button" class="client-tab" data-tab="reports">Reports</button>
         <button type="button" class="client-tab" data-tab="invoices">Invoices</button>
+        <button type="button" class="client-tab" data-tab="documents">Documents</button>
       </div>
 
       <div id="tab-overview" class="client-tab-panel">
@@ -107,12 +108,42 @@
           <div id="tab-forms" class="client-tab-panel hidden"></div>
           <div id="tab-reports" class="client-tab-panel hidden"></div>
           <div id="tab-invoices" class="client-tab-panel hidden"></div>
+          <div id="tab-documents" class="client-tab-panel hidden">
+            <div class="internal-card">
+              <h3 class="overview-subheading" style="margin-top:0;">Upload a document</h3>
+              <p class="lede" style="margin-bottom:20px;">EHCP copies, assessments, school letters - anything worth keeping with this family's file.</p>
+              <div id="document-upload-error" class="form-error hidden"></div>
+              <form id="document-upload-form">
+                <div class="internal-form-row">
+                  <div class="form-field">
+                    <label for="document-label">Label</label>
+                    <input type="text" id="document-label" required placeholder="e.g. EHCP - March 2026">
+                  </div>
+                  <div class="form-field">
+                    <label for="document-category">Category</label>
+                    <select id="document-category">
+                      <option value="EHCP">EHCP</option>
+                      <option value="Assessment">Assessment</option>
+                      <option value="School letter">School letter</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label for="document-file">File</label>
+                  <input type="file" id="document-file" accept="application/pdf,image/jpeg,image/png,.doc,.docx" required>
+                </div>
+                <button type="submit" class="form-submit" id="document-upload-submit" style="width:auto;">Upload document</button>
+              </form>
+            </div>
+            <div id="documents-list"></div>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
 </div>
-<script src="../js/internal-client.js?v=1784610000"></script>
+<script src="../js/internal-client.js?v=1784630000"></script>
 </body>
 </html>
