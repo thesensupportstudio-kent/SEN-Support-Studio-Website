@@ -73,9 +73,13 @@
 
   // Generic renderer for a submitted form's stored JSON: walks the object,
   // showing each leaf field as a labelled line rather than raw JSON.
-  function renderDetailObject(obj, container) {
+  // skipKeys lets a caller hide fields that are pure internal metadata (e.g.
+  // a "type" flag used only to decide how a report gets laid out) or that
+  // would just repeat something already shown, like a heading above it.
+  function renderDetailObject(obj, container, skipKeys) {
     if (!obj || typeof obj !== 'object') return;
     Object.keys(obj).forEach(function (key) {
+      if (skipKeys && skipKeys.indexOf(key) !== -1) return;
       var value = obj[key];
       if (value == null || value === '') return;
 
@@ -89,7 +93,7 @@
               heading.textContent = item.title;
               container.appendChild(heading);
             }
-            renderDetailObject(item, container);
+            renderDetailObject(item, container, ['title', 'type']);
           });
           return;
         }
@@ -214,6 +218,50 @@
     var wrap = document.createElement('div');
     wrap.className = 'timeline';
     items.forEach(function (item) { wrap.appendChild(renderTimelineItem(item)); });
+    panelEl.appendChild(wrap);
+  }
+
+  // Reports get their own clean list - just the title, session date and a
+  // download link, since that's what's actually useful when looking back at
+  // what was sent (the generic form-detail dump was too noisy to scan).
+  function renderReports(panelEl, items) {
+    panelEl.innerHTML = '';
+    if (!items.length) {
+      panelEl.innerHTML = '<p class="clients-empty">No reports sent yet.</p>';
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'timeline';
+    items.forEach(function (item) {
+      var detailObj = parseDetail(item) || {};
+      var div = document.createElement('div');
+      div.className = 'timeline-item';
+
+      var titleEl = document.createElement('p');
+      titleEl.className = 'document-label';
+      titleEl.textContent = detailObj.title || item.summary;
+      div.appendChild(titleEl);
+
+      var dateEl = document.createElement('p');
+      dateEl.className = 'timeline-date';
+      var sessionDateLabel = detailObj.sessionDate ? formatDateOnly(detailObj.sessionDate) : '';
+      dateEl.textContent = sessionDateLabel
+        ? 'Session on ' + sessionDateLabel + ' · Sent ' + formatDateTime(item.created_at)
+        : 'Sent ' + formatDateTime(item.created_at);
+      div.appendChild(dateEl);
+
+      if (item.file_key) {
+        var dl = document.createElement('a');
+        dl.className = 'timeline-download';
+        dl.href = '/api/internal/file?key=' + encodeURIComponent(item.file_key);
+        dl.target = '_blank';
+        dl.rel = 'noopener';
+        dl.textContent = 'Download PDF';
+        div.appendChild(dl);
+      }
+
+      wrap.appendChild(div);
+    });
     panelEl.appendChild(wrap);
   }
 
@@ -442,7 +490,7 @@
         var documentItems = interactions.filter(function (i) { return DOCUMENT_TYPES.indexOf(i.type) !== -1; });
 
         renderTabPanel(document.getElementById('tab-forms'), formItems, 'No forms submitted yet.');
-        renderTabPanel(document.getElementById('tab-reports'), reportItems, 'No reports sent yet.');
+        renderReports(document.getElementById('tab-reports'), reportItems);
         renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
         renderDocuments(documentItems);
         renderAssignments(assignments);

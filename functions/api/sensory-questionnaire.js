@@ -64,7 +64,7 @@ function buildEmailHtml(data) {
     ['Child', child.childName],
     ['Date of birth', child.dob],
     ['School', child.school],
-    ['Class / year group', child.klass],
+    ['Class / year group', child.class],
     ['Completed by', child.completedBy],
     ['Contact email', child.contactEmail]
   ].filter(function (row) { return row[1]; }).map(function (row) {

@@ -152,7 +152,7 @@
         childName: document.getElementById('child-name').value.trim(),
         dob: document.getElementById('child-dob').value,
         school: document.getElementById('child-school').value.trim(),
-        klass: document.getElementById('child-class').value.trim(),
+        class: document.getElementById('child-class').value.trim(),
         completedBy: document.getElementById('completed-by').value.trim(),
         contactEmail: document.getElementById('contact-email').value.trim()
       },

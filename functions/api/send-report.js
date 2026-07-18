@@ -131,8 +131,10 @@ export async function onRequestPost(context) {
     if (!resendResp.ok) {
       const detail = await resendResp.text().catch(function () { return ''; });
       console.log('Resend rejected send: ' + resendResp.status + ' ' + detail);
+      // Stay in the 4xx range - Cloudflare swaps a generic branded page in
+      // for any 5xx response, which would hide the real reason from the UI.
       return new Response(JSON.stringify({ error: 'Resend could not send the email.', detail: detail }), {
-        status: 502,
+        status: 422,
         headers: { 'Content-Type': 'application/json' }
       });
     }
