@@ -20,8 +20,34 @@
   var assignmentsWrap = document.getElementById('assignments-wrap');
   var assignmentsList = document.getElementById('assignments-list');
   var tabsBar = document.getElementById('client-tabs');
+  var detailModalOverlay = document.getElementById('detail-modal-overlay');
+  var detailModalTitle = document.getElementById('detail-modal-title');
+  var detailModalBody = document.getElementById('detail-modal-body');
+  var detailModalClose = document.getElementById('detail-modal-close');
 
   if (!detail) return;
+
+  function openDetailModal(title, fill) {
+    detailModalTitle.textContent = title;
+    detailModalBody.innerHTML = '';
+    fill(detailModalBody);
+    detailModalOverlay.classList.remove('hidden');
+  }
+
+  function closeDetailModal() {
+    detailModalOverlay.classList.add('hidden');
+    detailModalBody.innerHTML = '';
+  }
+
+  if (detailModalClose) detailModalClose.addEventListener('click', closeDetailModal);
+  if (detailModalOverlay) {
+    detailModalOverlay.addEventListener('click', function (e) {
+      if (e.target === detailModalOverlay) closeDetailModal();
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDetailModal();
+  });
 
   var clientId = new URLSearchParams(window.location.search).get('id');
 
@@ -201,14 +227,16 @@
 
     var detailObj = parseDetail(item);
     if (detailObj && Object.keys(detailObj).length) {
-      var details = document.createElement('details');
-      var summaryToggle = document.createElement('summary');
-      summaryToggle.textContent = 'View full submission';
-      details.appendChild(summaryToggle);
-      var detailBody = document.createElement('div');
-      renderDetailObject(detailObj, detailBody);
-      details.appendChild(detailBody);
-      div.appendChild(details);
+      var viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'timeline-view-btn';
+      viewBtn.textContent = 'View submission';
+      viewBtn.addEventListener('click', function () {
+        openDetailModal(item.summary, function (body) {
+          renderDetailObject(detailObj, body);
+        });
+      });
+      div.appendChild(viewBtn);
     }
 
     return div;
@@ -256,9 +284,24 @@
       div.appendChild(dateEl);
 
       if (item.file_key) {
+        var fileUrl = '/api/internal/file?key=' + encodeURIComponent(item.file_key);
+
+        var viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.className = 'timeline-view-btn';
+        viewBtn.textContent = 'View';
+        viewBtn.addEventListener('click', function () {
+          openDetailModal(detailObj.title || item.summary, function (body) {
+            var iframe = document.createElement('iframe');
+            iframe.src = fileUrl;
+            body.appendChild(iframe);
+          });
+        });
+        div.appendChild(viewBtn);
+
         var dl = document.createElement('a');
         dl.className = 'timeline-download';
-        dl.href = '/api/internal/file?key=' + encodeURIComponent(item.file_key);
+        dl.href = fileUrl;
         dl.target = '_blank';
         dl.rel = 'noopener';
         dl.textContent = 'Download PDF';
