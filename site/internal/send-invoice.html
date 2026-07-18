@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=1784600000">
+<link rel="stylesheet" href="../css/styles.css?v=1784620000">
 </head>
 <body>
 <div class="page">
@@ -77,9 +77,15 @@
           <input type="text" id="service-other-detail" placeholder="What is this invoice for?">
         </div>
 
-        <div class="form-field">
-          <label for="invoice-file">Invoice PDF</label>
-          <input type="file" id="invoice-file" name="invoiceFile" accept="application/pdf" required>
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="invoice-file">Invoice PDF</label>
+            <input type="file" id="invoice-file" name="invoiceFile" accept="application/pdf" required>
+          </div>
+          <div class="form-field">
+            <label for="invoice-due-date">Payment due date</label>
+            <input type="date" id="invoice-due-date" name="dueDate">
+          </div>
         </div>
 
         <button type="submit" class="form-submit" id="invoice-send-submit">Send Invoice</button>
@@ -97,6 +103,6 @@
 
 </div>
 <script src="../js/internal-client-context.js?v=1784000000"></script>
-<script src="../js/internal-send-invoice.js?v=1784000000"></script>
+<script src="../js/internal-send-invoice.js?v=1784610000"></script>
 </body>
 </html>

@@ -1,6 +1,9 @@
 (function () {
   var nextSessionEl = document.getElementById('glance-next-session');
   var submissionsEl = document.getElementById('glance-submissions');
+  var statActiveClients = document.getElementById('stat-active-clients');
+  var statSessionsMonth = document.getElementById('stat-sessions-month');
+  var statInvoicesOutstanding = document.getElementById('stat-invoices-outstanding');
 
   if (!nextSessionEl || !submissionsEl) return;
 
@@ -88,6 +91,24 @@
       });
   }
 
+  function loadStats() {
+    if (!statActiveClients || !statSessionsMonth || !statInvoicesOutstanding) return;
+    fetch('/api/internal/stats')
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) throw new Error();
+        statActiveClients.textContent = String(result.data.activeClients);
+        statSessionsMonth.textContent = result.data.sessionsThisMonth == null ? '-' : String(result.data.sessionsThisMonth);
+        statInvoicesOutstanding.textContent = String(result.data.invoicesOutstanding);
+      })
+      .catch(function () {
+        statActiveClients.textContent = '-';
+        statSessionsMonth.textContent = '-';
+        statInvoicesOutstanding.textContent = '-';
+      });
+  }
+
   loadNextSession();
   loadSubmissions();
+  loadStats();
 })();

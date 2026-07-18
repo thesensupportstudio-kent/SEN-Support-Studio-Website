@@ -1,4 +1,4 @@
-import { logInteraction } from './_lib/clients.js';
+import { logInteraction } from '../_lib/clients.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -69,6 +69,7 @@ export async function onRequestPost(context) {
   const service = (body.service || '').trim();
   const fileName = (body.fileName || 'invoice.pdf').trim();
   const fileBase64 = body.fileBase64 || '';
+  const dueDate = (body.dueDate || '').trim() || null;
 
   if (!recipientName || !recipientEmail || !service || !fileBase64) {
     return new Response(JSON.stringify({ error: 'Please fill in the required fields and attach a PDF.' }), {
@@ -124,8 +125,10 @@ export async function onRequestPost(context) {
     if (!resendResp.ok) {
       const detail = await resendResp.text().catch(function () { return ''; });
       console.log('Resend rejected send: ' + resendResp.status + ' ' + detail);
+      // Stay in the 4xx range - Cloudflare swaps a generic branded page in
+      // for any 5xx response, which would hide the real reason from the UI.
       return new Response(JSON.stringify({ error: 'Resend could not send the invoice.', detail: detail }), {
-        status: 502,
+        status: 422,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -138,7 +141,8 @@ export async function onRequestPost(context) {
       summary: 'Invoice sent for ' + service,
       detail: { service, fileName },
       status: 'active',
-      fileKey: fileKey
+      fileKey: fileKey,
+      dueDate: dueDate
     });
 
     return new Response(JSON.stringify({ ok: true }), {

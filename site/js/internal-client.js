@@ -57,6 +57,13 @@
       ' at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 
+  function formatDateOnly(value) {
+    if (!value) return '';
+    var d = new Date(value.length <= 10 ? value + 'T00:00:00Z' : value.replace(' ', 'T') + 'Z');
+    if (isNaN(d.getTime())) return value;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
   function humanizeKey(key) {
     var spaced = String(key).replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
@@ -134,6 +141,42 @@
     dateEl.className = 'timeline-date';
     dateEl.textContent = formatDateTime(item.created_at);
     div.appendChild(dateEl);
+
+    if (item.type === 'invoice_sent') {
+      var invoiceRow = document.createElement('div');
+      invoiceRow.className = 'invoice-status-row';
+
+      var pill = document.createElement('span');
+      var isPaid = !!item.paid_at;
+      pill.className = 'status-pill ' + (isPaid ? 'status-active' : 'status-enquiry');
+      pill.textContent = isPaid ? 'Paid ' + formatDateOnly(item.paid_at) : (item.due_date ? 'Due ' + formatDateOnly(item.due_date) : 'Awaiting payment');
+      invoiceRow.appendChild(pill);
+
+      var payBtn = document.createElement('button');
+      payBtn.type = 'button';
+      payBtn.className = 'invoice-paid-btn';
+      payBtn.textContent = isPaid ? 'Mark as unpaid' : 'Mark as paid';
+      payBtn.addEventListener('click', function () {
+        payBtn.disabled = true;
+        fetch('/api/internal/mark-invoice-paid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ interactionId: item.id, paid: !isPaid })
+        })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (result) {
+            if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not update this invoice.');
+            loadClient();
+          })
+          .catch(function (err) {
+            payBtn.disabled = false;
+            window.alert(err.message || 'Could not update this invoice.');
+          });
+      });
+      invoiceRow.appendChild(payBtn);
+
+      div.appendChild(invoiceRow);
+    }
 
     if (item.file_key) {
       var dl = document.createElement('a');

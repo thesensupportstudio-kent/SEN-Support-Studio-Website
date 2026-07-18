@@ -12,6 +12,13 @@
 
   if (!form) return;
 
+  var dueDateField = document.getElementById('invoice-due-date');
+  if (dueDateField && !dueDateField.value) {
+    var defaultDue = new Date();
+    defaultDue.setDate(defaultDue.getDate() + 14);
+    dueDateField.value = defaultDue.getFullYear() + '-' + String(defaultDue.getMonth() + 1).padStart(2, '0') + '-' + String(defaultDue.getDate()).padStart(2, '0');
+  }
+
   serviceSelect.addEventListener('change', function () {
     serviceOtherWrap.classList.toggle('hidden', serviceSelect.value !== 'other');
   });
@@ -80,10 +87,11 @@
           service: service,
           fileName: file.name,
           fileBase64: base64,
+          dueDate: document.getElementById('invoice-due-date').value,
           clientId: (window.SENClientContext && window.SENClientContext.clientId) || undefined
         };
 
-        return fetch('/api/send-invoice', {
+        return fetch('/api/internal/send-invoice', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
