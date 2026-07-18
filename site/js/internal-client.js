@@ -66,7 +66,12 @@
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
+  // Covers submissions stored before a field's name was corrected, so
+  // already-saved records display properly rather than just new ones.
+  var KEY_LABEL_OVERRIDES = { klass: 'Class' };
+
   function humanizeKey(key) {
+    if (KEY_LABEL_OVERRIDES[key]) return KEY_LABEL_OVERRIDES[key];
     var spaced = String(key).replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
   }
