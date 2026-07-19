@@ -46,6 +46,56 @@
       </div>
 
       <div id="tab-bookings" class="client-tab-panel">
+        <div class="book-card">
+          <div class="book-step-heading">
+            <span class="num">01</span>
+            <h2>Choose your service</h2>
+          </div>
+
+          <div class="book-field">
+            <span class="label">Are you a</span>
+            <div class="role-toggle">
+              <button type="button" class="role-btn" id="role-parent">Parent / Carer</button>
+              <button type="button" class="role-btn" id="role-school">School / Educator</button>
+            </div>
+          </div>
+
+          <div class="book-field hidden" id="service-field">
+            <span class="label">Which service?</span>
+            <div class="service-row-list" id="service-list"></div>
+          </div>
+
+          <div class="book-field hidden" id="type-field">
+            <span class="label">Single session or pack?</span>
+            <div class="type-options" id="type-list"></div>
+          </div>
+
+          <div class="booking-summary hidden" id="booking-summary">
+            <div>
+              <span class="name" id="summary-name"></span>
+              <span class="price" id="summary-price"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="book-card">
+          <div class="book-step-heading">
+            <span class="num">02</span>
+            <h2>Pick a time</h2>
+          </div>
+          <p class="calendly-hint" id="calendly-hint">Select a service above to see availability.</p>
+          <div class="hidden" id="calendly-widget"></div>
+        </div>
+
+        <div class="book-card">
+          <div class="book-step-heading">
+            <span class="num">03</span>
+            <h2>Pay to confirm</h2>
+          </div>
+          <p id="payment-hint">Select a service above to see payment options.</p>
+          <div class="payment-buttons hidden" id="payment-buttons"></div>
+        </div>
+
         <div id="packs-wrap"></div>
 
         <div class="book-card" id="upcoming-card">
@@ -116,6 +166,9 @@
 </div>
 
 <script src="js/nav-toggle.js?v=1784020297"></script>
-<script src="js/client-portal.js?v=1784710000"></script>
+<script src="js/payment-links.js?v=1783900000"></script>
+<script src="js/service-labels.js?v=1783900000"></script>
+<script src="js/book.js?v=1783900001"></script>
+<script src="js/client-portal.js?v=1784720000"></script>
 </body>
 </html>
