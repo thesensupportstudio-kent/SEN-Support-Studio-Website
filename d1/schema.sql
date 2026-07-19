@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS interactions (
   file_key TEXT,
   due_date TEXT,
   paid_at TEXT,
+  viewed_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

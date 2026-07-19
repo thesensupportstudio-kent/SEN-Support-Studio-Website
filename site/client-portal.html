@@ -40,12 +40,31 @@
 
     <div id="portal-content" class="hidden">
       <div class="client-tabs" id="portal-tabs">
-        <button type="button" class="client-tab active" data-tab="bookings">Bookings</button>
+        <button type="button" class="client-tab active" data-tab="home">Home</button>
+        <button type="button" class="client-tab" data-tab="bookings">Bookings</button>
         <button type="button" class="client-tab" data-tab="forms">Forms</button>
         <button type="button" class="client-tab" data-tab="reports">Reports</button>
       </div>
 
-      <div id="tab-bookings" class="client-tab-panel">
+      <div id="tab-home" class="client-tab-panel">
+        <div class="book-card" id="home-upcoming-card">
+          <div class="book-step-heading"><h2>Your upcoming sessions</h2></div>
+          <div id="home-upcoming-list"></div>
+          <button type="button" class="btn btn-primary" id="manage-bookings-btn" style="align-self:flex-start;">Manage bookings &rarr;</button>
+        </div>
+
+        <div class="book-card hidden" id="home-payments-card">
+          <div class="book-step-heading"><h2>Invoices needing payment</h2></div>
+          <div id="home-payments-list"></div>
+        </div>
+
+        <div class="book-card hidden" id="home-reports-card">
+          <div class="book-step-heading"><h2>New reports</h2></div>
+          <div id="home-reports-list"></div>
+        </div>
+      </div>
+
+      <div id="tab-bookings" class="client-tab-panel hidden">
         <div class="book-card">
           <div class="book-step-heading">
             <span class="num">01</span>
@@ -169,6 +188,6 @@
 <script src="js/payment-links.js?v=1783900000"></script>
 <script src="js/service-labels.js?v=1783900000"></script>
 <script src="js/book.js?v=1783900001"></script>
-<script src="js/client-portal.js?v=1784720000"></script>
+<script src="js/client-portal.js?v=1784730000"></script>
 </body>
 </html>

@@ -11,6 +11,12 @@
   var formsList = document.getElementById('forms-list');
   var reportsList = document.getElementById('reports-list');
   var logoutBtn = document.getElementById('logout-btn');
+  var homeUpcomingList = document.getElementById('home-upcoming-list');
+  var manageBookingsBtn = document.getElementById('manage-bookings-btn');
+  var homePaymentsCard = document.getElementById('home-payments-card');
+  var homePaymentsList = document.getElementById('home-payments-list');
+  var homeReportsCard = document.getElementById('home-reports-card');
+  var homeReportsList = document.getElementById('home-reports-list');
 
   var detailModalOverlay = document.getElementById('detail-modal-overlay');
   var detailModalTitle = document.getElementById('detail-modal-title');
@@ -407,6 +413,69 @@
     });
   }
 
+  function markReportViewed(id) {
+    return fetch('/api/client-auth/mark-report-viewed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interactionId: id })
+    }).then(function () { load(); }).catch(function () {});
+  }
+
+  function buildReportRow(item, opts) {
+    var detailObj = parseDetail(item) || {};
+    var row = document.createElement('div');
+    row.className = 'timeline-item';
+
+    var titleEl = document.createElement('p');
+    titleEl.className = 'document-label';
+    titleEl.textContent = detailObj.title || item.summary;
+    row.appendChild(titleEl);
+
+    var dateEl = document.createElement('p');
+    dateEl.className = 'timeline-date';
+    var sessionDateLabel = detailObj.sessionDate ? formatDateOnly(detailObj.sessionDate) : '';
+    dateEl.textContent = sessionDateLabel
+      ? 'Session on ' + sessionDateLabel + ' · Sent ' + formatDateTime(item.created_at)
+      : 'Sent ' + formatDateTime(item.created_at);
+    row.appendChild(dateEl);
+
+    if (item.file_key) {
+      var fileUrl = '/api/client-auth/file?key=' + encodeURIComponent(item.file_key);
+
+      var viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'timeline-view-btn';
+      viewBtn.textContent = 'View';
+      viewBtn.addEventListener('click', function () {
+        openDetailModal(detailObj.title || item.summary, function (body) {
+          var iframe = document.createElement('iframe');
+          iframe.src = fileUrl;
+          body.appendChild(iframe);
+        });
+        if (!item.viewed_at) markReportViewed(item.id);
+      });
+      row.appendChild(viewBtn);
+
+      var dl = document.createElement('a');
+      dl.className = 'timeline-download';
+      dl.href = fileUrl;
+      dl.target = '_blank';
+      dl.rel = 'noopener';
+      dl.textContent = 'Download PDF';
+      row.appendChild(dl);
+    }
+
+    if (opts && opts.newBadge) {
+      var badge = document.createElement('span');
+      badge.className = 'status-pill status-active';
+      badge.textContent = 'New';
+      badge.style.marginLeft = '10px';
+      titleEl.appendChild(badge);
+    }
+
+    return row;
+  }
+
   function renderReports(reports) {
     reportsList.innerHTML = '';
     if (!reports.length) {
@@ -414,49 +483,85 @@
       return;
     }
     reports.forEach(function (item) {
+      reportsList.appendChild(buildReportRow(item));
+    });
+  }
+
+  function renderHomeUpcoming(bookings) {
+    homeUpcomingList.innerHTML = '';
+    if (!bookings.length) {
+      homeUpcomingList.innerHTML = '<p class="clients-empty">No upcoming sessions booked.</p>';
+      return;
+    }
+    bookings.forEach(function (b) {
+      var row = document.createElement('div');
+      row.className = 'service-row';
+      row.style.cursor = 'default';
+      var left = document.createElement('span');
+      left.textContent = b.service_label + ' — ' + formatBookingRange(b.start_at, b.end_at);
+      row.appendChild(left);
+      homeUpcomingList.appendChild(row);
+    });
+  }
+
+  function renderHomePayments(payments) {
+    var unpaid = payments.filter(function (p) { return !p.paid_at; });
+    homePaymentsList.innerHTML = '';
+    if (!unpaid.length) {
+      homePaymentsCard.classList.add('hidden');
+      return;
+    }
+    homePaymentsCard.classList.remove('hidden');
+    unpaid.forEach(function (item) {
       var detailObj = parseDetail(item) || {};
       var row = document.createElement('div');
-      row.className = 'timeline-item';
+      row.className = 'service-row';
+      row.style.cursor = 'default';
 
-      var titleEl = document.createElement('p');
-      titleEl.className = 'document-label';
-      titleEl.textContent = detailObj.title || item.summary;
-      row.appendChild(titleEl);
+      var left = document.createElement('span');
+      left.textContent = item.summary;
+      row.appendChild(left);
 
-      var dateEl = document.createElement('p');
-      dateEl.className = 'timeline-date';
-      var sessionDateLabel = detailObj.sessionDate ? formatDateOnly(detailObj.sessionDate) : '';
-      dateEl.textContent = sessionDateLabel
-        ? 'Session on ' + sessionDateLabel + ' · Sent ' + formatDateTime(item.created_at)
-        : 'Sent ' + formatDateTime(item.created_at);
-      row.appendChild(dateEl);
-
-      if (item.file_key) {
-        var fileUrl = '/api/client-auth/file?key=' + encodeURIComponent(item.file_key);
-
-        var viewBtn = document.createElement('button');
-        viewBtn.type = 'button';
-        viewBtn.className = 'timeline-view-btn';
-        viewBtn.textContent = 'View';
-        viewBtn.addEventListener('click', function () {
-          openDetailModal(detailObj.title || item.summary, function (body) {
-            var iframe = document.createElement('iframe');
-            iframe.src = fileUrl;
-            body.appendChild(iframe);
-          });
-        });
-        row.appendChild(viewBtn);
-
-        var dl = document.createElement('a');
-        dl.className = 'timeline-download';
-        dl.href = fileUrl;
-        dl.target = '_blank';
-        dl.rel = 'noopener';
-        dl.textContent = 'Download PDF';
-        row.appendChild(dl);
+      if (detailObj.payUrl) {
+        var payLink = document.createElement('a');
+        payLink.href = detailObj.payUrl;
+        payLink.target = '_blank';
+        payLink.rel = 'noopener';
+        payLink.className = 'btn btn-primary';
+        payLink.style.padding = '8px 16px';
+        payLink.style.fontSize = '14px';
+        payLink.textContent = 'Pay now';
+        row.appendChild(payLink);
       }
 
-      reportsList.appendChild(row);
+      homePaymentsList.appendChild(row);
+    });
+  }
+
+  function renderHomeReports(reports) {
+    var unviewed = reports.filter(function (r) { return !r.viewed_at; });
+    homeReportsList.innerHTML = '';
+    if (!unviewed.length) {
+      homeReportsCard.classList.add('hidden');
+      return;
+    }
+    homeReportsCard.classList.remove('hidden');
+    unviewed.forEach(function (item) {
+      homeReportsList.appendChild(buildReportRow(item, { newBadge: true }));
+    });
+  }
+
+  var TAB_NAMES = ['home', 'bookings', 'forms', 'reports'];
+
+  function switchTab(tab) {
+    if (tabsBar) {
+      Array.prototype.forEach.call(tabsBar.querySelectorAll('.client-tab'), function (t) {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+    }
+    TAB_NAMES.forEach(function (name) {
+      var panel = document.getElementById('tab-' + name);
+      if (panel) panel.classList.toggle('hidden', name !== tab);
     });
   }
 
@@ -464,15 +569,12 @@
     tabsBar.addEventListener('click', function (e) {
       var btn = e.target.closest('.client-tab');
       if (!btn) return;
-      Array.prototype.forEach.call(tabsBar.querySelectorAll('.client-tab'), function (t) {
-        t.classList.toggle('active', t === btn);
-      });
-      var tab = btn.dataset.tab;
-      ['bookings', 'forms', 'reports'].forEach(function (name) {
-        var panel = document.getElementById('tab-' + name);
-        if (panel) panel.classList.toggle('hidden', name !== tab);
-      });
+      switchTab(btn.dataset.tab);
     });
+  }
+
+  if (manageBookingsBtn) {
+    manageBookingsBtn.addEventListener('click', function () { switchTab('bookings'); });
   }
 
   function load() {
@@ -494,6 +596,9 @@
         renderPayments(data.payments || []);
         renderForms(data.forms || []);
         renderReports(data.reports || []);
+        renderHomeUpcoming(data.bookings || []);
+        renderHomePayments(data.payments || []);
+        renderHomeReports(data.reports || []);
         contentEl.classList.remove('hidden');
         errorEl.classList.add('hidden');
       })

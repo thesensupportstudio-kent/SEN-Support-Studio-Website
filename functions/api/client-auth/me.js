@@ -28,7 +28,7 @@ export async function onRequestGet(context) {
     }
 
     const interactionResult = await env.DB.prepare(
-      'SELECT id, type, summary, detail, file_key, due_date, paid_at, created_at FROM interactions WHERE client_id = ? ORDER BY created_at DESC'
+      'SELECT id, type, summary, detail, file_key, due_date, paid_at, viewed_at, created_at FROM interactions WHERE client_id = ? ORDER BY created_at DESC'
     ).bind(client.id).all();
     const interactions = interactionResult.results || [];
 
