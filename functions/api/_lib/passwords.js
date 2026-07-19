@@ -1,8 +1,13 @@
 // Password hashing via Web Crypto's PBKDF2 - available natively in the
 // Cloudflare Workers runtime, unlike bcrypt/scrypt which need native
 // bindings this runtime doesn't provide.
-
-const ITERATIONS = 210000;
+//
+// Iteration count is kept modest rather than following current OWASP
+// guidance (600k+) because this runs on Cloudflare's free plan, which caps
+// CPU time per request - a higher count reliably tipped requests into an
+// "Unexpected server error" in production (though not locally, where no
+// such limit applies). Worth raising if the site ever moves to a paid plan.
+const ITERATIONS = 100000;
 const HASH_BITS = 256;
 
 function toBase64(bytes) {
