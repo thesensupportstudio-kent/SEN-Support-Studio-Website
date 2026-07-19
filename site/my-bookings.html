@@ -2,19 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Testimonials | SEN Support Studio</title>
-<meta name="description" content="What families and schools say about working with SEN Support Studio.">
-<link rel="canonical" href="https://sensupportstudio.com/testimonials.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="SEN Support Studio">
-<meta property="og:title" content="Testimonials | SEN Support Studio">
-<meta property="og:description" content="What families and schools say about working with SEN Support Studio.">
-<meta property="og:url" content="https://sensupportstudio.com/testimonials.html">
-<meta property="og:image" content="https://sensupportstudio.com/assets/img/full-logo-green.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Testimonials | SEN Support Studio">
-<meta name="twitter:description" content="What families and schools say about working with SEN Support Studio.">
-<meta name="twitter:image" content="https://sensupportstudio.com/assets/img/full-logo-green.png">
+<title>Manage Your Bookings | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
@@ -23,7 +12,6 @@
 <body>
 <div class="page">
 
-  <div class="announcement-bar">Launching September 2026. Get in touch now to secure your place.</div>
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
       <img src="assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
@@ -43,36 +31,26 @@
   </nav>
 
   <section class="page-hero">
-    <h1>Testimonials</h1>
-    <p class="lede">In families' and schools' own words.</p>
+    <h1>Your Bookings</h1>
+    <p class="lede" id="bookings-lede">See your remaining sessions and book, reschedule or cancel your own slots.</p>
   </section>
 
-  <section class="testimonials-section">
-    <div class="testimonial-grid">
-      <div class="testimonial-card">
-        <span class="quote-mark">&ldquo;</span>
-        <p>[Add a quote from a parent/carer or school here.]</p>
-        <span class="name">[Name, Parent/Carer or School]</span>
-      </div>
-      <div class="testimonial-card">
-        <span class="quote-mark">&ldquo;</span>
-        <p>[Add a quote from a parent/carer or school here.]</p>
-        <span class="name">[Name, Parent/Carer or School]</span>
-      </div>
-      <div class="testimonial-card">
-        <span class="quote-mark">&ldquo;</span>
-        <p>[Add a quote from a parent/carer or school here.]</p>
-        <span class="name">[Name, Parent/Carer or School]</span>
-      </div>
-    </div>
-    <p class="testimonials-note">Working with families and schools? We'd love to share your feedback here, get in touch to add yours.</p>
-  </section>
+  <section class="book-section">
+    <div id="bookings-error" class="form-error hidden"></div>
+    <p id="bookings-loading" class="lede">Loading your bookings…</p>
 
-  <section class="cta-banner">
-    <div class="inner">
-      <h2>Ready to start your own story?</h2>
-      <a href="book.html" class="btn btn-on-green">Book In</a>
+    <div id="bookings-content" class="hidden">
+      <div id="packs-wrap"></div>
+
+      <div class="book-card" id="upcoming-card">
+        <div class="book-step-heading">
+          <h2>Your upcoming sessions</h2>
+        </div>
+        <div id="upcoming-list"></div>
+      </div>
     </div>
+
+    <p class="book-footnote">Something not right, or need help another way? <a href="contact.html">Get in touch</a>.</p>
   </section>
 
   <footer class="site-footer">
@@ -109,5 +87,6 @@
 
 </div>
 <script src="js/nav-toggle.js?v=1784020297"></script>
+<script src="js/my-bookings.js?v=1784690000"></script>
 </body>
 </html>

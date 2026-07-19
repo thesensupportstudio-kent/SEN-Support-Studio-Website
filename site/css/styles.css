@@ -2155,6 +2155,54 @@ img {
   display: block;
 }
 
+.slots-wrap {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot-date-heading {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--green);
+  margin: 12px 0 4px;
+}
+
+.slot-date-heading:first-child {
+  margin-top: 0;
+}
+
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.slot-btn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(45, 84, 57, 0.25);
+  background: var(--offwhite);
+  color: var(--green);
+  cursor: pointer;
+}
+
+.slot-btn:hover {
+  background: var(--green);
+  color: var(--text-on-green);
+  border-color: var(--green);
+}
+
+.slot-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .calendly-hint {
   font-size: 15px;
   line-height: 1.6;
@@ -2635,8 +2683,48 @@ img {
   margin-top: 0;
 }
 
-#tab-documents .internal-card {
+#tab-documents .internal-card,
+#tab-packs .internal-card {
   margin-bottom: 24px;
+}
+
+.portal-link-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.portal-link-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(45, 84, 57, 0.25);
+  background: var(--cream);
+  color: var(--green);
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+
+.pack-card {
+  margin-bottom: 16px;
+}
+
+.pack-card .status-pill {
+  text-transform: none;
+}
+
+.pack-card .document-row-top {
+  justify-content: space-between;
+}
+
+@media (max-width: 640px) {
+  .portal-link-row {
+    flex-wrap: wrap;
+  }
+  .portal-link-row input {
+    width: 100%;
+  }
 }
 
 .timeline-view-btn {

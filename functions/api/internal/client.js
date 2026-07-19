@@ -36,7 +36,22 @@ export async function onRequestGet(context) {
       'SELECT id, form_type, status, sent_at, completed_at FROM assignments WHERE client_id = ? ORDER BY sent_at DESC'
     ).bind(id).all();
 
-    return new Response(JSON.stringify({ client, interactions: interactionResult.results, assignments: assignmentResult.results }), {
+    const packResult = await env.DB.prepare(
+      'SELECT * FROM session_packs WHERE client_id = ? ORDER BY created_at DESC'
+    ).bind(id).all();
+
+    const bookingResult = await env.DB.prepare(
+      "SELECT b.*, p.service_label FROM pack_bookings b JOIN session_packs p ON p.id = b.pack_id WHERE b.client_id = ? AND b.status = 'booked' ORDER BY b.start_at ASC"
+    ).bind(id).all();
+
+    return new Response(JSON.stringify({
+      client,
+      interactions: interactionResult.results,
+      assignments: assignmentResult.results,
+      packs: packResult.results,
+      bookings: bookingResult.results,
+      portalUrl: client.portal_token ? new URL(request.url).origin + '/my-bookings.html?token=' + client.portal_token : null
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });

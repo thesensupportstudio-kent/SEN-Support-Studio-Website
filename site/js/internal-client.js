@@ -24,6 +24,15 @@
   var detailModalTitle = document.getElementById('detail-modal-title');
   var detailModalBody = document.getElementById('detail-modal-body');
   var detailModalClose = document.getElementById('detail-modal-close');
+  var portalLinkRow = document.getElementById('portal-link-row');
+  var portalLinkInput = document.getElementById('portal-link-input');
+  var portalLinkEmpty = document.getElementById('portal-link-empty');
+  var portalLinkCopy = document.getElementById('portal-link-copy');
+  var packsList = document.getElementById('packs-list');
+  var packBookingsList = document.getElementById('pack-bookings-list');
+  var packCreateForm = document.getElementById('pack-create-form');
+  var packCreateError = document.getElementById('pack-create-error');
+  var packCreateSubmit = document.getElementById('pack-create-submit');
 
   if (!detail) return;
 
@@ -422,6 +431,72 @@
     documentsList.appendChild(wrap);
   }
 
+  function renderPortalLink(portalUrl) {
+    if (!portalLinkRow || !portalLinkEmpty) return;
+    if (portalUrl) {
+      portalLinkInput.value = portalUrl;
+      portalLinkRow.classList.remove('hidden');
+      portalLinkEmpty.classList.add('hidden');
+    } else {
+      portalLinkRow.classList.add('hidden');
+      portalLinkEmpty.classList.remove('hidden');
+    }
+  }
+
+  function renderPacks(packs) {
+    if (!packsList) return;
+    packsList.innerHTML = '';
+    if (!packs.length) {
+      packsList.innerHTML = '<p class="clients-empty">No session packs added yet.</p>';
+      return;
+    }
+    packs.forEach(function (pack) {
+      var card = document.createElement('div');
+      card.className = 'internal-card pack-card';
+
+      var top = document.createElement('div');
+      top.className = 'document-row-top';
+      var title = document.createElement('p');
+      title.className = 'document-label';
+      title.textContent = pack.service_label;
+      top.appendChild(title);
+      var pill = document.createElement('span');
+      pill.className = 'status-pill ' + (pack.remaining_sessions > 0 ? 'status-active' : 'status-lapsed');
+      pill.textContent = pack.remaining_sessions + ' of ' + pack.total_sessions + ' remaining';
+      top.appendChild(pill);
+      card.appendChild(top);
+
+      var meta = document.createElement('p');
+      meta.className = 'timeline-date';
+      meta.textContent = pack.session_minutes + ' min sessions · added ' + formatDateTime(pack.created_at);
+      card.appendChild(meta);
+
+      packsList.appendChild(card);
+    });
+  }
+
+  function renderPackBookings(bookings) {
+    if (!packBookingsList) return;
+    packBookingsList.innerHTML = '';
+    if (!bookings.length) {
+      packBookingsList.innerHTML = '<p class="clients-empty">No upcoming sessions booked from a pack.</p>';
+      return;
+    }
+    bookings.forEach(function (b) {
+      var div = document.createElement('div');
+      div.className = 'timeline-item';
+      var summary = document.createElement('p');
+      summary.className = 'timeline-summary';
+      summary.textContent = b.service_label;
+      div.appendChild(summary);
+      var dateEl = document.createElement('p');
+      dateEl.className = 'timeline-date';
+      dateEl.textContent = formatDateTime(b.start_at) + ' - ' + formatDateTime(b.end_at);
+      div.appendChild(dateEl);
+      packBookingsList.appendChild(div);
+    });
+  }
+
   function showError(message) {
     loading.classList.add('hidden');
     errorBox.textContent = message;
@@ -499,7 +574,7 @@
         t.classList.toggle('active', t === btn);
       });
       var tab = btn.dataset.tab;
-      ['overview', 'forms', 'reports', 'invoices', 'documents'].forEach(function (name) {
+      ['overview', 'forms', 'reports', 'invoices', 'documents', 'packs'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.classList.toggle('hidden', name !== tab);
       });
@@ -542,6 +617,9 @@
         renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
         renderDocuments(documentItems);
         renderAssignments(assignments);
+        renderPortalLink(result.data.portalUrl);
+        renderPacks(result.data.packs || []);
+        renderPackBookings(result.data.bookings || []);
 
         loading.classList.add('hidden');
         detail.classList.remove('hidden');
@@ -616,6 +694,56 @@
         .finally(function () {
           documentUploadSubmit.disabled = false;
           documentUploadSubmit.textContent = 'Upload document';
+        });
+    });
+  }
+
+  if (portalLinkCopy) {
+    portalLinkCopy.addEventListener('click', function () {
+      portalLinkInput.select();
+      navigator.clipboard.writeText(portalLinkInput.value).then(function () {
+        portalLinkCopy.textContent = 'Copied!';
+        setTimeout(function () { portalLinkCopy.textContent = 'Copy link'; }, 1500);
+      }).catch(function () {});
+    });
+  }
+
+  if (packCreateForm) {
+    packCreateForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      packCreateError.classList.add('hidden');
+
+      var serviceLabel = document.getElementById('pack-service-label').value.trim();
+      var totalSessions = document.getElementById('pack-total-sessions').value;
+      var sessionMinutes = document.getElementById('pack-session-minutes').value;
+
+      packCreateSubmit.disabled = true;
+      packCreateSubmit.textContent = 'Adding…';
+
+      fetch('/api/internal/create-pack', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: clientId,
+          serviceLabel: serviceLabel,
+          totalSessions: totalSessions,
+          sessionMinutes: sessionMinutes
+        })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not add this pack.');
+          packCreateForm.reset();
+          document.getElementById('pack-session-minutes').value = 60;
+          loadClient();
+        })
+        .catch(function (err) {
+          packCreateError.textContent = err.message || 'Could not add this pack.';
+          packCreateError.classList.remove('hidden');
+        })
+        .finally(function () {
+          packCreateSubmit.disabled = false;
+          packCreateSubmit.textContent = 'Add pack & email link';
         });
     });
   }

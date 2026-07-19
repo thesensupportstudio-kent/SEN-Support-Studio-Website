@@ -34,6 +34,96 @@ function offsetString(timeZone, dateStr, timeStr) {
   return isBst(dateStr, timeStr) ? '+01:00' : '+00:00';
 }
 
+// Studio working hours, keyed by Date#getDay() (0 = Sunday). Used to generate
+// bookable slots for the client self-service portal - a day absent from this
+// map is closed.
+export const WORKING_HOURS = {
+  1: { start: '09:00', end: '19:00' },
+  2: { start: '09:00', end: '19:00' },
+  3: { start: '09:00', end: '19:00' },
+  4: { start: '09:00', end: '19:00' },
+  5: { start: '09:00', end: '19:00' },
+  6: { start: '09:00', end: '12:00' }
+};
+
+// Converts a wall-clock local date/time into an ISO string with the correct
+// UK offset, for anything that needs to build or compare Google Calendar
+// dateTime values outside of buildEventBody itself.
+export function localToIso(dateStr, timeStr, timeZone) {
+  return dateStr + 'T' + timeStr + ':00' + offsetString(timeZone || 'Europe/London', dateStr, timeStr);
+}
+
+function minutesToTimeStr(minutes) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+
+function timeStrToMinutes(timeStr) {
+  const parts = timeStr.split(':');
+  return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+}
+
+// Fetches all events in the given ISO range and returns simplified busy
+// ranges (as millisecond timestamps), treating all-day events as busy for
+// their entire span. Shared by the availability lookup and the booking
+// endpoint's last-moment double-booking check.
+export async function listBusyRanges(env, timeMinIso, timeMaxIso) {
+  const url = EVENTS_URL + '?' + new URLSearchParams({
+    timeMin: timeMinIso,
+    timeMax: timeMaxIso,
+    singleEvents: 'true',
+    orderBy: 'startTime',
+    maxResults: '250'
+  });
+  const data = await callGoogle(env, url, { method: 'GET' });
+  return (data.items || []).map(function (item) {
+    const start = item.start && (item.start.dateTime || (item.start.date + 'T00:00:00Z'));
+    const end = item.end && (item.end.dateTime || (item.end.date + 'T00:00:00Z'));
+    return { start: new Date(start).getTime(), end: new Date(end).getTime() };
+  });
+}
+
+// Pure function: given busy ranges (ms timestamps) and a starting point,
+// walks forward `days` calendar days and returns every working-hours slot of
+// `sessionMinutes` length that doesn't overlap a busy range and isn't in the
+// past. Kept pure/exported so slot math can be unit tested without a live
+// Google connection.
+export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDate, nowMs) {
+  const now = nowMs != null ? nowMs : Date.now();
+  const start = fromDate ? new Date(fromDate + 'T00:00:00Z') : new Date(now);
+  const slots = [];
+
+  for (let dayOffset = 0; dayOffset < days; dayOffset++) {
+    const d = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + dayOffset));
+    const dow = d.getUTCDay();
+    const hours = WORKING_HOURS[dow];
+    if (!hours) continue;
+
+    const dateStr = d.toISOString().slice(0, 10);
+    const startMin = timeStrToMinutes(hours.start);
+    const endMin = timeStrToMinutes(hours.end);
+
+    for (let slotStart = startMin; slotStart + sessionMinutes <= endMin; slotStart += sessionMinutes) {
+      const startTime = minutesToTimeStr(slotStart);
+      const endTime = minutesToTimeStr(slotStart + sessionMinutes);
+      const startIso = localToIso(dateStr, startTime);
+      const endIso = localToIso(dateStr, endTime);
+      const startMs = new Date(startIso).getTime();
+      const endMs = new Date(endIso).getTime();
+
+      if (startMs <= now) continue;
+
+      const overlaps = busyRanges.some(function (b) { return b.start < endMs && b.end > startMs; });
+      if (overlaps) continue;
+
+      slots.push({ date: dateStr, startTime: startTime, endTime: endTime, startIso: startIso, endIso: endIso });
+    }
+  }
+
+  return slots;
+}
+
 export function buildEventBody(body) {
   const title = (body.title || '').trim();
   const location = (body.location || '').trim();
