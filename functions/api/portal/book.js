@@ -1,7 +1,9 @@
 import { isConnected } from '../_lib/google.js';
 import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL } from '../_lib/calendarEvent.js';
-import { getClientByPortalToken, getPackById, createBooking } from '../_lib/packs.js';
+import { requireClientSession } from '../_lib/clientAuth.js';
+import { getPackById, createBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
+import { PAYMENT_LINKS } from '../_lib/paymentLinks.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -23,13 +25,12 @@ export async function onRequestPost(context) {
     });
   }
 
-  const token = (body.token || '').toString().trim();
   const packId = (body.packId || '').toString().trim();
   const date = (body.date || '').toString().trim();
   const startTime = (body.startTime || '').toString().trim();
   const endTime = (body.endTime || '').toString().trim();
 
-  if (!token || !packId || !date || !startTime || !endTime) {
+  if (!packId || !date || !startTime || !endTime) {
     return new Response(JSON.stringify({ error: 'Missing booking details.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
@@ -37,10 +38,10 @@ export async function onRequestPost(context) {
   }
 
   try {
-    const client = await getClientByPortalToken(env, token);
+    const client = await requireClientSession(request, env);
     if (!client) {
-      return new Response(JSON.stringify({ error: 'This link isn’t recognised.' }), {
-        status: 404,
+      return new Response(JSON.stringify({ error: 'Not logged in.' }), {
+        status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -52,7 +53,7 @@ export async function onRequestPost(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    if (pack.remaining_sessions < 1) {
+    if (pack.pack_type !== 'ongoing' && pack.remaining_sessions < 1) {
       return new Response(JSON.stringify({ error: 'No sessions remaining on this pack.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -97,7 +98,7 @@ export async function onRequestPost(context) {
     const title = pack.service_label + ' - ' + (client.child_name || client.parent_name || client.parent_email);
     const eventBody = buildEventBody({
       title: title,
-      description: 'Booked via client portal (session pack: ' + pack.service_label + ')',
+      description: 'Booked via client portal (' + pack.service_label + ')',
       date: date,
       startTime: startTime,
       endTime: endTime
@@ -121,6 +122,21 @@ export async function onRequestPost(context) {
       type: 'session_booked',
       summary: 'Booked ' + pack.service_label + ' session for ' + date + ' ' + startTime
     });
+
+    // Ongoing (pay-per-session) packs don't pre-pay via a pack purchase -
+    // each booking needs its own payment, tracked through the same
+    // due_date/paid_at invoice system already used for invoices, so it shows
+    // up in the existing "mark as paid" flow rather than a parallel one.
+    if (pack.pack_type === 'ongoing') {
+      const payUrl = pack.service_key ? PAYMENT_LINKS[pack.service_key] : null;
+      await logInteraction(env, {
+        clientId: client.id,
+        type: 'invoice_sent',
+        summary: pack.service_label + ' session - ' + date,
+        detail: { service: pack.service_label, payUrl: payUrl, bookedViaPortal: true },
+        dueDate: date
+      });
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,

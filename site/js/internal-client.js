@@ -24,15 +24,19 @@
   var detailModalTitle = document.getElementById('detail-modal-title');
   var detailModalBody = document.getElementById('detail-modal-body');
   var detailModalClose = document.getElementById('detail-modal-close');
-  var portalLinkRow = document.getElementById('portal-link-row');
-  var portalLinkInput = document.getElementById('portal-link-input');
-  var portalLinkEmpty = document.getElementById('portal-link-empty');
-  var portalLinkCopy = document.getElementById('portal-link-copy');
+  var portalAccessStatus = document.getElementById('portal-access-status');
+  var portalAccessBtn = document.getElementById('portal-access-btn');
+  var portalAccessError = document.getElementById('portal-access-error');
   var packsList = document.getElementById('packs-list');
   var packBookingsList = document.getElementById('pack-bookings-list');
   var packCreateForm = document.getElementById('pack-create-form');
   var packCreateError = document.getElementById('pack-create-error');
   var packCreateSubmit = document.getElementById('pack-create-submit');
+  var packTypeToggle = document.getElementById('pack-type-toggle');
+  var packTotalSessionsField = document.getElementById('pack-total-sessions-field');
+  var packServiceKeyField = document.getElementById('pack-service-key-field');
+  var packTotalSessionsInput = document.getElementById('pack-total-sessions');
+  var currentPackType = 'fixed';
 
   if (!detail) return;
 
@@ -84,6 +88,18 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  }
+
+  // pack_bookings.start_at/end_at are already full ISO strings (with a
+  // trailing Z or +offset) built via calendarEvent.js's localToIso, unlike
+  // created_at/due_date which are bare SQLite "YYYY-MM-DD HH:MM:SS" values -
+  // formatDateTime's space->T rewrite only applies to the latter.
+  function formatBookingTime(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+      ' at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 
   function formatDateTime(iso) {
@@ -431,15 +447,15 @@
     documentsList.appendChild(wrap);
   }
 
-  function renderPortalLink(portalUrl) {
-    if (!portalLinkRow || !portalLinkEmpty) return;
-    if (portalUrl) {
-      portalLinkInput.value = portalUrl;
-      portalLinkRow.classList.remove('hidden');
-      portalLinkEmpty.classList.add('hidden');
+  function renderPortalAccess(hasPortalAccess) {
+    if (!portalAccessStatus || !portalAccessBtn) return;
+    if (hasPortalAccess) {
+      portalAccessStatus.textContent = 'Portal access enabled';
+      portalAccessStatus.classList.remove('hidden');
+      portalAccessBtn.textContent = 'Resend setup email';
     } else {
-      portalLinkRow.classList.add('hidden');
-      portalLinkEmpty.classList.remove('hidden');
+      portalAccessStatus.classList.add('hidden');
+      portalAccessBtn.textContent = 'Enable portal access';
     }
   }
 
@@ -461,8 +477,9 @@
       title.textContent = pack.service_label;
       top.appendChild(title);
       var pill = document.createElement('span');
-      pill.className = 'status-pill ' + (pack.remaining_sessions > 0 ? 'status-active' : 'status-lapsed');
-      pill.textContent = pack.remaining_sessions + ' of ' + pack.total_sessions + ' remaining';
+      var isOngoing = pack.pack_type === 'ongoing';
+      pill.className = 'status-pill ' + (isOngoing || pack.remaining_sessions > 0 ? 'status-active' : 'status-lapsed');
+      pill.textContent = isOngoing ? 'Pay per session' : pack.remaining_sessions + ' of ' + pack.total_sessions + ' remaining';
       top.appendChild(pill);
       card.appendChild(top);
 
@@ -491,7 +508,7 @@
       div.appendChild(summary);
       var dateEl = document.createElement('p');
       dateEl.className = 'timeline-date';
-      dateEl.textContent = formatDateTime(b.start_at) + ' - ' + formatDateTime(b.end_at);
+      dateEl.textContent = formatBookingTime(b.start_at) + ' - ' + formatBookingTime(b.end_at);
       div.appendChild(dateEl);
       packBookingsList.appendChild(div);
     });
@@ -617,7 +634,7 @@
         renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
         renderDocuments(documentItems);
         renderAssignments(assignments);
-        renderPortalLink(result.data.portalUrl);
+        renderPortalAccess(result.data.hasPortalAccess);
         renderPacks(result.data.packs || []);
         renderPackBookings(result.data.bookings || []);
 
@@ -698,13 +715,47 @@
     });
   }
 
-  if (portalLinkCopy) {
-    portalLinkCopy.addEventListener('click', function () {
-      portalLinkInput.select();
-      navigator.clipboard.writeText(portalLinkInput.value).then(function () {
-        portalLinkCopy.textContent = 'Copied!';
-        setTimeout(function () { portalLinkCopy.textContent = 'Copy link'; }, 1500);
-      }).catch(function () {});
+  if (portalAccessBtn) {
+    portalAccessBtn.addEventListener('click', function () {
+      portalAccessError.classList.add('hidden');
+      portalAccessBtn.disabled = true;
+      var originalText = portalAccessBtn.textContent;
+      portalAccessBtn.textContent = 'Sending…';
+
+      fetch('/api/internal/enable-portal-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: clientId })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not send the setup email.');
+          portalAccessBtn.textContent = 'Setup email sent!';
+          setTimeout(function () { portalAccessBtn.textContent = originalText; }, 2000);
+        })
+        .catch(function (err) {
+          portalAccessError.textContent = err.message || 'Could not send the setup email.';
+          portalAccessError.classList.remove('hidden');
+          portalAccessBtn.textContent = originalText;
+        })
+        .finally(function () {
+          portalAccessBtn.disabled = false;
+        });
+    });
+  }
+
+  if (packTypeToggle) {
+    packTypeToggle.addEventListener('click', function (e) {
+      var btn = e.target.closest('.role-btn');
+      if (!btn) return;
+      currentPackType = btn.dataset.packType;
+      Array.prototype.forEach.call(packTypeToggle.querySelectorAll('.role-btn'), function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      var isOngoing = currentPackType === 'ongoing';
+      packTotalSessionsField.classList.toggle('hidden', isOngoing);
+      packServiceKeyField.classList.toggle('hidden', !isOngoing);
+      packTotalSessionsInput.required = !isOngoing;
     });
   }
 
@@ -716,6 +767,7 @@
       var serviceLabel = document.getElementById('pack-service-label').value.trim();
       var totalSessions = document.getElementById('pack-total-sessions').value;
       var sessionMinutes = document.getElementById('pack-session-minutes').value;
+      var serviceKey = document.getElementById('pack-service-key').value;
 
       packCreateSubmit.disabled = true;
       packCreateSubmit.textContent = 'Adding…';
@@ -727,7 +779,9 @@
           clientId: clientId,
           serviceLabel: serviceLabel,
           totalSessions: totalSessions,
-          sessionMinutes: sessionMinutes
+          sessionMinutes: sessionMinutes,
+          packType: currentPackType,
+          serviceKey: serviceKey
         })
       })
         .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
@@ -735,6 +789,13 @@
           if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not add this pack.');
           packCreateForm.reset();
           document.getElementById('pack-session-minutes').value = 60;
+          currentPackType = 'fixed';
+          Array.prototype.forEach.call(packTypeToggle.querySelectorAll('.role-btn'), function (b) {
+            b.classList.toggle('active', b.dataset.packType === 'fixed');
+          });
+          packTotalSessionsField.classList.remove('hidden');
+          packServiceKeyField.classList.add('hidden');
+          packTotalSessionsInput.required = true;
           loadClient();
         })
         .catch(function (err) {
@@ -743,7 +804,7 @@
         })
         .finally(function () {
           packCreateSubmit.disabled = false;
-          packCreateSubmit.textContent = 'Add pack & email link';
+          packCreateSubmit.textContent = 'Add pack';
         });
     });
   }

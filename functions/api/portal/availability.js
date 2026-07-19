@@ -1,6 +1,7 @@
 import { isConnected } from '../_lib/google.js';
 import { listBusyRanges, generateAvailableSlots } from '../_lib/calendarEvent.js';
-import { getClientByPortalToken, getPackById } from '../_lib/packs.js';
+import { requireClientSession } from '../_lib/clientAuth.js';
+import { getPackById } from '../_lib/packs.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -13,23 +14,22 @@ export async function onRequestGet(context) {
   }
 
   const url = new URL(request.url);
-  const token = (url.searchParams.get('token') || '').trim();
   const packId = (url.searchParams.get('packId') || '').trim();
   const daysParam = parseInt(url.searchParams.get('days') || '21', 10);
   const days = Math.min(Math.max(daysParam || 21, 1), 60);
 
-  if (!token || !packId) {
-    return new Response(JSON.stringify({ error: 'Missing link token or pack.' }), {
+  if (!packId) {
+    return new Response(JSON.stringify({ error: 'Missing pack.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
   }
 
   try {
-    const client = await getClientByPortalToken(env, token);
+    const client = await requireClientSession(request, env);
     if (!client) {
-      return new Response(JSON.stringify({ error: 'This link isn’t recognised.' }), {
-        status: 404,
+      return new Response(JSON.stringify({ error: 'Not logged in.' }), {
+        status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -41,7 +41,7 @@ export async function onRequestGet(context) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-    if (pack.remaining_sessions < 1) {
+    if (pack.pack_type !== 'ongoing' && pack.remaining_sessions < 1) {
       return new Response(JSON.stringify({ error: 'No sessions remaining on this pack.' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }

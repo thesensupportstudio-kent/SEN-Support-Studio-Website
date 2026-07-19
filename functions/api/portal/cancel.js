@@ -1,5 +1,6 @@
 import { callGoogle, EVENTS_URL } from '../_lib/calendarEvent.js';
-import { getClientByPortalToken, getBookingById, cancelBooking } from '../_lib/packs.js';
+import { requireClientSession } from '../_lib/clientAuth.js';
+import { getBookingById, getPackById, cancelBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
 
 const NOTICE_HOURS = 24;
@@ -24,10 +25,8 @@ export async function onRequestPost(context) {
     });
   }
 
-  const token = (body.token || '').toString().trim();
   const bookingId = (body.bookingId || '').toString().trim();
-
-  if (!token || !bookingId) {
+  if (!bookingId) {
     return new Response(JSON.stringify({ error: 'Missing booking id.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
@@ -35,10 +34,10 @@ export async function onRequestPost(context) {
   }
 
   try {
-    const client = await getClientByPortalToken(env, token);
+    const client = await requireClientSession(request, env);
     if (!client) {
-      return new Response(JSON.stringify({ error: 'This link isn’t recognised.' }), {
-        status: 404,
+      return new Response(JSON.stringify({ error: 'Not logged in.' }), {
+        status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -57,8 +56,12 @@ export async function onRequestPost(context) {
       });
     }
 
+    const pack = await getPackById(env, booking.pack_id);
     const noticeHours = (new Date(booking.start_at).getTime() - Date.now()) / 3600000;
-    const refundCredit = noticeHours >= NOTICE_HOURS;
+    // Ongoing (pay-per-session) packs have no credit to refund - refunding
+    // would corrupt their "unlimited" sentinel, so this only ever applies
+    // to fixed packs.
+    const refundCredit = !!pack && pack.pack_type === 'fixed' && noticeHours >= NOTICE_HOURS;
 
     try {
       await callGoogle(env, EVENTS_URL + '/' + encodeURIComponent(booking.calendar_event_id), { method: 'DELETE' });
@@ -73,7 +76,7 @@ export async function onRequestPost(context) {
     await logInteraction(env, {
       clientId: client.id,
       type: 'session_cancelled',
-      summary: 'Cancelled session for ' + booking.start_at + (refundCredit ? ' (credit refunded)' : ' (within ' + NOTICE_HOURS + 'h notice - credit used)')
+      summary: 'Cancelled session for ' + booking.start_at + (refundCredit ? ' (credit refunded)' : ' (within ' + NOTICE_HOURS + 'h notice or pay-per-session - credit used)')
     });
 
     return new Response(JSON.stringify({ ok: true, refunded: refundCredit }), {

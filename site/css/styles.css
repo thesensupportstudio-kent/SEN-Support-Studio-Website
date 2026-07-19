@@ -2688,24 +2688,6 @@ img {
   margin-bottom: 24px;
 }
 
-.portal-link-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.portal-link-row input {
-  flex: 1;
-  min-width: 0;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(45, 84, 57, 0.25);
-  background: var(--cream);
-  color: var(--green);
-  font-size: 14px;
-  font-family: var(--font-body);
-}
-
 .pack-card {
   margin-bottom: 16px;
 }
@@ -2716,15 +2698,6 @@ img {
 
 .pack-card .document-row-top {
   justify-content: space-between;
-}
-
-@media (max-width: 640px) {
-  .portal-link-row {
-    flex-wrap: wrap;
-  }
-  .portal-link-row input {
-    width: 100%;
-  }
 }
 
 .timeline-view-btn {

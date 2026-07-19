@@ -1,28 +1,23 @@
-// Session packs let a client who's paid for multiple sessions (e.g. a
-// 4-session monthly tuition pack) book and manage their own remaining
-// sessions through a private link, instead of it going through Emma's
-// personal email/texts every time.
+// Session packs let a client book and manage their own sessions through
+// their account - either a fixed pack paid for upfront (e.g. a 4-session
+// monthly tuition pack) or an ongoing pay-per-session arrangement - instead
+// of it going through Emma's personal email/texts every time.
 
-export async function ensurePortalToken(env, clientId) {
-  const client = await env.DB.prepare('SELECT portal_token FROM clients WHERE id = ?').bind(clientId).first();
-  if (!client) throw new Error('Client not found.');
-  if (client.portal_token) return client.portal_token;
-
-  const token = crypto.randomUUID();
-  await env.DB.prepare('UPDATE clients SET portal_token = ? WHERE id = ?').bind(token, clientId).run();
-  return token;
-}
-
-export async function createPack(env, { clientId, serviceLabel, totalSessions, sessionMinutes }) {
-  const total = parseInt(totalSessions, 10);
+export async function createPack(env, { clientId, serviceLabel, totalSessions, sessionMinutes, packType, serviceKey }) {
   const minutes = parseInt(sessionMinutes, 10) || 60;
+  const isOngoing = packType === 'ongoing';
   if (!clientId) throw new Error('Missing client id.');
   if (!serviceLabel || !serviceLabel.trim()) throw new Error('Please enter a service name for this pack.');
-  if (!total || total < 1) throw new Error('Please enter how many sessions are in this pack.');
+
+  let total = -1;
+  if (!isOngoing) {
+    total = parseInt(totalSessions, 10);
+    if (!total || total < 1) throw new Error('Please enter how many sessions are in this pack.');
+  }
 
   const result = await env.DB.prepare(
-    'INSERT INTO session_packs (client_id, service_label, session_minutes, total_sessions, remaining_sessions) VALUES (?, ?, ?, ?, ?)'
-  ).bind(clientId, serviceLabel.trim(), minutes, total, total).run();
+    'INSERT INTO session_packs (client_id, service_label, session_minutes, total_sessions, remaining_sessions, pack_type, service_key) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).bind(clientId, serviceLabel.trim(), minutes, total, total, isOngoing ? 'ongoing' : 'fixed', isOngoing ? (serviceKey || null) : null).run();
 
   return result.meta.last_row_id;
 }
@@ -36,11 +31,6 @@ export async function getPacksForClient(env, clientId) {
 
 export async function getPackById(env, packId) {
   return env.DB.prepare('SELECT * FROM session_packs WHERE id = ?').bind(packId).first();
-}
-
-export async function getClientByPortalToken(env, token) {
-  if (!token) return null;
-  return env.DB.prepare('SELECT * FROM clients WHERE portal_token = ?').bind(token).first();
 }
 
 export async function getBookingsForClient(env, clientId, { upcomingOnly } = {}) {

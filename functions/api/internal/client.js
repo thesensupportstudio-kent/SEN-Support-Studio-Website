@@ -50,7 +50,7 @@ export async function onRequestGet(context) {
       assignments: assignmentResult.results,
       packs: packResult.results,
       bookings: bookingResult.results,
-      portalUrl: client.portal_token ? new URL(request.url).origin + '/my-bookings.html?token=' + client.portal_token : null
+      hasPortalAccess: !!client.password_hash
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

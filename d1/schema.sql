@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS clients (
   status TEXT NOT NULL DEFAULT 'enquiry',
   notes TEXT,
   portal_token TEXT,
+  password_hash TEXT,
+  password_salt TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -56,6 +58,30 @@ CREATE TABLE IF NOT EXISTS dashboard_state (
   last_viewed_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS client_sessions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  client_id INTEGER NOT NULL REFERENCES clients(id),
+  token TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_sessions_token ON client_sessions(token);
+CREATE INDEX IF NOT EXISTS idx_client_sessions_client ON client_sessions(client_id);
+
+CREATE TABLE IF NOT EXISTS client_password_tokens (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  client_id INTEGER NOT NULL REFERENCES clients(id),
+  token TEXT NOT NULL,
+  purpose TEXT NOT NULL DEFAULT 'setup',
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_client_password_tokens_token ON client_password_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_client_password_tokens_client ON client_password_tokens(client_id);
+
 CREATE TABLE IF NOT EXISTS session_packs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   client_id INTEGER NOT NULL REFERENCES clients(id),
@@ -63,6 +89,8 @@ CREATE TABLE IF NOT EXISTS session_packs (
   session_minutes INTEGER NOT NULL DEFAULT 60,
   total_sessions INTEGER NOT NULL,
   remaining_sessions INTEGER NOT NULL,
+  pack_type TEXT NOT NULL DEFAULT 'fixed',
+  service_key TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

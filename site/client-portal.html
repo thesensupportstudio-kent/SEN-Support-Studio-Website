@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Manage Your Bookings | SEN Support Studio</title>
+<title>Your Account | SEN Support Studio</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=1784700000">
+<link rel="stylesheet" href="css/styles.css?v=1784710000">
 </head>
 <body>
 <div class="page">
@@ -24,29 +24,47 @@
       <a href="blog.html" class="nav-link">Resources</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </div>
-    <a href="book.html" class="btn-book">Book In</a>
+    <button type="button" class="btn-book" id="logout-btn" style="border:none;cursor:pointer;">Log out</button>
     <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
   </nav>
 
   <section class="page-hero">
-    <h1>Your Bookings</h1>
-    <p class="lede" id="bookings-lede">See your remaining sessions and book, reschedule or cancel your own slots.</p>
+    <h1>Your Account</h1>
+    <p class="lede" id="portal-lede">Loading…</p>
   </section>
 
   <section class="book-section">
-    <div id="bookings-error" class="form-error hidden"></div>
-    <p id="bookings-loading" class="lede">Loading your bookings…</p>
+    <div id="portal-error" class="form-error hidden"></div>
 
-    <div id="bookings-content" class="hidden">
-      <div id="packs-wrap"></div>
+    <div id="portal-content" class="hidden">
+      <div class="client-tabs" id="portal-tabs">
+        <button type="button" class="client-tab active" data-tab="bookings">Bookings</button>
+        <button type="button" class="client-tab" data-tab="forms">Forms</button>
+        <button type="button" class="client-tab" data-tab="reports">Reports</button>
+      </div>
 
-      <div class="book-card" id="upcoming-card">
-        <div class="book-step-heading">
-          <h2>Your upcoming sessions</h2>
+      <div id="tab-bookings" class="client-tab-panel">
+        <div id="packs-wrap"></div>
+
+        <div class="book-card" id="upcoming-card">
+          <div class="book-step-heading"><h2>Your upcoming sessions</h2></div>
+          <div id="upcoming-list"></div>
         </div>
-        <div id="upcoming-list"></div>
+
+        <div class="book-card hidden" id="payments-card">
+          <div class="book-step-heading"><h2>Payments</h2></div>
+          <div id="payments-list"></div>
+        </div>
+      </div>
+
+      <div id="tab-forms" class="client-tab-panel hidden">
+        <div id="forms-list"></div>
+      </div>
+
+      <div id="tab-reports" class="client-tab-panel hidden">
+        <div id="reports-list"></div>
       </div>
     </div>
 
@@ -86,7 +104,18 @@
   </footer>
 
 </div>
+
+<div id="detail-modal-overlay" class="detail-modal-overlay hidden">
+  <div class="detail-modal-panel">
+    <div class="detail-modal-header">
+      <h3 id="detail-modal-title"></h3>
+      <button type="button" id="detail-modal-close" class="detail-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="detail-modal-body" id="detail-modal-body"></div>
+  </div>
+</div>
+
 <script src="js/nav-toggle.js?v=1784020297"></script>
-<script src="js/my-bookings.js?v=1784690000"></script>
+<script src="js/client-portal.js?v=1784710000"></script>
 </body>
 </html>
