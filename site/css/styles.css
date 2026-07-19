@@ -1308,6 +1308,16 @@ img {
   padding: 40px;
 }
 
+@media (max-width: 860px) {
+  .contact-section {
+    flex-direction: column;
+  }
+
+  .contact-form-col {
+    order: -1;
+  }
+}
+
 .form-field {
   display: flex;
   flex-direction: column;
