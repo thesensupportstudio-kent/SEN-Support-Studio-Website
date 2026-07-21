@@ -30,6 +30,7 @@ function buildEmailHtml(data) {
         '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">New website enquiry</h1>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>From:</strong> ' + escapeHtml(data.name) + ' &lt;' + escapeHtml(data.email) + '&gt;</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>I am a:</strong> ' + escapeHtml(roleLabel) + '</p>' +
+        (data.serviceLabel ? '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 8px;"><strong>Interested in:</strong> ' + escapeHtml(data.serviceLabel) + '</p>' : '') +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:16px 0 4px;"><strong>Message:</strong></p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">' + nl2br(data.message) + '</p>' +
         '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">Reply directly to this email to respond to ' + escapeHtml(data.name) + '.</p>' +
@@ -56,6 +57,7 @@ export async function onRequestPost(context) {
     const email = (body.email || '').trim();
     const role = (body.role || '').trim();
     const message = (body.message || '').trim();
+    const serviceLabel = (body.serviceLabel || '').trim();
 
     if (!name || !email || !message) {
       return new Response(JSON.stringify({ error: 'Please fill in the required fields.' }), {
@@ -85,7 +87,7 @@ export async function onRequestPost(context) {
       to: [notifyTo],
       reply_to: email,
       subject: 'Website enquiry from ' + name,
-      html: buildEmailHtml({ name, email, role, message })
+      html: buildEmailHtml({ name, email, role, message, serviceLabel })
     };
 
     const resendResp = await fetch('https://api.resend.com/emails', {
@@ -110,8 +112,10 @@ export async function onRequestPost(context) {
       parentName: name,
       parentEmail: email,
       type: 'contact_enquiry',
-      summary: 'Website enquiry (' + (ROLE_LABELS[role] || role || 'not specified') + ')',
-      detail: { role, message }
+      summary: serviceLabel
+        ? 'Website enquiry - ' + serviceLabel
+        : 'Website enquiry (' + (ROLE_LABELS[role] || role || 'not specified') + ')',
+      detail: { role, message, serviceLabel: serviceLabel || undefined }
     });
 
     return new Response(JSON.stringify({ ok: true }), {

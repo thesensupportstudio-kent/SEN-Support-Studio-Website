@@ -47,7 +47,7 @@
 
   // Mirrors functions/api/_lib/serviceCatalog.js (server-side source of
   // truth for pricing) - kept as a small duplicated display copy, same
-  // reasoning as the site's existing payment-links.js/service-labels.js.
+  // reasoning as the site's existing service-labels.js.
   var NEW_SERVICES = {
     'tuition-parent': {
       label: '1:1 Tuition', role: 'parent',
@@ -476,6 +476,35 @@
     });
   }
 
+  function createPayNowButton(item) {
+    var payBtn = document.createElement('button');
+    payBtn.type = 'button';
+    payBtn.className = 'btn btn-primary';
+    payBtn.style.padding = '8px 16px';
+    payBtn.style.fontSize = '14px';
+    payBtn.textContent = 'Pay now';
+    payBtn.addEventListener('click', function () {
+      payBtn.disabled = true;
+      payBtn.textContent = 'Redirecting…';
+      fetch('/api/client-auth/pay-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interactionId: item.id })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok || !result.data.url) throw new Error((result.data && result.data.error) || 'Could not start checkout.');
+          window.location.href = result.data.url;
+        })
+        .catch(function (err) {
+          window.alert(err.message || 'Could not start checkout.');
+          payBtn.disabled = false;
+          payBtn.textContent = 'Pay now';
+        });
+    });
+    return payBtn;
+  }
+
   function renderPayments(payments) {
     paymentsList.innerHTML = '';
     if (!payments.length) {
@@ -485,7 +514,6 @@
     paymentsCard.classList.remove('hidden');
 
     payments.forEach(function (item) {
-      var detailObj = parseDetail(item) || {};
       var row = document.createElement('div');
       row.className = 'service-row';
       row.style.cursor = 'default';
@@ -505,16 +533,8 @@
       pill.textContent = isPaid ? 'Paid ' + formatDateOnly(item.paid_at) : 'Awaiting payment';
       right.appendChild(pill);
 
-      if (!isPaid && detailObj.payUrl) {
-        var payLink = document.createElement('a');
-        payLink.href = detailObj.payUrl;
-        payLink.target = '_blank';
-        payLink.rel = 'noopener';
-        payLink.className = 'btn btn-primary';
-        payLink.style.padding = '8px 16px';
-        payLink.style.fontSize = '14px';
-        payLink.textContent = 'Pay now';
-        right.appendChild(payLink);
+      if (!isPaid) {
+        right.appendChild(createPayNowButton(item));
       }
 
       row.appendChild(right);
@@ -659,7 +679,6 @@
     }
     homePaymentsCard.classList.remove('hidden');
     unpaid.forEach(function (item) {
-      var detailObj = parseDetail(item) || {};
       var row = document.createElement('div');
       row.className = 'service-row';
       row.style.cursor = 'default';
@@ -667,18 +686,7 @@
       var left = document.createElement('span');
       left.textContent = item.summary;
       row.appendChild(left);
-
-      if (detailObj.payUrl) {
-        var payLink = document.createElement('a');
-        payLink.href = detailObj.payUrl;
-        payLink.target = '_blank';
-        payLink.rel = 'noopener';
-        payLink.className = 'btn btn-primary';
-        payLink.style.padding = '8px 16px';
-        payLink.style.fontSize = '14px';
-        payLink.textContent = 'Pay now';
-        row.appendChild(payLink);
-      }
+      row.appendChild(createPayNowButton(item));
 
       homePaymentsList.appendChild(row);
     });
@@ -753,7 +761,22 @@
       });
   }
 
-  var checkoutParam = new URLSearchParams(window.location.search).get('checkout');
+  var urlParams = new URLSearchParams(window.location.search);
+  var tabParam = urlParams.get('tab');
+  var serviceParam = urlParams.get('service');
+  var typeParam = urlParams.get('type');
+  var checkoutParam = urlParams.get('checkout');
+
+  if (serviceParam && NEW_SERVICES[serviceParam]) {
+    var presetSvc = NEW_SERVICES[serviceParam];
+    newServiceState = {
+      role: presetSvc.role,
+      serviceSlug: serviceParam,
+      type: (typeParam === 'pack' && presetSvc.pack) ? 'pack' : 'single'
+    };
+    renderNewServiceStep();
+  }
+
   if (checkoutParam && checkoutReturnMessage) {
     if (checkoutParam === 'success') {
       checkoutReturnMessage.innerHTML = '<p>Payment received! Your sessions will appear below shortly - refresh in a moment if you don’t see them yet.</p>';
@@ -762,7 +785,12 @@
       checkoutReturnMessage.innerHTML = '<p>Checkout was cancelled - no payment was taken.</p>';
       checkoutReturnMessage.classList.remove('hidden');
     }
+  }
+
+  if (tabParam === 'bookings' || checkoutParam) {
     switchTab('bookings');
+  }
+  if (tabParam || serviceParam || checkoutParam) {
     window.history.replaceState({}, '', window.location.pathname);
   }
 

@@ -1,62 +1,45 @@
 (function () {
+  // Mirrors functions/api/_lib/serviceCatalog.js (server-side source of
+  // truth for pricing) - same small duplicated display copy used in
+  // client-portal.js, kept in sync by hand since there's no build step
+  // joining browser/worker code in this project.
   var SERVICES = {
     'tuition-parent': {
-      role: 'parent', label: '1:1 Tuition',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1QQAWPlvnyI-P7qXkC3OrahQ7AecXLdalpERksWmPN8XRittye6fZQtMbakte-bgaayZUFZzWt?gv=true',
-      options: [
-        { id: 'single', label: 'Single session', price: '£50 / hour' },
-        { id: 'pack', label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
-      ]
+      label: '1:1 Tuition', role: 'parent',
+      single: { label: 'Single session', price: '£50 / hour' },
+      pack: { label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
     },
     'sensory-parent': {
-      role: 'parent', label: 'Sensory Profile Builder',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ06EqqpvHUaXI5CozeOcVMUMoX4YKtSouygGVPFEdKHIT--nwbI4pochLagX0oPf9AeyyGpmEhV?gv=true',
-      options: [
-        { id: 'single', label: 'One profile', price: '£100 (initial chat, questionnaire, findings call & report)' }
-      ]
+      label: 'Sensory Profile Builder', role: 'parent',
+      single: { label: 'One profile', price: '£100' }
     },
-    'support': {
-      role: 'parent', label: 'Support Sessions',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2YMKZnUKxlUHv3pB_3qb3CTqttezkIBJIauYrYYdUAeCejJW0JgOgpjU7WKPOgtYW5T2FRlcE5?gv=true',
-      options: [
-        { id: 'single', label: 'Single hour', price: '£50 / hour, in person or online' }
-      ]
+    support: {
+      label: 'Support Sessions', role: 'parent',
+      single: { label: 'Single hour', price: '£50 / hour' }
     },
     'tuition-school': {
-      role: 'school', label: '1:1 Pupil Tuition',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ2vUJ5ZnDaU7-h8wRRovDAmKYdr_v_Vxfi368blbPFs18KZgH5DfgtFbudTsuWmUTwzfmTETvtL?gv=true',
-      options: [
-        { id: 'single', label: 'Single session', price: '£60 / hour' },
-        { id: 'pack', label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
-      ]
+      label: '1:1 Pupil Tuition', role: 'school',
+      single: { label: 'Single session', price: '£60 / hour' },
+      pack: { label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
     },
     'sensory-school': {
-      role: 'school', label: 'Sensory Profile Builder',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1j5Sw5vHALvL4lUI6nTSijEanCKYruOTMmW6RANHI4597a_MScCawb8jwaE-wnpqBGUsf_pe_t?gv=true',
-      options: [
-        { id: 'single', label: 'Single profile', price: '£100 per profile' },
-        { id: 'pack', label: 'Pack of 5 profiles', price: '£475 total (5% off)' }
-      ]
+      label: 'Sensory Profile Builder', role: 'school',
+      single: { label: 'Single profile', price: '£100' },
+      pack: { label: 'Pack of 5 profiles', price: '£475 total (5% off)' }
     },
     'sentence-steps': {
-      role: 'school', label: 'Sentence Steps Intervention',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0MLvzESXaoEszq-4-PrukOsDnO1-SNonMlz0pEOfxQe9iair91CCM1EZIYWcrSpZjNvg4mfYp3?gv=true',
-      options: [
-        { id: 'single', label: 'Single hour (2 sessions, up to 4 pupils)', price: '£100 / hour' },
-        { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
-      ]
+      label: 'Sentence Steps Intervention', role: 'school',
+      single: { label: 'Single hour', price: '£100 / hour' },
+      pack: { label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
     },
     'build-buddies': {
-      role: 'school', label: 'Build Buddies Intervention',
-      bookingUrl: 'https://calendar.google.com/calendar/appointments/AcZssZ1VVcjc9sLchWThU2bNG7O99FDydTmXkrJ3-Qk=?gv=true',
-      options: [
-        { id: 'single', label: 'Single hour (2 sessions, up to 3 pupils)', price: '£100 / hour' },
-        { id: 'pack', label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
-      ]
+      label: 'Build Buddies Intervention', role: 'school',
+      single: { label: 'Single hour', price: '£100 / hour' },
+      pack: { label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
     }
   };
 
-  var state = { role: '', serviceSlug: '', bookingType: '' };
+  var state = { role: '', serviceSlug: '', type: '' };
 
   var els = {
     roleParent: document.getElementById('role-parent'),
@@ -67,165 +50,71 @@
     typeList: document.getElementById('type-list'),
     summary: document.getElementById('booking-summary'),
     summaryName: document.getElementById('summary-name'),
-    summaryPrice: document.getElementById('summary-price'),
-    calendlyHint: document.getElementById('calendly-hint'),
-    calendlyWidget: document.getElementById('calendly-widget'),
-    paymentHint: document.getElementById('payment-hint'),
-    paymentButtons: document.getElementById('payment-buttons')
+    summaryPrice: document.getElementById('summary-price')
   };
-
-  function paymentKeyFor(serviceSlug, optionId) {
-    return optionId === 'pack' ? serviceSlug + '-pack' : serviceSlug;
-  }
-
-  function updatePayment(svc, chosenOption) {
-    if (!els.paymentButtons) return;
-
-    els.paymentButtons.innerHTML = '';
-
-    if (!svc || !chosenOption) {
-      els.paymentButtons.classList.add('hidden');
-      els.paymentHint.textContent = 'Select a service above to see payment options.';
-      return;
-    }
-
-    var key = paymentKeyFor(state.serviceSlug, chosenOption.id);
-    var links = window.PAYMENT_LINKS || {};
-    var invoiceServices = window.INVOICE_SERVICES || {};
-    var payUrl = links[key];
-    var canInvoice = !!invoiceServices[key];
-
-    if (payUrl) {
-      var payLink = document.createElement('a');
-      payLink.href = payUrl;
-      payLink.target = '_blank';
-      payLink.rel = 'noopener';
-      payLink.className = 'btn btn-primary';
-      payLink.textContent = 'Pay by card (Tide) →';
-      els.paymentButtons.appendChild(payLink);
-    } else {
-      var payPlaceholder = document.createElement('button');
-      payPlaceholder.type = 'button';
-      payPlaceholder.className = 'btn-disabled';
-      payPlaceholder.disabled = true;
-      payPlaceholder.textContent = 'Pay by card (coming soon)';
-      els.paymentButtons.appendChild(payPlaceholder);
-    }
-
-    if (canInvoice) {
-      var invoiceLink = document.createElement('a');
-      invoiceLink.href = 'request-invoice.html?service=' + encodeURIComponent(key);
-      invoiceLink.className = 'btn btn-outline';
-      invoiceLink.textContent = 'Request an Invoice →';
-      els.paymentButtons.appendChild(invoiceLink);
-    }
-
-    els.paymentHint.textContent = payUrl
-      ? 'Pay online now to secure your place, or get in touch if you’d rather arrange it another way.'
-      : 'Card payments are being set up for this service - in the meantime, get in touch' + (canInvoice ? ', or request an invoice below' : '') + '.';
-    els.paymentButtons.classList.remove('hidden');
-  }
-
-  function updateBooking(svc) {
-    if (!els.calendlyWidget) return;
-
-    if (!svc || !svc.bookingUrl) {
-      els.calendlyHint.classList.remove('hidden');
-      els.calendlyWidget.classList.add('hidden');
-      els.calendlyWidget.innerHTML = '';
-      els.calendlyWidget.removeAttribute('data-current-url');
-      return;
-    }
-
-    if (els.calendlyWidget.getAttribute('data-current-url') === svc.bookingUrl) return;
-
-    els.calendlyHint.classList.add('hidden');
-    els.calendlyWidget.classList.remove('hidden');
-    els.calendlyWidget.setAttribute('data-current-url', svc.bookingUrl);
-    els.calendlyWidget.innerHTML = '';
-
-    var iframe = document.createElement('iframe');
-    iframe.src = svc.bookingUrl;
-    iframe.style.border = '0';
-    iframe.width = '100%';
-    iframe.height = '700';
-    iframe.setAttribute('frameborder', '0');
-    els.calendlyWidget.appendChild(iframe);
-  }
-
-  function selectRole(role) {
-    state.role = role;
-    state.serviceSlug = '';
-    state.bookingType = '';
-    render();
-  }
-
-  function selectService(slug) {
-    state.serviceSlug = slug;
-    state.bookingType = '';
-    render();
-  }
-
-  function selectType(typeId) {
-    state.bookingType = typeId;
-    render();
-  }
 
   function render() {
     els.roleParent.classList.toggle('active', state.role === 'parent');
     els.roleSchool.classList.toggle('active', state.role === 'school');
 
-    var slugsForRole = state.role
+    var slugs = state.role
       ? Object.keys(SERVICES).filter(function (k) { return SERVICES[k].role === state.role; })
       : [];
 
     els.serviceField.classList.toggle('hidden', !state.role);
     els.serviceList.innerHTML = '';
-    slugsForRole.forEach(function (slug) {
+    slugs.forEach(function (slug) {
       var svc = SERVICES[slug];
       var row = document.createElement('button');
       row.type = 'button';
       row.className = 'service-row' + (state.serviceSlug === slug ? ' active' : '');
-      row.innerHTML = '<span>' + svc.label + '</span><span class="from-price">' + svc.options[0].price + '</span>';
-      row.addEventListener('click', function () { selectService(slug); });
+      row.innerHTML = '<span>' + svc.label + '</span><span class="from-price">' + svc.single.price + '</span>';
+      row.addEventListener('click', function () {
+        state.serviceSlug = slug;
+        state.type = '';
+        render();
+      });
       els.serviceList.appendChild(row);
     });
 
     var svc = state.serviceSlug ? SERVICES[state.serviceSlug] : null;
-    updateBooking(svc);
-    var showBookingType = !!(svc && svc.options.length > 1);
+    var showType = !!(svc && svc.pack);
+    if (svc && !showType) state.type = 'single';
 
-    els.typeField.classList.toggle('hidden', !showBookingType);
+    els.typeField.classList.toggle('hidden', !showType);
     els.typeList.innerHTML = '';
-    if (svc) {
-      svc.options.forEach(function (opt) {
-        var active = showBookingType
-          ? state.bookingType === opt.id
-          : true;
+    if (showType) {
+      ['single', 'pack'].forEach(function (typeKey) {
+        var opt = svc[typeKey];
+        if (!opt) return;
         var card = document.createElement('button');
         card.type = 'button';
-        card.className = 'type-card' + (active ? ' active' : '');
+        card.className = 'type-card' + (state.type === typeKey ? ' active' : '');
         card.innerHTML = '<span class="top">' + opt.label + '</span><span class="bottom">' + opt.price + '</span>';
-        card.addEventListener('click', function () { selectType(opt.id); });
+        card.addEventListener('click', function () {
+          state.type = typeKey;
+          render();
+        });
         els.typeList.appendChild(card);
       });
     }
 
-    var effectiveType = svc ? (svc.options.length > 1 ? state.bookingType : svc.options[0].id) : '';
-    var chosenOption = svc ? svc.options.filter(function (o) { return o.id === effectiveType; })[0] : null;
-    var hasFullSelection = !!(svc && chosenOption);
-
-    els.summary.classList.toggle('hidden', !hasFullSelection);
-    if (hasFullSelection) {
+    var chosenOption = svc && state.type ? svc[state.type] : null;
+    els.summary.classList.toggle('hidden', !chosenOption);
+    if (chosenOption) {
       els.summaryName.textContent = svc.label + ' - ' + chosenOption.label;
       els.summaryPrice.textContent = chosenOption.price;
     }
-
-    updatePayment(svc, chosenOption);
   }
 
-  els.roleParent.addEventListener('click', function () { selectRole('parent'); });
-  els.roleSchool.addEventListener('click', function () { selectRole('school'); });
+  els.roleParent.addEventListener('click', function () {
+    state = { role: 'parent', serviceSlug: '', type: '' };
+    render();
+  });
+  els.roleSchool.addEventListener('click', function () {
+    state = { role: 'school', serviceSlug: '', type: '' };
+    render();
+  });
 
   try {
     var params = new URLSearchParams(window.location.search);
@@ -237,4 +126,55 @@
   } catch (e) {}
 
   render();
+
+  var form = document.getElementById('enquiry-form');
+  var success = document.getElementById('enquiry-success');
+  var errorBox = document.getElementById('enquiry-error');
+  if (!form) return;
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    errorBox.classList.add('hidden');
+
+    var submitBtn = form.querySelector('.form-submit');
+    submitBtn.disabled = true;
+
+    var svc = state.serviceSlug ? SERVICES[state.serviceSlug] : null;
+    var chosenOption = svc && state.type ? svc[state.type] : null;
+    var serviceLabel = svc ? svc.label + (chosenOption ? ' - ' + chosenOption.label : '') : '';
+    var message = document.getElementById('enquiry-message').value.trim();
+
+    var payload = {
+      name: document.getElementById('enquiry-name').value.trim(),
+      email: document.getElementById('enquiry-email').value.trim(),
+      role: state.role,
+      serviceLabel: serviceLabel,
+      message: message || (serviceLabel ? 'Interested in: ' + serviceLabel : 'Enquiry via Enquire Now page')
+    };
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) {
+          throw new Error((result.data && result.data.error) || 'Something went wrong sending your enquiry.');
+        }
+        form.classList.add('hidden');
+        success.classList.remove('hidden');
+      })
+      .catch(function (err) {
+        showError(err.message || 'Something went wrong. Please try again, or email hello@sensupportstudio.com directly.');
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+      });
+  });
 })();

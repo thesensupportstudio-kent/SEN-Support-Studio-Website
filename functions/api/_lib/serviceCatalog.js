@@ -1,7 +1,7 @@
 // Server-side mirror of site/js/book.js's SERVICES catalog, in pence for
 // Stripe. Kept as its own small duplicated source of truth rather than a
-// shared import, same reasoning as paymentLinks.js - no build step joins
-// browser and Worker code in this project.
+// shared import - no build step joins browser and Worker code in this
+// project.
 export const SERVICE_CATALOG = {
   'tuition-parent': {
     label: '1:1 Tuition', role: 'parent', sessionMinutes: 60,

@@ -3,7 +3,6 @@ import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL } fr
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPackById, createBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
-import { PAYMENT_LINKS } from '../_lib/paymentLinks.js';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -126,14 +125,16 @@ export async function onRequestPost(context) {
     // Ongoing (pay-per-session) packs don't pre-pay via a pack purchase -
     // each booking needs its own payment, tracked through the same
     // due_date/paid_at invoice system already used for invoices, so it shows
-    // up in the existing "mark as paid" flow rather than a parallel one.
+    // up in the existing "mark as paid" flow rather than a parallel one. The
+    // actual Stripe Checkout Session is created on demand when the client
+    // clicks "Pay now" (client-auth/pay-invoice.js) rather than stored here,
+    // since a Checkout Session URL expires long before an invoice is due.
     if (pack.pack_type === 'ongoing') {
-      const payUrl = pack.service_key ? PAYMENT_LINKS[pack.service_key] : null;
       await logInteraction(env, {
         clientId: client.id,
         type: 'invoice_sent',
         summary: pack.service_label + ' session - ' + date,
-        detail: { service: pack.service_label, payUrl: payUrl, bookedViaPortal: true },
+        detail: { service: pack.service_label, serviceKey: pack.service_key, bookedViaPortal: true },
         dueDate: date
       });
     }

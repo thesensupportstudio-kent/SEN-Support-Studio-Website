@@ -62,36 +62,47 @@ export async function onRequestPost(context) {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       const metadata = session.metadata || {};
-      const clientId = metadata.clientId;
 
-      if (clientId) {
-        const totalSessions = parseInt(metadata.sessions, 10) || 1;
-        const sessionMinutes = parseInt(metadata.sessionMinutes, 10) || 60;
+      if (metadata.purpose === 'invoice_payment') {
+        if (metadata.interactionId && metadata.clientId) {
+          await env.DB.prepare(
+            "UPDATE interactions SET paid_at = datetime('now') WHERE id = ? AND client_id = ?"
+          ).bind(metadata.interactionId, metadata.clientId).run();
+        } else {
+          console.log('Stripe checkout.session.completed (invoice_payment) missing interactionId/clientId - skipping.');
+        }
+      } else {
+        const clientId = metadata.clientId;
 
-        await createPack(env, {
-          clientId: clientId,
-          serviceLabel: metadata.serviceLabel || 'Session pack',
-          totalSessions: totalSessions,
-          sessionMinutes: sessionMinutes,
-          packType: 'fixed'
-        });
+        if (clientId) {
+          const totalSessions = parseInt(metadata.sessions, 10) || 1;
+          const sessionMinutes = parseInt(metadata.sessionMinutes, 10) || 60;
 
-        await logInteraction(env, {
-          clientId: clientId,
-          type: 'pack_created',
-          summary: 'Paid & booked ' + totalSessions + '-session pack: ' + (metadata.serviceLabel || 'Session pack') + ' (via Stripe)',
-          detail: {
-            serviceLabel: metadata.serviceLabel,
+          await createPack(env, {
+            clientId: clientId,
+            serviceLabel: metadata.serviceLabel || 'Session pack',
             totalSessions: totalSessions,
             sessionMinutes: sessionMinutes,
-            packType: 'fixed',
-            stripeSessionId: session.id,
-            amountPaid: session.amount_total,
-            currency: session.currency
-          }
-        });
-      } else {
-        console.log('Stripe checkout.session.completed with no clientId in metadata - skipping.');
+            packType: 'fixed'
+          });
+
+          await logInteraction(env, {
+            clientId: clientId,
+            type: 'pack_created',
+            summary: 'Paid & booked ' + totalSessions + '-session pack: ' + (metadata.serviceLabel || 'Session pack') + ' (via Stripe)',
+            detail: {
+              serviceLabel: metadata.serviceLabel,
+              totalSessions: totalSessions,
+              sessionMinutes: sessionMinutes,
+              packType: 'fixed',
+              stripeSessionId: session.id,
+              amountPaid: session.amount_total,
+              currency: session.currency
+            }
+          });
+        } else {
+          console.log('Stripe checkout.session.completed with no clientId in metadata - skipping.');
+        }
       }
     }
 

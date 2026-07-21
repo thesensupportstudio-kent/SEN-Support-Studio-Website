@@ -1,4 +1,13 @@
 (function () {
+  // Only ever allow redirecting to a same-site .html page (with an optional
+  // query string) - blocks the ?next= param being used as an open redirect.
+  function safeNext(value) {
+    if (value && /^[a-zA-Z0-9_-]+\.html(\?[a-zA-Z0-9_=&%.-]*)?$/.test(value)) return value;
+    return 'client-portal.html';
+  }
+
+  var nextParam = new URLSearchParams(window.location.search).get('next');
+
   var loginForm = document.getElementById('login-form');
   var loginError = document.getElementById('login-error');
   var loginSubmit = document.getElementById('login-submit');
@@ -31,7 +40,7 @@
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {
         if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not log in.');
-        window.location.href = 'client-portal.html';
+        window.location.href = safeNext(nextParam);
       })
       .catch(function (err) {
         loginError.textContent = err.message || 'Could not log in.';
