@@ -27,8 +27,11 @@
   var bookingSummary = document.getElementById('booking-summary');
   var summaryName = document.getElementById('summary-name');
   var summaryPrice = document.getElementById('summary-price');
+  var bookingSummaryActions = document.getElementById('booking-summary-actions');
   var checkoutBtn = document.getElementById('checkout-btn');
   var checkoutError = document.getElementById('checkout-error');
+  var requestInvoiceBtn = document.getElementById('request-invoice-btn');
+  var requestInvoiceSuccess = document.getElementById('request-invoice-success');
 
   var detailModalOverlay = document.getElementById('detail-modal-overlay');
   var detailModalTitle = document.getElementById('detail-modal-title');
@@ -87,6 +90,7 @@
   var newServiceState = { role: '', serviceSlug: '', type: '' };
 
   function renderNewServiceStep() {
+    requestInvoiceSuccess.classList.add('hidden');
     rolesParentBtn.classList.toggle('active', newServiceState.role === 'parent');
     roleSchoolBtn.classList.toggle('active', newServiceState.role === 'school');
 
@@ -134,7 +138,8 @@
 
     var chosenOption = svc && newServiceState.type ? svc[newServiceState.type] : null;
     bookingSummary.classList.toggle('hidden', !chosenOption);
-    checkoutBtn.classList.toggle('hidden', !chosenOption);
+    bookingSummaryActions.classList.toggle('hidden', !chosenOption);
+    requestInvoiceBtn.classList.toggle('hidden', newServiceState.role !== 'school');
     if (chosenOption) {
       summaryName.textContent = svc.label + ' - ' + chosenOption.label;
       summaryPrice.textContent = chosenOption.price;
@@ -175,6 +180,35 @@
           checkoutError.classList.remove('hidden');
           checkoutBtn.disabled = false;
           checkoutBtn.textContent = 'Pay & book →';
+        });
+    });
+  }
+
+  if (requestInvoiceBtn) {
+    requestInvoiceBtn.addEventListener('click', function () {
+      checkoutError.classList.add('hidden');
+      requestInvoiceSuccess.classList.add('hidden');
+      requestInvoiceBtn.disabled = true;
+      requestInvoiceBtn.textContent = 'Sending…';
+
+      fetch('/api/client-auth/request-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceSlug: newServiceState.serviceSlug, type: newServiceState.type })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not send this request.');
+          requestInvoiceSuccess.textContent = 'Request sent - we’ll be in touch with an invoice shortly.';
+          requestInvoiceSuccess.classList.remove('hidden');
+        })
+        .catch(function (err) {
+          checkoutError.textContent = err.message || 'Could not send this request.';
+          checkoutError.classList.remove('hidden');
+        })
+        .finally(function () {
+          requestInvoiceBtn.disabled = false;
+          requestInvoiceBtn.textContent = 'Request an invoice instead';
         });
     });
   }

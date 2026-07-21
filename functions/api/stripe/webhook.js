@@ -2,6 +2,64 @@ import { verifyStripeSignature } from '../_lib/stripe.js';
 import { createPack } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
 
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatAmount(pence, currency) {
+  const amount = (pence / 100).toFixed(2);
+  return (currency || 'gbp').toUpperCase() === 'GBP' ? '£' + amount : amount + ' ' + (currency || '').toUpperCase();
+}
+
+function buildReceiptEmailHtml(client, lineLabel, amount, currency) {
+  return (
+    '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
+      '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
+        '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Thank you for your payment</h1>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 20px;">Hi ' + escapeHtml(client.parent_name || 'there') + ', this confirms we’ve received your payment.</p>' +
+        '<div style="background:#FBFAF5;border-radius:12px;padding:16px 20px;margin:0 0 20px;">' +
+          '<p style="font-size:14px;color:#5b6f5f;margin:0 0 4px;">Payment for</p>' +
+          '<p style="font-size:16px;font-weight:700;color:#2D5439;margin:0 0 8px;">' + escapeHtml(lineLabel) + '</p>' +
+          '<p style="font-size:14px;color:#5b6f5f;margin:0;">Amount paid: <strong style="color:#2D5439;">' + escapeHtml(formatAmount(amount, currency)) + '</strong></p>' +
+        '</div>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">Log in any time to book your session date/time and see everything in one place.</p>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function sendReceiptEmail(env, client, lineLabel, amount, currency) {
+  if (!env.RESEND_API_KEY || !client || !client.parent_email) return;
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + env.RESEND_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        to: [client.parent_email],
+        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
+        subject: 'Payment received - SEN Support Studio',
+        html: buildReceiptEmailHtml(client, lineLabel, amount, currency)
+      })
+    }).then(function (resp) {
+      if (!resp.ok) return resp.text().then(function (t) { console.log('Resend rejected payment-receipt email: ' + resp.status + ' ' + t); });
+    });
+  } catch (err) {
+    // A receipt email failing to send shouldn't fail the whole webhook -
+    // the payment itself has already been recorded correctly.
+    console.log('sendReceiptEmail failed: ' + String(err && err.message));
+  }
+}
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -68,6 +126,10 @@ export async function onRequestPost(context) {
           await env.DB.prepare(
             "UPDATE interactions SET paid_at = datetime('now') WHERE id = ? AND client_id = ?"
           ).bind(metadata.interactionId, metadata.clientId).run();
+
+          const client = await env.DB.prepare('SELECT * FROM clients WHERE id = ?').bind(metadata.clientId).first();
+          const interaction = await env.DB.prepare('SELECT summary FROM interactions WHERE id = ?').bind(metadata.interactionId).first();
+          await sendReceiptEmail(env, client, (interaction && interaction.summary) || 'Session payment', session.amount_total, session.currency);
         } else {
           console.log('Stripe checkout.session.completed (invoice_payment) missing interactionId/clientId - skipping.');
         }
@@ -100,6 +162,10 @@ export async function onRequestPost(context) {
               currency: session.currency
             }
           });
+
+          const client = await env.DB.prepare('SELECT * FROM clients WHERE id = ?').bind(clientId).first();
+          const lineLabel = (metadata.serviceLabel || 'Session pack') + (totalSessions > 1 ? ' (' + totalSessions + ' sessions)' : '');
+          await sendReceiptEmail(env, client, lineLabel, session.amount_total, session.currency);
         } else {
           console.log('Stripe checkout.session.completed with no clientId in metadata - skipping.');
         }

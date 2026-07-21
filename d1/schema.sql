@@ -106,7 +106,8 @@ CREATE TABLE IF NOT EXISTS pack_bookings (
   end_at TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'booked',
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  cancelled_at TEXT
+  cancelled_at TEXT,
+  reminder_sent_at TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_pack_bookings_pack ON pack_bookings(pack_id);

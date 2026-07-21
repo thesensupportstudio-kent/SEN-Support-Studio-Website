@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=1784780000">
+<link rel="stylesheet" href="css/styles.css?v=1784800000">
 </head>
 <body>
 <div class="page">
@@ -98,7 +98,11 @@
           </div>
 
           <div id="checkout-error" class="form-error hidden"></div>
-          <button type="button" class="btn btn-primary hidden" id="checkout-btn" style="align-self:flex-start;">Pay &amp; book &rarr;</button>
+          <div id="request-invoice-success" class="form-success hidden"></div>
+          <div class="booking-summary-actions hidden" id="booking-summary-actions">
+            <button type="button" class="btn btn-primary" id="checkout-btn">Pay &amp; book &rarr;</button>
+            <button type="button" class="btn btn-outline hidden" id="request-invoice-btn">Request an invoice instead</button>
+          </div>
         </div>
 
         <div id="packs-wrap"></div>
@@ -171,6 +175,6 @@
 </div>
 
 <script src="js/nav-toggle.js?v=1784020297"></script>
-<script src="js/client-portal.js?v=1784740100"></script>
+<script src="js/client-portal.js?v=1784800000"></script>
 </body>
 </html>

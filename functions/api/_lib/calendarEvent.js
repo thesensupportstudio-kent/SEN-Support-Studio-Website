@@ -146,6 +146,29 @@ export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDat
   return slots;
 }
 
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+// Formats an ISO datetime that already carries the correct UK offset (e.g.
+// produced by localToIso) into a human string for emails, without going
+// through Date + Intl - the Workers runtime's default timezone is UTC, so
+// round-tripping through toLocaleString would silently show the wrong
+// wall-clock time instead of the UK time actually embedded in the string.
+export function formatUkDateTime(isoWithOffset) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(isoWithOffset || '');
+  if (!m) return isoWithOffset;
+  const year = parseInt(m[1], 10);
+  const month = parseInt(m[2], 10);
+  const day = parseInt(m[3], 10);
+  const hour = parseInt(m[4], 10);
+  const minute = parseInt(m[5], 10);
+  const dow = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+  const ampm = hour < 12 ? 'am' : 'pm';
+  const minuteStr = minute === 0 ? '' : ':' + String(minute).padStart(2, '0');
+  return DAY_NAMES[dow] + ' ' + day + ' ' + MONTH_NAMES[month - 1] + ' at ' + hour12 + minuteStr + ampm;
+}
+
 export function buildEventBody(body) {
   const title = (body.title || '').trim();
   const location = (body.location || '').trim();

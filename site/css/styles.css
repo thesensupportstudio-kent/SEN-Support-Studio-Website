@@ -2167,6 +2167,13 @@ img {
   display: block;
 }
 
+.booking-summary-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .slots-wrap {
   margin-top: 20px;
   display: flex;

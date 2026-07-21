@@ -1,8 +1,62 @@
 import { isConnected } from '../_lib/google.js';
-import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL, overlapsBusyWithBuffer } from '../_lib/calendarEvent.js';
+import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL, overlapsBusyWithBuffer, formatUkDateTime } from '../_lib/calendarEvent.js';
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPackById, createBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
+
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildBookingConfirmationHtml(client, serviceLabel, whenText) {
+  return (
+    '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
+      '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
+        '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">You’re booked in!</h1>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 20px;">Hi ' + escapeHtml(client.parent_name || 'there') + ', thanks for booking - here are the details.</p>' +
+        '<div style="background:#FBFAF5;border-radius:12px;padding:16px 20px;margin:0 0 20px;">' +
+          '<p style="font-size:14px;color:#5b6f5f;margin:0 0 4px;">' + escapeHtml(serviceLabel) + '</p>' +
+          '<p style="font-size:16px;font-weight:700;color:#2D5439;margin:0;">' + escapeHtml(whenText) + '</p>' +
+        '</div>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">Need to change or cancel? Log in to your account any time to manage this booking.</p>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function sendBookingConfirmationEmail(env, client, serviceLabel, startIso) {
+  if (!env.RESEND_API_KEY || !client || !client.parent_email) return;
+  try {
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + env.RESEND_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        to: [client.parent_email],
+        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
+        subject: 'You’re booked in - SEN Support Studio',
+        html: buildBookingConfirmationHtml(client, serviceLabel, formatUkDateTime(startIso))
+      })
+    });
+    if (!resp.ok) {
+      const detail = await resp.text().catch(function () { return ''; });
+      console.log('Resend rejected booking-confirmation email: ' + resp.status + ' ' + detail);
+    }
+  } catch (err) {
+    // A confirmation email failing to send shouldn't fail the booking
+    // itself - the session is already on the calendar either way.
+    console.log('sendBookingConfirmationEmail failed: ' + String(err && err.message));
+  }
+}
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -121,6 +175,8 @@ export async function onRequestPost(context) {
       type: 'session_booked',
       summary: 'Booked ' + pack.service_label + ' session for ' + date + ' ' + startTime
     });
+
+    await sendBookingConfirmationEmail(env, client, pack.service_label, startIso);
 
     // Ongoing (pay-per-session) packs don't pre-pay via a pack purchase -
     // each booking needs its own payment, tracked through the same
