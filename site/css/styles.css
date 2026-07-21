@@ -1932,6 +1932,20 @@ img {
   gap: 14px;
 }
 
+.tab-panel-heading {
+  margin-bottom: 20px;
+}
+
+.card-eyebrow {
+  display: block;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pale-green);
+  margin-bottom: 4px;
+}
+
 .book-step-heading {
   display: flex;
   align-items: center;

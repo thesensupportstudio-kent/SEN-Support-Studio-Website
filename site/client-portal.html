@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=1784800000">
+<link rel="stylesheet" href="css/styles.css?v=1784820000">
 </head>
 <body>
 <div class="page">
@@ -48,7 +48,10 @@
 
       <div id="tab-home" class="client-tab-panel">
         <div class="book-card" id="home-upcoming-card">
-          <div class="book-step-heading"><h2>Your upcoming sessions</h2></div>
+          <div>
+            <span class="card-eyebrow">Strong Roots</span>
+            <div class="book-step-heading"><h2>Your upcoming sessions</h2></div>
+          </div>
           <div id="home-upcoming-list"></div>
           <button type="button" class="btn btn-primary" id="manage-bookings-btn" style="align-self:flex-start;">Manage bookings &rarr;</button>
         </div>
@@ -59,7 +62,10 @@
         </div>
 
         <div class="book-card hidden" id="home-reports-card">
-          <div class="book-step-heading"><h2>New reports</h2></div>
+          <div>
+            <span class="card-eyebrow">Space to Flourish</span>
+            <div class="book-step-heading"><h2>New reports</h2></div>
+          </div>
           <div id="home-reports-list"></div>
         </div>
       </div>
@@ -68,8 +74,11 @@
         <div id="checkout-return-message" class="form-success hidden"></div>
 
         <div class="book-card">
-          <div class="book-step-heading">
-            <h2>Start something new</h2>
+          <div>
+            <span class="card-eyebrow">Strong Roots</span>
+            <div class="book-step-heading">
+              <h2>Start something new</h2>
+            </div>
           </div>
 
           <div class="book-field">
@@ -123,6 +132,10 @@
       </div>
 
       <div id="tab-reports" class="client-tab-panel hidden">
+        <div class="tab-panel-heading">
+          <span class="card-eyebrow">Space to Flourish</span>
+          <div class="book-step-heading"><h2>Reports</h2></div>
+        </div>
         <div id="reports-list"></div>
       </div>
     </div>
