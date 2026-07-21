@@ -1,5 +1,5 @@
 import { isConnected } from '../_lib/google.js';
-import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL } from '../_lib/calendarEvent.js';
+import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL, overlapsBusyWithBuffer } from '../_lib/calendarEvent.js';
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPackById, createBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
@@ -85,7 +85,7 @@ export async function onRequestPost(context) {
     const busyRanges = await listBusyRanges(env, timeMin, timeMax);
     const startMs = new Date(startIso).getTime();
     const endMs = new Date(endIso).getTime();
-    const stillFree = !busyRanges.some(function (b) { return b.start < endMs && b.end > startMs; });
+    const stillFree = !overlapsBusyWithBuffer(busyRanges, startMs, endMs);
 
     if (!stillFree) {
       return new Response(JSON.stringify({ error: 'That slot was just taken - please choose another time.' }), {

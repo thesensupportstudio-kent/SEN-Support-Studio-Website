@@ -46,6 +46,21 @@ export const WORKING_HOURS = {
   6: { start: '09:00', end: '12:00' }
 };
 
+// Travel time between sessions (or any other calendar commitment) - padded
+// onto both sides of every busy range before checking a slot against it, so
+// back-to-back bookings (or a booking right up against an existing
+// appointment) always leave room to get from one place to the next.
+export const BOOKING_BUFFER_MINUTES = 30;
+const BOOKING_BUFFER_MS = BOOKING_BUFFER_MINUTES * 60000;
+
+// Shared by slot generation and the last-moment double-booking check, so a
+// slot is never offered - or accepted - without the same buffer either side.
+export function overlapsBusyWithBuffer(busyRanges, startMs, endMs) {
+  return busyRanges.some(function (b) {
+    return (b.start - BOOKING_BUFFER_MS) < endMs && (b.end + BOOKING_BUFFER_MS) > startMs;
+  });
+}
+
 // Converts a wall-clock local date/time into an ISO string with the correct
 // UK offset, for anything that needs to build or compare Google Calendar
 // dateTime values outside of buildEventBody itself.
@@ -114,8 +129,7 @@ export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDat
 
       if (startMs <= now) continue;
 
-      const overlaps = busyRanges.some(function (b) { return b.start < endMs && b.end > startMs; });
-      if (overlaps) continue;
+      if (overlapsBusyWithBuffer(busyRanges, startMs, endMs)) continue;
 
       slots.push({ date: dateStr, startTime: startTime, endTime: endTime, startIso: startIso, endIso: endIso });
     }
