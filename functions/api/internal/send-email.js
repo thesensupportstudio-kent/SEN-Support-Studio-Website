@@ -91,10 +91,12 @@ export async function onRequestPost(context) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        // Personal, one-off emails go out under Emma's own address rather
+        // than the generic automated-report sender, so replies land
+        // directly with her instead of a shared inbox.
+        from: env.PERSONAL_FROM_EMAIL || 'Emma Owen <emma@sensupportstudio.com>',
         to: [client.parent_email],
         bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
-        reply_to: env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com',
         subject: subject,
         html: buildEmailHtml(client.parent_name, message)
       })
