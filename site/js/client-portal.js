@@ -449,7 +449,7 @@
       } else {
         var doneMsg = document.createElement('p');
         doneMsg.className = 'lede';
-        doneMsg.textContent = 'All sessions in this pack are booked. Get in touch if you’d like to add another pack.';
+        doneMsg.textContent = 'All sessions in this pack are booked. Use “Start something new” above to book another pack.';
         card.appendChild(doneMsg);
       }
 
