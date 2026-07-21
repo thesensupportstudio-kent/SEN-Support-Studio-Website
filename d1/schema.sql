@@ -111,3 +111,8 @@ CREATE TABLE IF NOT EXISTS pack_bookings (
 
 CREATE INDEX IF NOT EXISTS idx_pack_bookings_pack ON pack_bookings(pack_id);
 CREATE INDEX IF NOT EXISTS idx_pack_bookings_client ON pack_bookings(client_id);
+
+CREATE TABLE IF NOT EXISTS stripe_events (
+  id TEXT PRIMARY KEY,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

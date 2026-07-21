@@ -17,6 +17,18 @@
   var homePaymentsList = document.getElementById('home-payments-list');
   var homeReportsCard = document.getElementById('home-reports-card');
   var homeReportsList = document.getElementById('home-reports-list');
+  var checkoutReturnMessage = document.getElementById('checkout-return-message');
+  var rolesParentBtn = document.getElementById('role-parent');
+  var roleSchoolBtn = document.getElementById('role-school');
+  var serviceField = document.getElementById('service-field');
+  var serviceListEl = document.getElementById('service-list');
+  var typeField = document.getElementById('type-field');
+  var typeListEl = document.getElementById('type-list');
+  var bookingSummary = document.getElementById('booking-summary');
+  var summaryName = document.getElementById('summary-name');
+  var summaryPrice = document.getElementById('summary-price');
+  var checkoutBtn = document.getElementById('checkout-btn');
+  var checkoutError = document.getElementById('checkout-error');
 
   var detailModalOverlay = document.getElementById('detail-modal-overlay');
   var detailModalTitle = document.getElementById('detail-modal-title');
@@ -32,6 +44,140 @@
     client_agreement: 'Client Agreement'
   };
   var KEY_LABEL_OVERRIDES = { klass: 'Class' };
+
+  // Mirrors functions/api/_lib/serviceCatalog.js (server-side source of
+  // truth for pricing) - kept as a small duplicated display copy, same
+  // reasoning as the site's existing payment-links.js/service-labels.js.
+  var NEW_SERVICES = {
+    'tuition-parent': {
+      label: '1:1 Tuition', role: 'parent',
+      single: { label: 'Single session', price: '£50 / hour' },
+      pack: { label: 'Monthly pack (4 sessions)', price: '£190 total (5% off)' }
+    },
+    'sensory-parent': {
+      label: 'Sensory Profile Builder', role: 'parent',
+      single: { label: 'One profile', price: '£100' }
+    },
+    support: {
+      label: 'Support Sessions', role: 'parent',
+      single: { label: 'Single hour', price: '£50 / hour' }
+    },
+    'tuition-school': {
+      label: '1:1 Pupil Tuition', role: 'school',
+      single: { label: 'Single session', price: '£60 / hour' },
+      pack: { label: 'Term pack (7 sessions)', price: '£399 total (5% off)' }
+    },
+    'sensory-school': {
+      label: 'Sensory Profile Builder', role: 'school',
+      single: { label: 'Single profile', price: '£100' },
+      pack: { label: 'Pack of 5 profiles', price: '£475 total (5% off)' }
+    },
+    'sentence-steps': {
+      label: 'Sentence Steps Intervention', role: 'school',
+      single: { label: 'Single hour', price: '£100 / hour' },
+      pack: { label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
+    },
+    'build-buddies': {
+      label: 'Build Buddies Intervention', role: 'school',
+      single: { label: 'Single hour', price: '£100 / hour' },
+      pack: { label: 'Term pack (7 x 1hr slots)', price: '£665 total (5% off)' }
+    }
+  };
+
+  var newServiceState = { role: '', serviceSlug: '', type: '' };
+
+  function renderNewServiceStep() {
+    rolesParentBtn.classList.toggle('active', newServiceState.role === 'parent');
+    roleSchoolBtn.classList.toggle('active', newServiceState.role === 'school');
+
+    var slugs = newServiceState.role
+      ? Object.keys(NEW_SERVICES).filter(function (k) { return NEW_SERVICES[k].role === newServiceState.role; })
+      : [];
+
+    serviceField.classList.toggle('hidden', !newServiceState.role);
+    serviceListEl.innerHTML = '';
+    slugs.forEach(function (slug) {
+      var svc = NEW_SERVICES[slug];
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'service-row' + (newServiceState.serviceSlug === slug ? ' active' : '');
+      row.innerHTML = '<span>' + svc.label + '</span><span class="from-price">' + svc.single.price + '</span>';
+      row.addEventListener('click', function () {
+        newServiceState.serviceSlug = slug;
+        newServiceState.type = '';
+        renderNewServiceStep();
+      });
+      serviceListEl.appendChild(row);
+    });
+
+    var svc = newServiceState.serviceSlug ? NEW_SERVICES[newServiceState.serviceSlug] : null;
+    var showType = !!(svc && svc.pack);
+    if (svc && !showType) newServiceState.type = 'single';
+
+    typeField.classList.toggle('hidden', !showType);
+    typeListEl.innerHTML = '';
+    if (showType) {
+      ['single', 'pack'].forEach(function (typeKey) {
+        var opt = svc[typeKey];
+        if (!opt) return;
+        var card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'type-card' + (newServiceState.type === typeKey ? ' active' : '');
+        card.innerHTML = '<span class="top">' + opt.label + '</span><span class="bottom">' + opt.price + '</span>';
+        card.addEventListener('click', function () {
+          newServiceState.type = typeKey;
+          renderNewServiceStep();
+        });
+        typeListEl.appendChild(card);
+      });
+    }
+
+    var chosenOption = svc && newServiceState.type ? svc[newServiceState.type] : null;
+    bookingSummary.classList.toggle('hidden', !chosenOption);
+    checkoutBtn.classList.toggle('hidden', !chosenOption);
+    if (chosenOption) {
+      summaryName.textContent = svc.label + ' - ' + chosenOption.label;
+      summaryPrice.textContent = chosenOption.price;
+    }
+  }
+
+  if (rolesParentBtn) {
+    rolesParentBtn.addEventListener('click', function () {
+      newServiceState = { role: 'parent', serviceSlug: '', type: '' };
+      renderNewServiceStep();
+    });
+  }
+  if (roleSchoolBtn) {
+    roleSchoolBtn.addEventListener('click', function () {
+      newServiceState = { role: 'school', serviceSlug: '', type: '' };
+      renderNewServiceStep();
+    });
+  }
+
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', function () {
+      checkoutError.classList.add('hidden');
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = 'Redirecting to payment…';
+
+      fetch('/api/client-auth/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceSlug: newServiceState.serviceSlug, type: newServiceState.type })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok || !result.data.url) throw new Error((result.data && result.data.error) || 'Could not start checkout.');
+          window.location.href = result.data.url;
+        })
+        .catch(function (err) {
+          checkoutError.textContent = err.message || 'Could not start checkout.';
+          checkoutError.classList.remove('hidden');
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = 'Pay & book →';
+        });
+    });
+  }
 
   function openDetailModal(title, fill) {
     detailModalTitle.textContent = title;
@@ -605,6 +751,19 @@
       .catch(function (err) {
         showError(err.message || 'Could not load your account.');
       });
+  }
+
+  var checkoutParam = new URLSearchParams(window.location.search).get('checkout');
+  if (checkoutParam && checkoutReturnMessage) {
+    if (checkoutParam === 'success') {
+      checkoutReturnMessage.innerHTML = '<p>Payment received! Your sessions will appear below shortly - refresh in a moment if you don’t see them yet.</p>';
+      checkoutReturnMessage.classList.remove('hidden');
+    } else if (checkoutParam === 'cancelled') {
+      checkoutReturnMessage.innerHTML = '<p>Checkout was cancelled - no payment was taken.</p>';
+      checkoutReturnMessage.classList.remove('hidden');
+    }
+    switchTab('bookings');
+    window.history.replaceState({}, '', window.location.pathname);
   }
 
   load();
