@@ -17,6 +17,11 @@
   var sendLinksMenu = document.getElementById('send-links-menu');
   var sendLinksSubmit = document.getElementById('send-links-submit');
   var sendLinksStatus = document.getElementById('send-links-status');
+  var emailClientBtn = document.getElementById('email-client-btn');
+  var emailClientMenu = document.getElementById('email-client-menu');
+  var emailClientSubmit = document.getElementById('email-client-submit');
+  var emailClientStatus = document.getElementById('email-client-status');
+  var emailClientError = document.getElementById('email-client-error');
   var assignmentsWrap = document.getElementById('assignments-wrap');
   var assignmentsList = document.getElementById('assignments-list');
   var tabsBar = document.getElementById('client-tabs');
@@ -32,11 +37,6 @@
   var packCreateForm = document.getElementById('pack-create-form');
   var packCreateError = document.getElementById('pack-create-error');
   var packCreateSubmit = document.getElementById('pack-create-submit');
-  var packTypeToggle = document.getElementById('pack-type-toggle');
-  var packTotalSessionsField = document.getElementById('pack-total-sessions-field');
-  var packServiceKeyField = document.getElementById('pack-service-key-field');
-  var packTotalSessionsInput = document.getElementById('pack-total-sessions');
-  var currentPackType = 'fixed';
 
   if (!detail) return;
 
@@ -78,7 +78,8 @@
     invoice_sent: 'Invoice sent',
     session_report: 'Session report sent',
     links_sent: 'Forms assigned',
-    document_uploaded: 'Document uploaded'
+    document_uploaded: 'Document uploaded',
+    email_sent: 'Email sent'
   };
 
   function escapeHtml(str) {
@@ -371,6 +372,52 @@
     assignmentsWrap.classList.remove('hidden');
   }
 
+  var emailsWrap = document.getElementById('emails-wrap');
+  var emailsList = document.getElementById('emails-list');
+
+  function renderEmails(items) {
+    if (!emailsWrap || !emailsList) return;
+    if (!items.length) {
+      emailsWrap.classList.add('hidden');
+      return;
+    }
+    emailsList.innerHTML = '';
+    items.forEach(function (item) {
+      var div = document.createElement('div');
+      div.className = 'timeline-item';
+
+      var subjectEl = document.createElement('p');
+      subjectEl.className = 'timeline-summary';
+      subjectEl.textContent = item.summary;
+      div.appendChild(subjectEl);
+
+      var dateEl = document.createElement('p');
+      dateEl.className = 'timeline-date';
+      dateEl.textContent = 'Sent ' + formatDateTime(item.created_at);
+      div.appendChild(dateEl);
+
+      var detailObj = parseDetail(item);
+      if (detailObj && detailObj.message) {
+        var viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.className = 'timeline-view-btn';
+        viewBtn.textContent = 'View';
+        viewBtn.addEventListener('click', function () {
+          openDetailModal(item.summary, function (body) {
+            var p = document.createElement('p');
+            p.style.whiteSpace = 'pre-wrap';
+            p.textContent = detailObj.message;
+            body.appendChild(p);
+          });
+        });
+        div.appendChild(viewBtn);
+      }
+
+      emailsList.appendChild(div);
+    });
+    emailsWrap.classList.remove('hidden');
+  }
+
   var documentsList = document.getElementById('documents-list');
 
   function renderDocuments(items) {
@@ -528,6 +575,7 @@
   function closeMenus() {
     if (sendReportMenu) sendReportMenu.classList.add('hidden');
     if (sendLinksMenu) sendLinksMenu.classList.add('hidden');
+    if (emailClientMenu) emailClientMenu.classList.add('hidden');
   }
 
   function toggleMenu(btn, menu) {
@@ -543,6 +591,7 @@
 
   toggleMenu(sendReportBtn, sendReportMenu);
   toggleMenu(sendLinksBtn, sendLinksMenu);
+  toggleMenu(emailClientBtn, emailClientMenu);
   document.addEventListener('click', closeMenus);
 
   if (sendLinksSubmit) {
@@ -579,6 +628,48 @@
         })
         .finally(function () {
           sendLinksSubmit.disabled = false;
+        });
+    });
+  }
+
+  if (emailClientSubmit) {
+    emailClientSubmit.addEventListener('click', function () {
+      emailClientError.classList.add('hidden');
+      var subject = document.getElementById('email-client-subject').value.trim();
+      var message = document.getElementById('email-client-message').value.trim();
+
+      if (!subject || !message) {
+        emailClientStatus.textContent = 'Add a subject and message.';
+        return;
+      }
+
+      emailClientStatus.textContent = 'Sending…';
+      emailClientSubmit.disabled = true;
+
+      fetch('/api/internal/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: clientId, subject: subject, message: message })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not send.');
+          emailClientStatus.textContent = 'Sent!';
+          document.getElementById('email-client-subject').value = '';
+          document.getElementById('email-client-message').value = '';
+          loadClient();
+          setTimeout(function () {
+            emailClientStatus.textContent = '';
+            emailClientMenu.classList.add('hidden');
+          }, 1200);
+        })
+        .catch(function (err) {
+          emailClientError.textContent = err.message || 'Could not send.';
+          emailClientError.classList.remove('hidden');
+          emailClientStatus.textContent = '';
+        })
+        .finally(function () {
+          emailClientSubmit.disabled = false;
         });
     });
   }
@@ -628,12 +719,14 @@
         var reportItems = interactions.filter(function (i) { return REPORT_TYPES.indexOf(i.type) !== -1; });
         var invoiceItems = interactions.filter(function (i) { return INVOICE_TYPES.indexOf(i.type) !== -1; });
         var documentItems = interactions.filter(function (i) { return DOCUMENT_TYPES.indexOf(i.type) !== -1; });
+        var emailItems = interactions.filter(function (i) { return i.type === 'email_sent'; });
 
         renderTabPanel(document.getElementById('tab-forms'), formItems, 'No forms submitted yet.');
         renderReports(document.getElementById('tab-reports'), reportItems);
         renderTabPanel(document.getElementById('tab-invoices'), invoiceItems, 'No invoices sent or requested yet.');
         renderDocuments(documentItems);
         renderAssignments(assignments);
+        renderEmails(emailItems);
         renderPortalAccess(result.data.hasPortalAccess);
         renderPacks(result.data.packs || []);
         renderPackBookings(result.data.bookings || []);
@@ -744,33 +837,17 @@
     });
   }
 
-  if (packTypeToggle) {
-    packTypeToggle.addEventListener('click', function (e) {
-      var btn = e.target.closest('.role-btn');
-      if (!btn) return;
-      currentPackType = btn.dataset.packType;
-      Array.prototype.forEach.call(packTypeToggle.querySelectorAll('.role-btn'), function (b) {
-        b.classList.toggle('active', b === btn);
-      });
-      var isOngoing = currentPackType === 'ongoing';
-      packTotalSessionsField.classList.toggle('hidden', isOngoing);
-      packServiceKeyField.classList.toggle('hidden', !isOngoing);
-      packTotalSessionsInput.required = !isOngoing;
-    });
-  }
-
   if (packCreateForm) {
     packCreateForm.addEventListener('submit', function (e) {
       e.preventDefault();
       packCreateError.classList.add('hidden');
 
       var serviceLabel = document.getElementById('pack-service-label').value.trim();
-      var totalSessions = document.getElementById('pack-total-sessions').value;
       var sessionMinutes = document.getElementById('pack-session-minutes').value;
       var serviceKey = document.getElementById('pack-service-key').value;
 
       packCreateSubmit.disabled = true;
-      packCreateSubmit.textContent = 'Adding…';
+      packCreateSubmit.textContent = 'Setting up…';
 
       fetch('/api/internal/create-pack', {
         method: 'POST',
@@ -778,33 +855,25 @@
         body: JSON.stringify({
           clientId: clientId,
           serviceLabel: serviceLabel,
-          totalSessions: totalSessions,
           sessionMinutes: sessionMinutes,
-          packType: currentPackType,
+          packType: 'ongoing',
           serviceKey: serviceKey
         })
       })
         .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
         .then(function (result) {
-          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not add this pack.');
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not set this up.');
           packCreateForm.reset();
           document.getElementById('pack-session-minutes').value = 60;
-          currentPackType = 'fixed';
-          Array.prototype.forEach.call(packTypeToggle.querySelectorAll('.role-btn'), function (b) {
-            b.classList.toggle('active', b.dataset.packType === 'fixed');
-          });
-          packTotalSessionsField.classList.remove('hidden');
-          packServiceKeyField.classList.add('hidden');
-          packTotalSessionsInput.required = true;
           loadClient();
         })
         .catch(function (err) {
-          packCreateError.textContent = err.message || 'Could not add this pack.';
+          packCreateError.textContent = err.message || 'Could not set this up.';
           packCreateError.classList.remove('hidden');
         })
         .finally(function () {
           packCreateSubmit.disabled = false;
-          packCreateSubmit.textContent = 'Add pack';
+          packCreateSubmit.textContent = 'Set up';
         });
     });
   }
