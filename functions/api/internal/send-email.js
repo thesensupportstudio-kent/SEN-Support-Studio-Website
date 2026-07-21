@@ -96,7 +96,6 @@ export async function onRequestPost(context) {
         // directly with her instead of a shared inbox.
         from: env.PERSONAL_FROM_EMAIL || 'Emma Owen <emma@sensupportstudio.com>',
         to: [client.parent_email],
-        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
         subject: subject,
         html: buildEmailHtml(client.parent_name, message)
       })

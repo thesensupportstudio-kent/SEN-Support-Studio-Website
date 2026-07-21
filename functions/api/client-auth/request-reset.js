@@ -78,7 +78,6 @@ export async function onRequestPost(context) {
       body: JSON.stringify({
         from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
         to: [client.parent_email],
-        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
         subject: 'Reset your password - SEN Support Studio',
         html: buildEmailHtml(client.parent_name, resetUrl)
       })

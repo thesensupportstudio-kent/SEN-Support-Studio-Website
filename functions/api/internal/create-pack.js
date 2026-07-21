@@ -94,9 +94,8 @@ export async function onRequestPost(context) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+          from: env.BOOKING_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
           to: [client.parent_email],
-          bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
           subject: 'Your sessions are ready to book - SEN Support Studio',
           html: buildEmailHtml(client.parent_name, body.serviceLabel, loginUrl)
         })

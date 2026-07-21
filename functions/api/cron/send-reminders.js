@@ -93,7 +93,7 @@ export async function onRequestPost(context) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+            from: env.BOOKING_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
             to: [booking.parent_email],
             subject: 'Reminder: your upcoming session - SEN Support Studio',
             html: buildReminderHtml(booking, formatUkDateTime(booking.start_at))

@@ -44,9 +44,8 @@ async function sendReceiptEmail(env, client, lineLabel, amount, currency) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        from: env.BOOKING_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
         to: [client.parent_email],
-        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
         subject: 'Payment received - SEN Support Studio',
         html: buildReceiptEmailHtml(client, lineLabel, amount, currency)
       })

@@ -51,7 +51,6 @@ export async function sendAccountSetupEmail(env, request, client) {
     body: JSON.stringify({
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: [client.parent_email],
-      bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
       subject: 'Set up your account - SEN Support Studio',
       html: buildEmailHtml(client.parent_name, setupUrl)
     })

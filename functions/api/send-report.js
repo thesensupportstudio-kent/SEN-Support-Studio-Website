@@ -113,7 +113,6 @@ export async function onRequestPost(context) {
     const emailPayload = {
       from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
       to: to,
-      bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
       subject: title + ' - ' + clientName + ' - ' + sessionDate,
       html: buildEmailHtml({ service, recipientName, sessionDate, perChild: isPerChild }),
       attachments: [{ filename: pdfFileName, content: pdfBase64 }]

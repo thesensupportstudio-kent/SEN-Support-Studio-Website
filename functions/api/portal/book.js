@@ -40,9 +40,8 @@ async function sendBookingConfirmationEmail(env, client, serviceLabel, startIso)
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        from: env.BOOKING_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
         to: [client.parent_email],
-        bcc: [env.REPORT_BCC_EMAIL || 'thesensupportstudio@gmail.com'],
         subject: 'You’re booked in - SEN Support Studio',
         html: buildBookingConfirmationHtml(client, serviceLabel, formatUkDateTime(startIso))
       })
