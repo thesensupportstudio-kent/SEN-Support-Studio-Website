@@ -43,7 +43,7 @@ async function sendEnquiryConfirmationEmail(env, data) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        from: env.CONTACT_FROM_EMAIL || 'SEN Support Studio <hello@sensupportstudio.com>',
         to: [data.email],
         subject: 'We’ve received your enquiry - SEN Support Studio',
         html: buildConfirmationEmailHtml(data)
@@ -122,7 +122,7 @@ export async function onRequestPost(context) {
     const notifyTo = env.CONTACT_TO_EMAIL || 'hello@sensupportstudio.com';
 
     const emailPayload = {
-      from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+      from: env.CONTACT_FROM_EMAIL || 'SEN Support Studio <hello@sensupportstudio.com>',
       to: [notifyTo],
       reply_to: email,
       subject: 'Website enquiry from ' + name,
