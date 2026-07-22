@@ -21,6 +21,45 @@ function nl2br(str) {
   return escapeHtml(str).replace(/\n/g, '<br>');
 }
 
+function buildConfirmationEmailHtml(data) {
+  return (
+    '<div style="background:#FBFAF5;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;color:#2D5439;">' +
+      '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;">' +
+        '<p style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5b8a63;margin:0 0 4px;">SEN Support Studio</p>' +
+        '<h1 style="font-family:Georgia,serif;font-weight:400;font-size:22px;color:#2D5439;margin:0 0 20px;">Thanks for getting in touch</h1>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0 0 16px;">Hi ' + escapeHtml(data.name) + ', thank you for your enquiry' + (data.serviceLabel ? ' about ' + escapeHtml(data.serviceLabel) : '') + '. We’ve received your message and will be in touch within 1 business day to talk it through.</p>' +
+        '<p style="font-size:15px;color:#3f5943;line-height:1.6;margin:0;">If anything changes in the meantime, or you have any other questions, just reply to this email.</p>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function sendEnquiryConfirmationEmail(env, data) {
+  try {
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + env.RESEND_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: env.REPORT_FROM_EMAIL || 'SEN Support Studio <onboarding@resend.dev>',
+        to: [data.email],
+        subject: 'We’ve received your enquiry - SEN Support Studio',
+        html: buildConfirmationEmailHtml(data)
+      })
+    });
+    if (!resp.ok) {
+      const detail = await resp.text().catch(function () { return ''; });
+      console.log('Resend rejected enquiry-confirmation email: ' + resp.status + ' ' + detail);
+    }
+  } catch (err) {
+    // A confirmation email failing to send shouldn't fail the enquiry
+    // itself - the staff notification already went out either way.
+    console.log('sendEnquiryConfirmationEmail failed: ' + String(err && err.message));
+  }
+}
+
 function buildEmailHtml(data) {
   const roleLabel = ROLE_LABELS[data.role] || data.role || 'Not specified';
   return (
@@ -117,6 +156,8 @@ export async function onRequestPost(context) {
         : 'Website enquiry (' + (ROLE_LABELS[role] || role || 'not specified') + ')',
       detail: { role, message, serviceLabel: serviceLabel || undefined }
     });
+
+    await sendEnquiryConfirmationEmail(env, { name, email, serviceLabel });
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
