@@ -1,5 +1,5 @@
 import { isConnected } from '../_lib/google.js';
-import { listBusyRanges, generateAvailableSlots } from '../_lib/calendarEvent.js';
+import { listBusyRanges, generateAvailableSlots, EARLIEST_BOOKABLE_DATE } from '../_lib/calendarEvent.js';
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPackById } from '../_lib/packs.js';
 
@@ -57,8 +57,11 @@ export async function onRequestGet(context) {
     }
 
     const now = new Date();
-    const timeMin = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const timeMax = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days).toISOString();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const earliestStart = new Date(EARLIEST_BOOKABLE_DATE + 'T00:00:00Z');
+    const rangeStart = todayStart.getTime() > earliestStart.getTime() ? todayStart : earliestStart;
+    const timeMin = rangeStart.toISOString();
+    const timeMax = new Date(rangeStart.getTime() + days * 24 * 60 * 60000).toISOString();
 
     const busyRanges = await listBusyRanges(env, timeMin, timeMax);
     const slots = generateAvailableSlots(busyRanges, pack.session_minutes, days);

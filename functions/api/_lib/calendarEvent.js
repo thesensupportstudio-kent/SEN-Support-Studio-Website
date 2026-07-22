@@ -46,6 +46,11 @@ export const WORKING_HOURS = {
   6: { start: '09:00', end: '12:00' }
 };
 
+// Emma isn't available to deliver sessions until she finishes her current
+// role on 31 August 2026, so the portal shouldn't offer or accept any
+// booking before this date even though the site itself is live earlier.
+export const EARLIEST_BOOKABLE_DATE = '2026-09-01';
+
 // Travel time between sessions (or any other calendar commitment) - padded
 // onto both sides of every busy range before checking a slot against it, so
 // back-to-back bookings (or a booking right up against an existing
@@ -113,7 +118,9 @@ export async function listBusyRanges(env, timeMinIso, timeMaxIso) {
 // after something else gets booked into it.
 export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDate, nowMs) {
   const now = nowMs != null ? nowMs : Date.now();
-  const start = fromDate ? new Date(fromDate + 'T00:00:00Z') : new Date(now);
+  const requestedStart = fromDate ? new Date(fromDate + 'T00:00:00Z') : new Date(now);
+  const earliestStart = new Date(EARLIEST_BOOKABLE_DATE + 'T00:00:00Z');
+  const start = requestedStart.getTime() > earliestStart.getTime() ? requestedStart : earliestStart;
   const slots = [];
   const slotStep = sessionMinutes + BOOKING_BUFFER_MINUTES;
 
