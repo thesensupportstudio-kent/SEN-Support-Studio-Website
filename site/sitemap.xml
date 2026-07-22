@@ -46,6 +46,26 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://sensupportstudio.com/article-sensory-strategies-home.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sensupportstudio.com/article-sensory-profile-explained.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sensupportstudio.com/article-back-to-school-anxiety.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sensupportstudio.com/article-adhd-executive-function.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://sensupportstudio.com/testimonials.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
