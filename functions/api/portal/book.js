@@ -1,5 +1,5 @@
 import { isConnected } from '../_lib/google.js';
-import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL, overlapsBusyWithBuffer, formatUkDateTime } from '../_lib/calendarEvent.js';
+import { listBusyRanges, localToIso, buildEventBody, callGoogle, EVENTS_URL, overlapsBusyWithBuffer, formatUkDateTime, EARLIEST_BOOKABLE_DATE } from '../_lib/calendarEvent.js';
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPackById, createBooking } from '../_lib/packs.js';
 import { logInteraction } from '../_lib/clients.js';
@@ -84,6 +84,13 @@ export async function onRequestPost(context) {
 
   if (!packId || !date || !startTime || !endTime) {
     return new Response(JSON.stringify({ error: 'Missing booking details.' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (date < EARLIEST_BOOKABLE_DATE) {
+    return new Response(JSON.stringify({ error: 'Sessions can only be booked from 1 September 2026 onwards.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
