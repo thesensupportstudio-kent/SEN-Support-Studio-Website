@@ -89,18 +89,18 @@ export async function onRequestPost(context) {
     });
   }
 
-  if (date < EARLIEST_BOOKABLE_DATE) {
-    return new Response(JSON.stringify({ error: 'Sessions can only be booked from 1 September 2026 onwards.' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
   try {
     const client = await requireClientSession(request, env);
     if (!client) {
       return new Response(JSON.stringify({ error: 'Not logged in.' }), {
         status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!client.early_booking_ok && date < EARLIEST_BOOKABLE_DATE) {
+      return new Response(JSON.stringify({ error: 'Sessions can only be booked from 1 September 2026 onwards.' }), {
+        status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
