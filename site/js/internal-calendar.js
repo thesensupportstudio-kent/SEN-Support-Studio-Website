@@ -14,6 +14,8 @@
   var titleField = document.getElementById('event-title');
   var dateField = document.getElementById('event-date');
   var allDayField = document.getElementById('event-allday');
+  var repeatWeeklyField = document.getElementById('event-repeat-weekly');
+  var repeatField = document.getElementById('event-repeat-field');
   var timeRow = document.getElementById('event-time-row');
   var startTimeField = document.getElementById('event-start-time');
   var endTimeField = document.getElementById('event-end-time');
@@ -220,6 +222,7 @@
   function openNewForm() {
     clearForm();
     formTitle.textContent = 'New event';
+    repeatField.classList.remove('hidden');
     formWrap.classList.remove('hidden');
     agenda.classList.add('hidden');
     formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -239,6 +242,12 @@
     }
     locationField.value = ev.location || '';
     descriptionField.value = ev.description || '';
+    // Editing an existing event's recurrence isn't supported here (Google
+    // Calendar splits "this event"/"this and following"/"all events" in a
+    // way that's out of scope for this simple form) - so this checkbox is
+    // only offered when creating a new event, not when editing one.
+    repeatWeeklyField.checked = false;
+    repeatField.classList.add('hidden');
     deleteBtn.classList.remove('hidden');
     formWrap.classList.remove('hidden');
     agenda.classList.add('hidden');
@@ -269,6 +278,7 @@
       endTime: endTimeField.value,
       location: locationField.value.trim(),
       description: descriptionField.value.trim(),
+      repeatWeekly: !eventIdField.value && repeatWeeklyField.checked,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     };
 

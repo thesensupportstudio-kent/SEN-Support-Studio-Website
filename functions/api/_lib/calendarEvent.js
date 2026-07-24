@@ -195,6 +195,7 @@ export function buildEventBody(body) {
   const event = { summary: title };
   if (location) event.location = location;
   if (description) event.description = description;
+  if (body.repeatWeekly) event.recurrence = ['RRULE:FREQ=WEEKLY'];
 
   if (allDay) {
     event.start = { date: date };
