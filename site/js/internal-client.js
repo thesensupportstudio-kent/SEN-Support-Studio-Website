@@ -7,6 +7,8 @@
   var contactEl = document.getElementById('client-contact');
   var statusSelect = document.getElementById('client-status-select');
   var statusSaveStatus = document.getElementById('status-save-status');
+  var earlyBookingCheckbox = document.getElementById('client-early-booking-checkbox');
+  var earlyBookingSaveStatus = document.getElementById('early-booking-save-status');
   var notesField = document.getElementById('client-notes');
   var notesSaveBtn = document.getElementById('notes-save-btn');
   var notesSaveStatus = document.getElementById('notes-save-status');
@@ -37,6 +39,9 @@
   var packCreateForm = document.getElementById('pack-create-form');
   var packCreateError = document.getElementById('pack-create-error');
   var packCreateSubmit = document.getElementById('pack-create-submit');
+  var packTypeSelect = document.getElementById('pack-type');
+  var packTotalSessionsField = document.getElementById('pack-total-sessions-field');
+  var packServiceKeyField = document.getElementById('pack-service-key-field');
 
   if (!detail) return;
 
@@ -704,6 +709,7 @@
         childEl.textContent = client.child_name ? 'Child: ' + client.child_name + (client.school ? ' - ' + client.school : '') : (client.school || '');
         contactEl.textContent = [client.parent_email, client.parent_phone].filter(Boolean).join(' · ');
         statusSelect.value = client.status || 'enquiry';
+        earlyBookingCheckbox.checked = !!client.early_booking_ok;
         notesField.value = client.notes || '';
 
         if (sendReportMenu) {
@@ -837,14 +843,27 @@
     });
   }
 
+  if (packTypeSelect) {
+    var togglePackFields = function () {
+      var isOngoing = packTypeSelect.value === 'ongoing';
+      packServiceKeyField.classList.toggle('hidden', !isOngoing);
+      packTotalSessionsField.classList.toggle('hidden', isOngoing);
+      document.getElementById('pack-total-sessions').required = !isOngoing;
+    };
+    packTypeSelect.addEventListener('change', togglePackFields);
+    togglePackFields();
+  }
+
   if (packCreateForm) {
     packCreateForm.addEventListener('submit', function (e) {
       e.preventDefault();
       packCreateError.classList.add('hidden');
 
+      var packType = packTypeSelect.value;
       var serviceLabel = document.getElementById('pack-service-label').value.trim();
       var sessionMinutes = document.getElementById('pack-session-minutes').value;
       var serviceKey = document.getElementById('pack-service-key').value;
+      var totalSessions = document.getElementById('pack-total-sessions').value;
 
       packCreateSubmit.disabled = true;
       packCreateSubmit.textContent = 'Setting up…';
@@ -856,8 +875,9 @@
           clientId: clientId,
           serviceLabel: serviceLabel,
           sessionMinutes: sessionMinutes,
-          packType: 'ongoing',
-          serviceKey: serviceKey
+          packType: packType,
+          serviceKey: serviceKey,
+          totalSessions: totalSessions
         })
       })
         .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
@@ -865,6 +885,7 @@
           if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not set this up.');
           packCreateForm.reset();
           document.getElementById('pack-session-minutes').value = 60;
+          togglePackFields();
           loadClient();
         })
         .catch(function (err) {
@@ -898,6 +919,10 @@
 
   statusSelect.addEventListener('change', function () {
     saveUpdate({ status: statusSelect.value }, statusSaveStatus, 'Saved');
+  });
+
+  earlyBookingCheckbox.addEventListener('change', function () {
+    saveUpdate({ earlyBookingOk: earlyBookingCheckbox.checked }, earlyBookingSaveStatus, 'Saved');
   });
 
   notesSaveBtn.addEventListener('click', function () {

@@ -116,11 +116,15 @@ export async function listBusyRanges(env, timeMinIso, timeMaxIso) {
 // until sessionMinutes + the buffer has passed, so the grid itself always
 // has travel time built in rather than relying on a slot only disappearing
 // after something else gets booked into it.
-export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDate, nowMs) {
+export function generateAvailableSlots(busyRanges, sessionMinutes, days, fromDate, nowMs, ignoreFloor) {
   const now = nowMs != null ? nowMs : Date.now();
   const requestedStart = fromDate ? new Date(fromDate + 'T00:00:00Z') : new Date(now);
-  const earliestStart = new Date(EARLIEST_BOOKABLE_DATE + 'T00:00:00Z');
-  const start = requestedStart.getTime() > earliestStart.getTime() ? requestedStart : earliestStart;
+  const start = ignoreFloor
+    ? requestedStart
+    : (function () {
+      const earliestStart = new Date(EARLIEST_BOOKABLE_DATE + 'T00:00:00Z');
+      return requestedStart.getTime() > earliestStart.getTime() ? requestedStart : earliestStart;
+    })();
   const slots = [];
   const slotStep = sessionMinutes + BOOKING_BUFFER_MINUTES;
 

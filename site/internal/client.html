@@ -114,6 +114,15 @@
           <span id="status-save-status" class="notes-save-status"></span>
         </div>
 
+        <div class="client-status-row">
+          <label for="client-early-booking-checkbox">
+            <input type="checkbox" id="client-early-booking-checkbox">
+            <strong>Allow this client to book before 1 September 2026</strong>
+          </label>
+          <span id="early-booking-save-status" class="notes-save-status"></span>
+        </div>
+        <p class="lede" style="margin:-8px 0 20px;">For testing the booking flow only - everyone else stays blocked until launch.</p>
+
         <div class="internal-card">
           <div class="form-field">
             <label for="client-notes">Notes</label>
@@ -169,17 +178,34 @@
           </div>
           <div id="tab-packs" class="client-tab-panel hidden">
             <div class="internal-card">
-              <h3 class="overview-subheading" style="margin-top:0;">Set up pay-per-session booking</h3>
-              <p class="lede" style="margin-bottom:12px;">For clients you're invoicing one session at a time rather than a prepaid pack. Prepaid packs no longer need adding here - they're created automatically as soon as a client pays through their portal.</p>
+              <h3 class="overview-subheading" style="margin-top:0;">Add a session pack</h3>
+              <p class="lede" style="margin-bottom:12px;">Prepaid packs bought through the portal at standard rates are created automatically - you don't need to add those here. Use this for anything paid outside the portal (e.g. bank transfer, a custom rate) or for pay-per-session invoicing.</p>
               <div id="pack-create-error" class="form-error hidden"></div>
               <form id="pack-create-form">
                 <div class="internal-form-row">
                   <div class="form-field">
+                    <label for="pack-type">Pack type</label>
+                    <select id="pack-type">
+                      <option value="fixed">Fixed pack - already paid (e.g. bank transfer, custom rate)</option>
+                      <option value="ongoing">Ongoing - invoice one session at a time</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
                     <label for="pack-service-label">Service</label>
                     <input type="text" id="pack-service-label" required placeholder="e.g. 1:1 Tuition">
                   </div>
-                  <div class="form-field" id="pack-service-key-field">
-                    <label for="pack-service-key">Rate (for online payment)</label>
+                  <div class="form-field">
+                    <label for="pack-session-minutes">Session length (minutes)</label>
+                    <input type="number" id="pack-session-minutes" min="15" step="15" value="60" required>
+                  </div>
+                </div>
+                <div class="internal-form-row">
+                  <div class="form-field" id="pack-total-sessions-field">
+                    <label for="pack-total-sessions">Number of sessions paid for</label>
+                    <input type="number" id="pack-total-sessions" min="1" step="1" placeholder="e.g. 4">
+                  </div>
+                  <div class="form-field hidden" id="pack-service-key-field">
+                    <label for="pack-service-key">Rate (for online card payment)</label>
                     <select id="pack-service-key">
                       <option value="tuition-parent">1:1 Tuition (Parent) - £50/session</option>
                       <option value="tuition-school">1:1 Pupil Tuition (School) - £60/session</option>
@@ -189,10 +215,6 @@
                       <option value="sentence-steps">Sentence Steps Intervention - £100/session</option>
                       <option value="build-buddies">Build Buddies Intervention - £100/session</option>
                     </select>
-                  </div>
-                  <div class="form-field">
-                    <label for="pack-session-minutes">Session length (minutes)</label>
-                    <input type="number" id="pack-session-minutes" min="15" step="15" value="60" required>
                   </div>
                 </div>
                 <button type="submit" class="form-submit" id="pack-create-submit" style="width:auto;">Set up</button>
@@ -222,6 +244,6 @@
   </div>
 
 </div>
-<script src="../js/internal-client.js?v=1784760000"></script>
+<script src="../js/internal-client.js?v=1784876204"></script>
 </body>
 </html>

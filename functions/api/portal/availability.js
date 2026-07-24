@@ -56,15 +56,16 @@ export async function onRequestGet(context) {
       });
     }
 
+    const ignoreFloor = !!client.early_booking_ok;
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const earliestStart = new Date(EARLIEST_BOOKABLE_DATE + 'T00:00:00Z');
-    const rangeStart = todayStart.getTime() > earliestStart.getTime() ? todayStart : earliestStart;
+    const rangeStart = ignoreFloor || todayStart.getTime() > earliestStart.getTime() ? todayStart : earliestStart;
     const timeMin = rangeStart.toISOString();
     const timeMax = new Date(rangeStart.getTime() + days * 24 * 60 * 60000).toISOString();
 
     const busyRanges = await listBusyRanges(env, timeMin, timeMax);
-    const slots = generateAvailableSlots(busyRanges, pack.session_minutes, days);
+    const slots = generateAvailableSlots(busyRanges, pack.session_minutes, days, null, null, ignoreFloor);
 
     return new Response(JSON.stringify({ ok: true, slots: slots }), {
       status: 200,
