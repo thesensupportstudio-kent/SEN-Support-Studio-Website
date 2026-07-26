@@ -2585,6 +2585,24 @@ img {
   margin: 0 0 4px;
 }
 
+.client-address-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.client-address-row input {
+  flex: 1;
+  max-width: 360px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-green-strong);
+  background: var(--offwhite);
+  color: var(--green);
+}
+
 .client-status-row {
   display: flex;
   align-items: center;
