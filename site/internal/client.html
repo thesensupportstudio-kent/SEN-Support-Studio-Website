@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=1784820000">
+<link rel="stylesheet" href="../css/styles.css?v=1785096852">
 <link rel="icon" type="image/x-icon" href="../favicon.ico?v=1784668545">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png?v=1784668545">
 <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16.png?v=1784668545">
@@ -47,6 +47,11 @@
           <h1 id="client-name"></h1>
           <p class="client-detail-meta" id="client-child"></p>
           <p class="client-detail-meta" id="client-contact"></p>
+          <p class="client-detail-meta client-address-row">
+            <span>Session address:</span>
+            <input type="text" id="client-address" placeholder="Home or session address - saves automatically">
+            <span id="address-save-status" class="notes-save-status"></span>
+          </p>
         </div>
         <div class="client-actions">
           <div class="client-action-dropdown">
@@ -122,16 +127,6 @@
           <span id="early-booking-save-status" class="notes-save-status"></span>
         </div>
         <p class="lede" style="margin:-8px 0 20px;">For testing the booking flow only - everyone else stays blocked until launch.</p>
-
-        <div class="internal-card">
-          <div class="form-field">
-            <label for="client-address">Session address</label>
-            <textarea id="client-address" rows="2" placeholder="Where sessions with this family happen - e.g. their home address, or leave blank if it's at their child's school"></textarea>
-          </div>
-          <p class="lede" style="margin:0 0 12px;">Used as the location on any session automatically booked through their portal.</p>
-          <button type="button" class="notes-save-btn" id="address-save-btn">Save address</button>
-          <span id="address-save-status" class="notes-save-status"></span>
-        </div>
 
         <div class="internal-card">
           <div class="form-field">
@@ -254,6 +249,6 @@
   </div>
 
 </div>
-<script src="../js/internal-client.js?v=1785095773"></script>
+<script src="../js/internal-client.js?v=1785096852"></script>
 </body>
 </html>

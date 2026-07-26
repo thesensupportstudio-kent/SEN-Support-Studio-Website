@@ -13,7 +13,6 @@
   var notesSaveBtn = document.getElementById('notes-save-btn');
   var notesSaveStatus = document.getElementById('notes-save-status');
   var addressField = document.getElementById('client-address');
-  var addressSaveBtn = document.getElementById('address-save-btn');
   var addressSaveStatus = document.getElementById('address-save-status');
   var sendReportBtn = document.getElementById('send-report-btn');
   var sendReportMenu = document.getElementById('send-report-menu');
@@ -715,6 +714,7 @@
         earlyBookingCheckbox.checked = !!client.early_booking_ok;
         notesField.value = client.notes || '';
         addressField.value = client.address || '';
+        lastSavedAddress = addressField.value;
 
         if (sendReportMenu) {
           Array.prototype.forEach.call(sendReportMenu.querySelectorAll('a'), function (a) {
@@ -933,7 +933,10 @@
     saveUpdate({ notes: notesField.value }, notesSaveStatus, 'Notes saved');
   });
 
-  addressSaveBtn.addEventListener('click', function () {
-    saveUpdate({ address: addressField.value }, addressSaveStatus, 'Address saved');
+  var lastSavedAddress = '';
+  addressField.addEventListener('blur', function () {
+    if (addressField.value === lastSavedAddress) return;
+    lastSavedAddress = addressField.value;
+    saveUpdate({ address: addressField.value }, addressSaveStatus, 'Saved');
   });
 })();
