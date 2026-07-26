@@ -12,6 +12,9 @@
   var notesField = document.getElementById('client-notes');
   var notesSaveBtn = document.getElementById('notes-save-btn');
   var notesSaveStatus = document.getElementById('notes-save-status');
+  var addressField = document.getElementById('client-address');
+  var addressSaveBtn = document.getElementById('address-save-btn');
+  var addressSaveStatus = document.getElementById('address-save-status');
   var sendReportBtn = document.getElementById('send-report-btn');
   var sendReportMenu = document.getElementById('send-report-menu');
   var sendInvoiceBtn = document.getElementById('send-invoice-btn');
@@ -711,6 +714,7 @@
         statusSelect.value = client.status || 'enquiry';
         earlyBookingCheckbox.checked = !!client.early_booking_ok;
         notesField.value = client.notes || '';
+        addressField.value = client.address || '';
 
         if (sendReportMenu) {
           Array.prototype.forEach.call(sendReportMenu.querySelectorAll('a'), function (a) {
@@ -927,5 +931,9 @@
 
   notesSaveBtn.addEventListener('click', function () {
     saveUpdate({ notes: notesField.value }, notesSaveStatus, 'Notes saved');
+  });
+
+  addressSaveBtn.addEventListener('click', function () {
+    saveUpdate({ address: addressField.value }, addressSaveStatus, 'Address saved');
   });
 })();

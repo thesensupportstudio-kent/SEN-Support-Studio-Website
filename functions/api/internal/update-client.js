@@ -23,6 +23,7 @@ export async function onRequestPost(context) {
   const id = (body.id || '').toString().trim();
   const status = (body.status || '').trim();
   const notes = typeof body.notes === 'string' ? body.notes : null;
+  const address = typeof body.address === 'string' ? body.address : null;
   const earlyBookingOk = typeof body.earlyBookingOk === 'boolean' ? body.earlyBookingOk : null;
 
   if (!id) {
@@ -43,9 +44,10 @@ export async function onRequestPost(context) {
   const values = [];
   if (status) { updates.push('status = ?'); values.push(status); }
   if (notes !== null) { updates.push('notes = ?'); values.push(notes); }
+  if (address !== null) { updates.push('address = ?'); values.push(address); }
   if (earlyBookingOk !== null) { updates.push('early_booking_ok = ?'); values.push(earlyBookingOk ? 1 : 0); }
 
-  if (!status && notes === null && earlyBookingOk === null) {
+  if (!status && notes === null && address === null && earlyBookingOk === null) {
     return new Response(JSON.stringify({ error: 'Nothing to update.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
