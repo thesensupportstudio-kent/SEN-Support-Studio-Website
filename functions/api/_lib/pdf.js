@@ -19656,6 +19656,7 @@ var CONTENT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
 var CREAM = rgb(251 / 255, 250 / 255, 245 / 255);
 var GREEN = rgb(45 / 255, 84 / 255, 57 / 255);
 var MUTED_GREEN = rgb(91 / 255, 138 / 255, 99 / 255);
+var PALE_GREEN = rgb(199 / 255, 217 / 255, 202 / 255);
 var INK = rgb(0.08, 0.1, 0.08);
 function base64ToBytes(base64) {
   const binary = atob(base64);
@@ -19911,6 +19912,44 @@ async function buildResourcePdf(data) {
   ctx.drawFooters();
   return ctx.doc.save();
 }
+async function buildReceiptPdf(data) {
+  const ctx = await createPdfContext({ title: "Payment Receipt", clientName: data.clientName });
+  ctx.addFullHeaderPage();
+  ctx.getPage().drawText("Payment Receipt", { x: MARGIN_X, y: ctx.getY(), size: 24, font: ctx.headingFont, color: GREEN });
+  ctx.setY(ctx.getY() - 18);
+  ctx.getPage().drawText("Receipt No. " + data.receiptNumber, { x: MARGIN_X, y: ctx.getY(), size: 10.5, font: ctx.bodyFont, color: MUTED_GREEN });
+  ctx.setY(ctx.getY() - 40);
+  function row(label, value) {
+    if (!value) return;
+    ctx.ensureSpace(22);
+    ctx.getPage().drawText(label, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyBoldFont, color: INK });
+    const lines = contentToLines(ctx.bodyFont, 11, CONTENT_WIDTH - 150, value);
+    lines.forEach(function(line, li) {
+      if (li > 0) ctx.setY(ctx.getY() - 15);
+      if (line) ctx.getPage().drawText(line, { x: MARGIN_X + 150, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+    });
+    ctx.setY(ctx.getY() - 22);
+  }
+  row("Received from:", data.clientName);
+  row("For:", data.description);
+  row("Date received:", data.dateLabel);
+  row("Payment method:", data.paymentMethod);
+  ctx.setY(ctx.getY() - 8);
+  ctx.ensureSpace(64);
+  const boxTop = ctx.getY();
+  const boxHeight = 64;
+  ctx.getPage().drawRectangle({ x: MARGIN_X, y: boxTop - boxHeight, width: CONTENT_WIDTH, height: boxHeight, color: PALE_GREEN, opacity: 0.45 });
+  ctx.getPage().drawText("AMOUNT RECEIVED", { x: MARGIN_X + 18, y: boxTop - 24, size: 10, font: ctx.bodyBoldFont, color: MUTED_GREEN });
+  ctx.getPage().drawText(data.amountLabel, { x: MARGIN_X + 18, y: boxTop - 48, size: 22, font: ctx.headingFont, color: GREEN });
+  ctx.setY(boxTop - boxHeight - 30);
+  if (data.notes) {
+    ctx.drawSection("Notes", data.notes);
+  }
+  ctx.ensureSpace(16);
+  ctx.getPage().drawText("Thank you for your payment.", { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: MUTED_GREEN });
+  ctx.drawFooters();
+  return ctx.doc.save();
+}
 function bytesToBase64(bytes) {
   let binary = "";
   const chunkSize = 32768;
@@ -19921,6 +19960,7 @@ function bytesToBase64(bytes) {
 }
 export {
   buildChildPagesPdf,
+  buildReceiptPdf,
   buildReportPdf,
   buildResourcePdf,
   bytesToBase64

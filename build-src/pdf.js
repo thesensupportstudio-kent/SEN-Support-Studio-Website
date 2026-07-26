@@ -13,6 +13,7 @@ const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_X * 2;
 const CREAM = rgb(0xfb / 255, 0xfa / 255, 0xf5 / 255);
 const GREEN = rgb(0x2d / 255, 0x54 / 255, 0x39 / 255);
 const MUTED_GREEN = rgb(0x5b / 255, 0x8a / 255, 0x63 / 255);
+const PALE_GREEN = rgb(0xc7 / 255, 0xd9 / 255, 0xca / 255);
 const INK = rgb(0.08, 0.1, 0.08);
 
 function base64ToBytes(base64) {
@@ -288,6 +289,52 @@ export async function buildResourcePdf(data) {
       ctx.setY(ctx.getY() - 15);
     });
   }
+
+  ctx.drawFooters();
+  return ctx.doc.save();
+}
+
+export async function buildReceiptPdf(data) {
+  const ctx = await createPdfContext({ title: 'Payment Receipt', clientName: data.clientName });
+  ctx.addFullHeaderPage();
+
+  ctx.getPage().drawText('Payment Receipt', { x: MARGIN_X, y: ctx.getY(), size: 24, font: ctx.headingFont, color: GREEN });
+  ctx.setY(ctx.getY() - 18);
+  ctx.getPage().drawText('Receipt No. ' + data.receiptNumber, { x: MARGIN_X, y: ctx.getY(), size: 10.5, font: ctx.bodyFont, color: MUTED_GREEN });
+  ctx.setY(ctx.getY() - 40);
+
+  function row(label, value) {
+    if (!value) return;
+    ctx.ensureSpace(22);
+    ctx.getPage().drawText(label, { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyBoldFont, color: INK });
+    const lines = contentToLines(ctx.bodyFont, 11, CONTENT_WIDTH - 150, value);
+    lines.forEach(function (line, li) {
+      if (li > 0) ctx.setY(ctx.getY() - 15);
+      if (line) ctx.getPage().drawText(line, { x: MARGIN_X + 150, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: INK });
+    });
+    ctx.setY(ctx.getY() - 22);
+  }
+
+  row('Received from:', data.clientName);
+  row('For:', data.description);
+  row('Date received:', data.dateLabel);
+  row('Payment method:', data.paymentMethod);
+
+  ctx.setY(ctx.getY() - 8);
+  ctx.ensureSpace(64);
+  const boxTop = ctx.getY();
+  const boxHeight = 64;
+  ctx.getPage().drawRectangle({ x: MARGIN_X, y: boxTop - boxHeight, width: CONTENT_WIDTH, height: boxHeight, color: PALE_GREEN, opacity: 0.45 });
+  ctx.getPage().drawText('AMOUNT RECEIVED', { x: MARGIN_X + 18, y: boxTop - 24, size: 10, font: ctx.bodyBoldFont, color: MUTED_GREEN });
+  ctx.getPage().drawText(data.amountLabel, { x: MARGIN_X + 18, y: boxTop - 48, size: 22, font: ctx.headingFont, color: GREEN });
+  ctx.setY(boxTop - boxHeight - 30);
+
+  if (data.notes) {
+    ctx.drawSection('Notes', data.notes);
+  }
+
+  ctx.ensureSpace(16);
+  ctx.getPage().drawText('Thank you for your payment.', { x: MARGIN_X, y: ctx.getY(), size: 11, font: ctx.bodyFont, color: MUTED_GREEN });
 
   ctx.drawFooters();
   return ctx.doc.save();

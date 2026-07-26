@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Send Receipt | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=1785096852">
+<link rel="icon" type="image/x-icon" href="../favicon.ico?v=1784668545">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32.png?v=1784668545">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16.png?v=1784668545">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png?v=1784668545">
+</head>
+<body>
+<div class="page">
+
+  <div class="internal-bar">Staff Only</div>
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <a href="index.html" class="app-sidebar-brand">
+        <img src="../assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+        <span>Internal Tools</span>
+      </a>
+      <nav class="app-nav">
+        <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>Home</a>
+        <a href="clients.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c2.3.4 4 2.4 4.5 5.8"/></svg>Clients</a>
+        <a href="calendar.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>Calendar</a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h6M9 8h2"/></svg>Reports</a>
+        <a href="send-invoice.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Invoices</a>
+        <a href="send-receipt.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/><path d="M9 15.5l1.5 1.5 3-3"/></svg>Receipts</a>
+      </nav>
+      <div class="app-sidebar-footer">
+        <a href="../index.html">&larr; Back to live site</a>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <section class="internal-section">
+    <h1>Send Receipt</h1>
+    <p class="lede">For payments that come to you directly (bank transfer, cash, etc.) rather than through the booking system. Fill in the details below and a branded PDF receipt goes straight from bookings@sensupportstudio.com, with a copy kept on this client's timeline.</p>
+    <div id="client-context-banner" class="client-context-banner hidden"></div>
+
+    <div class="internal-card">
+      <div id="receipt-send-error" class="form-error hidden"></div>
+
+      <form id="receipt-send-form">
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="recipient-name">Name</label>
+            <input type="text" id="recipient-name" name="recipientName" required placeholder="e.g. Juliette Tysoe">
+          </div>
+          <div class="form-field">
+            <label for="recipient-email">Email address</label>
+            <input type="email" id="recipient-email" name="recipientEmail" required placeholder="parent@example.com">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="receipt-description">What was this payment for?</label>
+          <input type="text" id="receipt-description" name="description" required placeholder="e.g. 4-session tuition pack">
+        </div>
+
+        <div class="internal-form-row">
+          <div class="form-field">
+            <label for="receipt-amount">Amount received (£)</label>
+            <input type="number" id="receipt-amount" name="amount" min="0.01" step="0.01" required placeholder="e.g. 180.00">
+          </div>
+          <div class="form-field">
+            <label for="receipt-date">Date received</label>
+            <input type="date" id="receipt-date" name="dateReceived" required>
+          </div>
+          <div class="form-field">
+            <label for="receipt-method">Payment method</label>
+            <select id="receipt-method" name="paymentMethod">
+              <option value="Bank transfer">Bank transfer</option>
+              <option value="Cash">Cash</option>
+              <option value="Card">Card</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="receipt-notes">Notes (optional)</label>
+          <textarea id="receipt-notes" rows="2" placeholder="Anything worth adding to the receipt"></textarea>
+        </div>
+
+        <button type="submit" class="form-submit" id="receipt-send-submit">Send Receipt</button>
+      </form>
+
+      <div id="receipt-send-success" class="form-success hidden">
+        <h3>Receipt sent</h3>
+        <p id="receipt-send-success-detail"></p>
+        <button type="button" class="form-submit" id="receipt-send-reset">Send another receipt</button>
+      </div>
+    </div>
+      </section>
+    </main>
+  </div>
+
+</div>
+<script src="../js/internal-client-context.js?v=1784000000"></script>
+<script src="../js/internal-send-receipt.js?v=1785096852"></script>
+</body>
+</html>
