@@ -17,6 +17,7 @@
   var sendReportBtn = document.getElementById('send-report-btn');
   var sendReportMenu = document.getElementById('send-report-menu');
   var sendInvoiceBtn = document.getElementById('send-invoice-btn');
+  var sendReceiptBtn = document.getElementById('send-receipt-btn');
   var sendLinksBtn = document.getElementById('send-links-btn');
   var sendLinksMenu = document.getElementById('send-links-menu');
   var sendLinksSubmit = document.getElementById('send-links-submit');
@@ -723,6 +724,9 @@
         }
         if (sendInvoiceBtn) {
           sendInvoiceBtn.setAttribute('href', 'send-invoice.html?clientId=' + encodeURIComponent(clientId));
+        }
+        if (sendReceiptBtn) {
+          sendReceiptBtn.setAttribute('href', 'send-receipt.html?clientId=' + encodeURIComponent(clientId));
         }
 
         var formItems = interactions.filter(function (i) { return FORM_TYPES.indexOf(i.type) !== -1; });
