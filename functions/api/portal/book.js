@@ -160,7 +160,11 @@ export async function onRequestPost(context) {
       description: 'Booked via client portal (' + pack.service_label + ')',
       date: date,
       startTime: startTime,
-      endTime: endTime
+      endTime: endTime,
+      // Home visit clients get their address; a school client's sessions
+      // happen at the school itself, so that name is the best fallback -
+      // either way beats leaving the calendar event's location blank.
+      location: client.address || client.school || ''
     });
 
     const created = await callGoogle(env, EVENTS_URL, {

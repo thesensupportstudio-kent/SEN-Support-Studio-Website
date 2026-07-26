@@ -2,33 +2,34 @@
 // value always wins over what's stored (the latest form a family fills in
 // is the most likely to be accurate) - an empty/missing value on the new
 // submission never erases something already on file.
-async function fillMissingFields(env, existing, { parentName, parentPhone, childName, school }) {
+async function fillMissingFields(env, existing, { parentName, parentPhone, childName, school, address }) {
   const updates = [];
   const values = [];
   if (parentName && parentName !== existing.parent_name) { updates.push('parent_name = ?'); values.push(parentName); }
   if (parentPhone && parentPhone !== existing.parent_phone) { updates.push('parent_phone = ?'); values.push(parentPhone); }
   if (childName && childName !== existing.child_name) { updates.push('child_name = ?'); values.push(childName); }
   if (school && school !== existing.school) { updates.push('school = ?'); values.push(school); }
+  if (address && address !== existing.address) { updates.push('address = ?'); values.push(address); }
   if (!updates.length) return;
   updates.push("updated_at = datetime('now')");
   values.push(existing.id);
   await env.DB.prepare('UPDATE clients SET ' + updates.join(', ') + ' WHERE id = ?').bind(...values).run();
 }
 
-async function findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school }) {
+async function findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school, address }) {
   const email = (parentEmail || '').trim().toLowerCase();
   if (!email) return null;
 
   const existing = await env.DB.prepare('SELECT * FROM clients WHERE parent_email = ?').bind(email).first();
 
   if (existing) {
-    await fillMissingFields(env, existing, { parentName, parentPhone, childName, school });
+    await fillMissingFields(env, existing, { parentName, parentPhone, childName, school, address });
     return { id: existing.id, created: false };
   }
 
   const result = await env.DB.prepare(
-    'INSERT INTO clients (parent_name, parent_email, parent_phone, child_name, school) VALUES (?, ?, ?, ?, ?)'
-  ).bind(parentName || null, email, parentPhone || null, childName || null, school || null).run();
+    'INSERT INTO clients (parent_name, parent_email, parent_phone, child_name, school, address) VALUES (?, ?, ?, ?, ?, ?)'
+  ).bind(parentName || null, email, parentPhone || null, childName || null, school || null, address || null).run();
 
   return { id: result.meta.last_row_id, created: true };
 }
@@ -48,7 +49,7 @@ async function setClientStatus(env, clientId, status) {
 // If clientId is supplied (dashboard-initiated sends), it's used directly
 // instead of matching by email - falls back to email matching if that
 // client no longer exists.
-export async function logInteraction(env, { clientId, parentName, parentEmail, parentPhone, childName, school, type, summary, detail, status, fileKey, dueDate }) {
+export async function logInteraction(env, { clientId, parentName, parentEmail, parentPhone, childName, school, address, type, summary, detail, status, fileKey, dueDate }) {
   if (!env.DB) return;
   try {
     let id = clientId ? Number(clientId) : null;
@@ -56,14 +57,14 @@ export async function logInteraction(env, { clientId, parentName, parentEmail, p
     if (id) {
       const existing = await env.DB.prepare('SELECT * FROM clients WHERE id = ?').bind(id).first();
       if (existing) {
-        await fillMissingFields(env, existing, { parentName, parentPhone, childName, school });
+        await fillMissingFields(env, existing, { parentName, parentPhone, childName, school, address });
       } else {
         id = null;
       }
     }
 
     if (!id) {
-      const found = await findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school });
+      const found = await findOrCreateClient(env, { parentName, parentEmail, parentPhone, childName, school, address });
       id = found ? found.id : null;
     }
 

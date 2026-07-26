@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS clients (
   parent_phone TEXT,
   child_name TEXT,
   school TEXT,
+  address TEXT,
   status TEXT NOT NULL DEFAULT 'enquiry',
   notes TEXT,
   portal_token TEXT,

@@ -125,6 +125,16 @@
 
         <div class="internal-card">
           <div class="form-field">
+            <label for="client-address">Session address</label>
+            <textarea id="client-address" rows="2" placeholder="Where sessions with this family happen - e.g. their home address, or leave blank if it's at their child's school"></textarea>
+          </div>
+          <p class="lede" style="margin:0 0 12px;">Used as the location on any session automatically booked through their portal.</p>
+          <button type="button" class="notes-save-btn" id="address-save-btn">Save address</button>
+          <span id="address-save-status" class="notes-save-status"></span>
+        </div>
+
+        <div class="internal-card">
+          <div class="form-field">
             <label for="client-notes">Notes</label>
             <textarea id="client-notes" rows="4" placeholder="Anything worth remembering about this family…"></textarea>
           </div>
@@ -244,6 +254,6 @@
   </div>
 
 </div>
-<script src="../js/internal-client.js?v=1784876204"></script>
+<script src="../js/internal-client.js?v=1785095773"></script>
 </body>
 </html>

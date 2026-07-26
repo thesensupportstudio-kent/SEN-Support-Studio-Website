@@ -177,6 +177,7 @@ export async function onRequestPost(context) {
       parentPhone: parentPhone,
       childName: childName,
       school: (child.school || '').trim(),
+      address: (parent.parentAddress || '').trim(),
       type: 'client_agreement',
       summary: 'Client Agreement signed by ' + signatureName,
       detail: body,
