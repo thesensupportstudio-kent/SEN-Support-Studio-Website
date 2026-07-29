@@ -1,5 +1,5 @@
 (function () {
-  var ledeEl = document.getElementById('practice-lede');
+  var loadingEl = document.getElementById('practice-loading');
   var errorBox = document.getElementById('practice-error');
   var emptyBox = document.getElementById('practice-empty');
   var contentBox = document.getElementById('practice-content');
@@ -40,15 +40,6 @@
   var quizScore = 0;
   var quizAnswered = false;
 
-  function escapeHtml(str) {
-    return String(str == null ? '' : str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
   function shuffled(arr) {
     var copy = arr.slice();
     for (var i = copy.length - 1; i > 0; i--) {
@@ -58,14 +49,29 @@
     return copy;
   }
 
-  function pictureHtml(item, sizeClass) {
+  // Sized with inline styles rather than relying purely on an external
+  // class, so an uploaded photo can never render at its native size
+  // regardless of anything else on the page.
+  function picElement(item, maxSize) {
     if (item.image_key) {
-      return '<img src="/api/client-auth/file?key=' + encodeURIComponent(item.image_key) + '" alt="" class="' + sizeClass + '">';
+      var img = document.createElement('img');
+      img.src = '/api/client-auth/file?key=' + encodeURIComponent(item.image_key);
+      img.alt = '';
+      img.style.display = 'block';
+      img.style.width = maxSize + 'px';
+      img.style.height = maxSize + 'px';
+      img.style.maxWidth = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '14px';
+      return img;
     }
     if (item.emoji) {
-      return '<span class="' + sizeClass + '">' + escapeHtml(item.emoji) + '</span>';
+      var span = document.createElement('span');
+      span.className = 'practice-card-emoji';
+      span.textContent = item.emoji;
+      return span;
     }
-    return '';
+    return null;
   }
 
   function answerText(item) {
@@ -81,20 +87,30 @@
   function renderFlashcard() {
     var item = flashOrder[flashIndex];
     flashcardProgress.textContent = (flashIndex + 1) + ' of ' + flashOrder.length;
+    flashcardEl.innerHTML = '';
     if (!item) return;
 
+    var pic = picElement(item, 130);
+
     if (!flashRevealed) {
-      var frontPic = pictureHtml(item, 'practice-card-pic');
-      var frontText = item.kind === 'letter'
-        ? '<div class="practice-card-letter">' + escapeHtml(item.main_text) + '</div>'
-        : (frontPic ? '' : '<div class="practice-card-word">' + escapeHtml(item.main_text) + '</div>');
-      flashcardEl.innerHTML = frontPic + frontText;
+      if (pic) flashcardEl.appendChild(pic);
+      if (item.kind === 'letter') {
+        var letterEl = document.createElement('div');
+        letterEl.className = 'practice-card-letter';
+        letterEl.textContent = item.main_text;
+        flashcardEl.appendChild(letterEl);
+      } else if (!pic) {
+        var wordEl = document.createElement('div');
+        wordEl.className = 'practice-card-word';
+        wordEl.textContent = item.main_text;
+        flashcardEl.appendChild(wordEl);
+      }
     } else {
-      var backPic = pictureHtml(item, 'practice-card-pic');
-      var backText = item.kind === 'letter'
-        ? '<div class="practice-card-word">' + escapeHtml(item.main_text) + ' is for ' + escapeHtml(item.example_text) + '</div>'
-        : '<div class="practice-card-word">' + escapeHtml(item.main_text) + '</div>';
-      flashcardEl.innerHTML = backPic + backText;
+      if (pic) flashcardEl.appendChild(pic);
+      var backEl = document.createElement('div');
+      backEl.className = 'practice-card-word';
+      backEl.textContent = item.kind === 'letter' ? (item.main_text + ' is for ' + item.example_text) : item.main_text;
+      flashcardEl.appendChild(backEl);
     }
     flashcardEl.classList.toggle('revealed', flashRevealed);
   }
@@ -146,14 +162,19 @@
     var item = quizOrder[quizIndex];
     quizAnswered = false;
     quizResultEl.classList.add('hidden');
-    quizResultEl.textContent = '';
+    quizResultEl.innerHTML = '';
     quizProgress.textContent = 'Question ' + (quizIndex + 1) + ' of ' + quizOrder.length + ' · Score: ' + quizScore;
 
+    quizPromptEl.innerHTML = '';
     if (item.kind === 'letter') {
-      quizPromptEl.innerHTML = '<div class="practice-card-letter">' + escapeHtml(item.main_text) + '</div>';
+      var letterEl = document.createElement('div');
+      letterEl.className = 'practice-card-letter';
+      letterEl.textContent = item.main_text;
+      quizPromptEl.appendChild(letterEl);
       quizQuestionText.textContent = 'What sound does this letter make?';
     } else {
-      quizPromptEl.innerHTML = pictureHtml(item, 'practice-card-pic');
+      var pic = picElement(item, 130);
+      if (pic) quizPromptEl.appendChild(pic);
       quizQuestionText.textContent = 'What word is this?';
     }
 
@@ -166,7 +187,7 @@
     options.forEach(function (optionText) {
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'btn btn-outline practice-quiz-option';
+      btn.className = 'practice-quiz-option';
       btn.textContent = optionText;
       btn.addEventListener('click', function () { answerQuiz(optionText, correct, btn); });
       quizOptionsEl.appendChild(btn);
@@ -185,15 +206,14 @@
       else if (b === btn) b.classList.add('practice-quiz-incorrect');
     });
 
-    quizResultEl.textContent = isCorrect ? 'Well done!' : 'Good try - the answer is ' + correct + '.';
-    quizResultEl.classList.remove('hidden');
-    quizResultEl.classList.toggle('practice-result-correct', isCorrect);
-    quizResultEl.classList.toggle('practice-result-incorrect', !isCorrect);
+    var message = document.createElement('p');
+    message.textContent = isCorrect ? 'Well done!' : 'Good try - the answer is ' + correct + '.';
+    message.className = isCorrect ? 'practice-result-correct' : 'practice-result-incorrect';
+    quizResultEl.appendChild(message);
 
     var nextBtn = document.createElement('button');
     nextBtn.type = 'button';
-    nextBtn.className = 'btn btn-primary';
-    nextBtn.style.marginTop = '12px';
+    nextBtn.className = 'practice-btn';
     nextBtn.textContent = quizIndex + 1 < quizOrder.length ? 'Next question →' : 'See my score';
     nextBtn.addEventListener('click', function () {
       quizIndex++;
@@ -203,8 +223,8 @@
         renderQuizQuestion();
       }
     });
-    quizResultEl.appendChild(document.createElement('br'));
     quizResultEl.appendChild(nextBtn);
+    quizResultEl.classList.remove('hidden');
   }
 
   function finishQuiz() {
@@ -234,17 +254,25 @@
     allItems.forEach(function (item) {
       var card = document.createElement('div');
       card.className = 'print-card';
-      var pic = pictureHtml(item, 'print-card-pic');
-      var label = item.kind === 'letter'
-        ? escapeHtml(item.main_text) + ' is for ' + escapeHtml(item.example_text)
-        : escapeHtml(item.main_text);
-      card.innerHTML = pic + '<div class="print-card-label">' + label + '</div>';
+      var pic = picElement(item, 90);
+      if (pic) card.appendChild(pic);
+      var label = document.createElement('div');
+      label.className = 'print-card-label';
+      label.textContent = item.kind === 'letter' ? (item.main_text + ' is for ' + item.example_text) : item.main_text;
+      card.appendChild(label);
       printSheet.appendChild(card);
     });
   }
 
+  // Toggled with a plain body class rather than relying only on
+  // @media print, so the swap works even if print-media detection
+  // doesn't behave as expected in a given browser.
   printBtn.addEventListener('click', function () {
+    document.body.classList.add('practice-printing');
     window.print();
+  });
+  window.addEventListener('afterprint', function () {
+    document.body.classList.remove('practice-printing');
   });
 
   // ---------- Load ----------
@@ -259,12 +287,10 @@
     })
     .then(function (result) {
       if (!result) return;
+      loadingEl.classList.add('hidden');
       if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not load your practice words.');
 
       allItems = result.data.items || [];
-      ledeEl.textContent = allItems.length
-        ? 'Play, quiz, or print off what you’ve been working on together.'
-        : 'Nothing added yet.';
 
       if (!allItems.length) {
         emptyBox.classList.remove('hidden');
@@ -277,6 +303,7 @@
       renderPrintSheet();
     })
     .catch(function (err) {
+      loadingEl.classList.add('hidden');
       errorBox.textContent = err.message || 'Could not load your practice words.';
       errorBox.classList.remove('hidden');
     });
