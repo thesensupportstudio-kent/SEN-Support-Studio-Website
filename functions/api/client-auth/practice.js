@@ -1,5 +1,6 @@
 import { requireClientSession } from '../_lib/clientAuth.js';
 import { getPracticeItemsForClient } from '../_lib/practiceItems.js';
+import { getPracticeDocumentsForClient } from '../_lib/practiceDocuments.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -21,7 +22,8 @@ export async function onRequestGet(context) {
     }
 
     const items = await getPracticeItemsForClient(env, client.id);
-    return new Response(JSON.stringify({ ok: true, items: items }), {
+    const documents = await getPracticeDocumentsForClient(env, client.id);
+    return new Response(JSON.stringify({ ok: true, items: items, documents: documents }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });

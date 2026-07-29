@@ -3392,23 +3392,6 @@ img {
   text-align: center;
 }
 
-.practice-print-btn {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--green);
-  background: var(--text-on-green);
-  border: none;
-  border-radius: 999px;
-  padding: 8px 16px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.practice-print-btn:hover {
-  background: var(--text-on-green-light);
-}
-
 .practice-main {
   flex: 1;
   display: flex;
@@ -3439,28 +3422,31 @@ img {
   gap: 20px;
 }
 
-.practice-mode-toggle {
+.practice-pdfs {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.practice-pdfs-title {
+  font-family: var(--font-heading);
+  font-size: clamp(18px, 3vw, 22px);
+  color: var(--green);
+  margin: 0 0 12px;
+}
+
+.practice-pdfs-list {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
 }
 
-.practice-mode-btn {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 14px;
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: 2px solid var(--pale-green);
-  background: var(--offwhite);
-  color: var(--green);
-  cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
-}
-
-.practice-mode-btn.active {
-  background: var(--green);
-  border-color: var(--green);
-  color: var(--text-on-green);
+.practice-pdf-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 
 .practice-view {
@@ -3562,53 +3548,6 @@ img {
   color: var(--green);
 }
 
-.practice-quiz-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  width: 100%;
-  max-width: 480px;
-  margin-top: 8px;
-}
-
-.practice-quiz-option {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 15px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 2px solid var(--pale-green);
-  background: var(--offwhite);
-  color: var(--green);
-  cursor: pointer;
-  width: 100%;
-}
-
-.practice-quiz-option:disabled {
-  cursor: default;
-}
-
-.practice-quiz-option.practice-quiz-correct {
-  background: var(--green);
-  color: var(--text-on-green);
-  border-color: var(--green);
-}
-
-.practice-quiz-option.practice-quiz-incorrect {
-  background: #c0392b;
-  color: #fff;
-  border-color: #c0392b;
-}
-
-#quiz-result {
-  margin-top: 12px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.practice-result-correct { color: var(--green); }
-.practice-result-incorrect { color: #c0392b; }
-
 .practice-footnote {
   font-size: 13px;
   color: var(--text-light);
@@ -3634,47 +3573,5 @@ img {
   }
   .practice-card-word {
     text-align: left;
-  }
-}
-
-/* ---------- Print (flashcards to cut out) ----------
-   Driven by a body class toggled in JS rather than relying solely on
-   @media print, so it doesn't depend on print-media detection working
-   correctly in every browser. */
-
-.print-sheet {
-  display: none;
-}
-
-body.practice-printing .practice-app {
-  display: none;
-}
-
-body.practice-printing .print-sheet {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding: 24px;
-}
-
-.print-card {
-  border: 2px dashed var(--pale-green);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  break-inside: avoid;
-}
-
-.print-card-label {
-  font-family: var(--font-heading);
-  color: var(--green);
-  font-size: 16px;
-  margin-top: 8px;
-}
-
-@media print {
-  .practice-topbar,
-  .practice-print-btn {
-    display: none !important;
   }
 }

@@ -17,19 +17,27 @@ export async function onRequestGet(context) {
 
   const isReport = /^reports\/[A-Za-z0-9._-]+$/.test(key);
   const isPracticeImage = /^practice-images\/[0-9]+\/[A-Za-z0-9._-]+$/.test(key);
-  if (!isReport && !isPracticeImage) {
+  const isPracticeDocument = /^practice-pdfs\/[0-9]+\/[A-Za-z0-9._-]+$/.test(key);
+  if (!isReport && !isPracticeImage && !isPracticeDocument) {
     return new Response('Invalid file key.', { status: 400 });
   }
 
   // Only serve a file this client's own record actually has - stops a
   // logged-in client from reading another family's file by guessing keys.
-  const owns = isReport
-    ? await env.DB.prepare(
+  let owns;
+  if (isReport) {
+    owns = await env.DB.prepare(
       "SELECT id FROM interactions WHERE client_id = ? AND file_key = ? AND type = 'session_report'"
-    ).bind(client.id, key).first()
-    : await env.DB.prepare(
+    ).bind(client.id, key).first();
+  } else if (isPracticeImage) {
+    owns = await env.DB.prepare(
       'SELECT id FROM practice_items WHERE client_id = ? AND image_key = ?'
     ).bind(client.id, key).first();
+  } else {
+    owns = await env.DB.prepare(
+      'SELECT id FROM practice_documents WHERE client_id = ? AND file_key = ?'
+    ).bind(client.id, key).first();
+  }
   if (!owns) {
     return new Response('File not found.', { status: 404 });
   }

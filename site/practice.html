@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=1785424000">
+<link rel="stylesheet" href="css/styles.css?v=1785424300">
 <link rel="icon" type="image/x-icon" href="favicon.ico?v=1784668545">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=1784668545">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=1784668545">
@@ -19,7 +19,6 @@
   <header class="practice-topbar">
     <a href="client-portal.html" class="practice-back">&larr; My Account</a>
     <span class="practice-topbar-title">Practice What We've Learnt</span>
-    <button type="button" class="practice-print-btn" id="print-btn">Print flashcards</button>
   </header>
 
   <main class="practice-main">
@@ -27,12 +26,12 @@
     <div id="practice-error" class="practice-status practice-status-error hidden"></div>
     <div id="practice-empty" class="practice-status hidden">Nothing added yet - ask your practitioner to add some words or letter sounds after your next session.</div>
 
-    <div id="practice-content" class="practice-content hidden">
-      <div class="practice-mode-toggle">
-        <button type="button" class="practice-mode-btn active" id="mode-flashcards-btn">Flashcards</button>
-        <button type="button" class="practice-mode-btn" id="mode-quiz-btn">Quiz</button>
-      </div>
+    <div id="practice-pdfs" class="practice-pdfs hidden">
+      <h2 class="practice-pdfs-title">Flashcards to print</h2>
+      <div id="practice-pdfs-list" class="practice-pdfs-list"></div>
+    </div>
 
+    <div id="practice-content" class="practice-content hidden">
       <section id="flashcards-view" class="practice-view">
         <p class="practice-progress" id="flashcard-progress"></p>
         <div class="practice-card" id="flashcard" tabindex="0" role="button" aria-label="Tap to reveal the answer"></div>
@@ -43,30 +42,12 @@
           <button type="button" class="practice-btn" id="flashcard-next-btn">Next &rarr;</button>
         </div>
       </section>
-
-      <section id="quiz-view" class="practice-view hidden">
-        <div id="quiz-unavailable" class="practice-status hidden">Add a few more words or letter sounds to unlock quiz mode - it needs at least 2 to make questions from.</div>
-        <div id="quiz-play">
-          <p class="practice-progress" id="quiz-progress"></p>
-          <div class="practice-card practice-card-static" id="quiz-prompt"></div>
-          <p class="practice-hint" id="quiz-question-text"></p>
-          <div class="practice-quiz-options" id="quiz-options"></div>
-          <div id="quiz-result" class="hidden"></div>
-        </div>
-        <div id="quiz-done" class="practice-status hidden">
-          <h2>All done!</h2>
-          <p id="quiz-score"></p>
-          <button type="button" class="practice-btn" id="quiz-again-btn">Play again</button>
-        </div>
-      </section>
     </div>
 
     <p class="practice-footnote">Something not right? <a href="contact.html">Get in touch</a>.</p>
   </main>
 </div>
 
-<div id="print-sheet" class="print-sheet"></div>
-
-<script src="js/practice.js?v=1785424000"></script>
+<script src="js/practice.js?v=1785424300"></script>
 </body>
 </html>
