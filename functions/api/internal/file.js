@@ -8,7 +8,10 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const key = url.searchParams.get('key') || '';
 
-  if (!/^(reports|invoices|documents)\/[A-Za-z0-9._-]+$/.test(key) && !/^practice-images\/[0-9]+\/[A-Za-z0-9._-]+$/.test(key)) {
+  const isKnownKey = /^(reports|invoices|documents)\/[A-Za-z0-9._-]+$/.test(key)
+    || /^practice-images\/[0-9]+\/[A-Za-z0-9._-]+$/.test(key)
+    || /^practice-pdfs\/[0-9]+\/[A-Za-z0-9._-]+$/.test(key);
+  if (!isKnownKey) {
     return new Response('Invalid file key.', { status: 400 });
   }
 

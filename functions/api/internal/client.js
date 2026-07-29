@@ -1,4 +1,5 @@
 import { getPracticeItemsForClient } from '../_lib/practiceItems.js';
+import { getPracticeDocumentsForClient } from '../_lib/practiceDocuments.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -47,6 +48,7 @@ export async function onRequestGet(context) {
     ).bind(id).all();
 
     const practiceItems = await getPracticeItemsForClient(env, id);
+    const practiceDocuments = await getPracticeDocumentsForClient(env, id);
 
     return new Response(JSON.stringify({
       client,
@@ -55,6 +57,7 @@ export async function onRequestGet(context) {
       packs: packResult.results,
       bookings: bookingResult.results,
       practiceItems: practiceItems,
+      practiceDocuments: practiceDocuments,
       hasPortalAccess: !!client.password_hash
     }), {
       status: 200,

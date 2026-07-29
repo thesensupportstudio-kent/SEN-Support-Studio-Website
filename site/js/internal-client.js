@@ -46,6 +46,11 @@
   var packTotalSessionsField = document.getElementById('pack-total-sessions-field');
   var packServiceKeyField = document.getElementById('pack-service-key-field');
   var practiceItemsList = document.getElementById('practice-items-list');
+  var practiceDocForm = document.getElementById('practice-doc-form');
+  var practiceDocFile = document.getElementById('practice-doc-file');
+  var practiceDocError = document.getElementById('practice-doc-error');
+  var practiceDocSubmit = document.getElementById('practice-doc-submit');
+  var practiceDocList = document.getElementById('practice-doc-list');
   var practiceAddForm = document.getElementById('practice-add-form');
   var practiceAddError = document.getElementById('practice-add-error');
   var practiceAddSubmit = document.getElementById('practice-add-submit');
@@ -585,7 +590,7 @@
 
       var title = document.createElement('p');
       title.className = 'document-label';
-      title.textContent = item.kind === 'letter' ? (item.main_text + ' is for ' + item.example_text) : item.main_text;
+      title.textContent = item.kind === 'letter' ? (item.example_text ? (item.main_text + ' is for ' + item.example_text) : item.main_text) : item.main_text;
       card.appendChild(title);
 
       var meta = document.createElement('p');
@@ -616,6 +621,66 @@
       grid.appendChild(card);
     });
     practiceItemsList.appendChild(grid);
+  }
+
+  function renderPracticeDocuments(docs) {
+    if (!practiceDocList) return;
+    practiceDocList.innerHTML = '';
+    if (!docs.length) {
+      practiceDocList.innerHTML = '<p class="clients-empty">No flashcard PDFs uploaded yet.</p>';
+      return;
+    }
+    var list = document.createElement('div');
+    list.className = 'timeline';
+    docs.forEach(function (doc) {
+      var row = document.createElement('div');
+      row.className = 'timeline-item';
+
+      var labelEl = document.createElement('p');
+      labelEl.className = 'document-label';
+      labelEl.textContent = doc.file_name;
+      row.appendChild(labelEl);
+
+      var meta = document.createElement('p');
+      meta.className = 'timeline-date';
+      meta.textContent = 'Uploaded ' + formatDateTime(doc.created_at);
+      row.appendChild(meta);
+
+      var actionsRow = document.createElement('div');
+      actionsRow.className = 'document-actions-row';
+
+      var link = document.createElement('a');
+      link.href = '/api/internal/file?key=' + encodeURIComponent(doc.file_key);
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.className = 'timeline-download';
+      link.textContent = 'Download';
+      actionsRow.appendChild(link);
+
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'invoice-paid-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', function () {
+        if (!window.confirm('Delete "' + doc.file_name + '"? This cannot be undone.')) return;
+        deleteBtn.disabled = true;
+        fetch('/api/internal/practice-documents/' + encodeURIComponent(doc.id), { method: 'DELETE' })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (result) {
+            if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not delete this document.');
+            loadClient();
+          })
+          .catch(function (err) {
+            deleteBtn.disabled = false;
+            window.alert(err.message || 'Could not delete this document.');
+          });
+      });
+      actionsRow.appendChild(deleteBtn);
+      row.appendChild(actionsRow);
+
+      list.appendChild(row);
+    });
+    practiceDocList.appendChild(list);
   }
 
   function renderPackBookings(bookings) {
@@ -816,6 +881,7 @@
         renderPacks(result.data.packs || []);
         renderPackBookings(result.data.bookings || []);
         renderPracticeItems(result.data.practiceItems || []);
+        renderPracticeDocuments(result.data.practiceDocuments || []);
 
         loading.classList.add('hidden');
         detail.classList.remove('hidden');
@@ -979,6 +1045,61 @@
     });
   }
 
+  if (practiceDocForm) {
+    practiceDocForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      practiceDocError.classList.add('hidden');
+
+      var file = practiceDocFile.files[0];
+      if (!file) {
+        practiceDocError.textContent = 'Please choose a PDF to upload.';
+        practiceDocError.classList.remove('hidden');
+        return;
+      }
+      if (file.type !== 'application/pdf') {
+        practiceDocError.textContent = 'Please upload a PDF file.';
+        practiceDocError.classList.remove('hidden');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        practiceDocError.textContent = 'That PDF is too large (max 10MB).';
+        practiceDocError.classList.remove('hidden');
+        return;
+      }
+
+      practiceDocSubmit.disabled = true;
+      practiceDocSubmit.textContent = 'Uploading…';
+
+      fileToBase64(file)
+        .then(function (fileBase64) {
+          return fetch('/api/internal/practice-documents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId: clientId,
+              fileBase64: fileBase64,
+              fileContentType: file.type,
+              fileName: file.name
+            })
+          });
+        })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not upload this PDF.');
+          practiceDocForm.reset();
+          loadClient();
+        })
+        .catch(function (err) {
+          practiceDocError.textContent = err.message || 'Could not upload this PDF.';
+          practiceDocError.classList.remove('hidden');
+        })
+        .finally(function () {
+          practiceDocSubmit.disabled = false;
+          practiceDocSubmit.textContent = 'Upload PDF';
+        });
+    });
+  }
+
   if (practiceKindSelect) {
     var togglePracticeFields = function () {
       var isLetter = practiceKindSelect.value === 'letter';
@@ -1012,11 +1133,6 @@
 
       if (!mainText) {
         practiceAddError.textContent = kind === 'letter' ? 'Please enter a letter.' : 'Please enter a word.';
-        practiceAddError.classList.remove('hidden');
-        return;
-      }
-      if (kind === 'letter' && !exampleText) {
-        practiceAddError.textContent = 'Please enter an example word for this letter.';
         practiceAddError.classList.remove('hidden');
         return;
       }

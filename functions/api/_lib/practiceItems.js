@@ -22,9 +22,6 @@ export async function createPracticeItem(env, { clientId, kind, mainText, exampl
   if (!trimmedMain) throw new Error('Please enter a word or letter.');
 
   const isLetter = kind === 'letter';
-  if (isLetter && !(exampleText || '').trim()) {
-    throw new Error('Please enter an example word for this letter.');
-  }
 
   const result = await env.DB.prepare(
     'INSERT INTO practice_items (client_id, kind, main_text, example_text, emoji, image_key) VALUES (?, ?, ?, ?, ?, ?)'
@@ -32,7 +29,7 @@ export async function createPracticeItem(env, { clientId, kind, mainText, exampl
     clientId,
     isLetter ? 'letter' : 'word',
     trimmedMain,
-    isLetter ? exampleText.trim() : null,
+    isLetter ? ((exampleText || '').trim() || null) : null,
     (emoji || '').trim() || null,
     imageKey || null
   ).run();
