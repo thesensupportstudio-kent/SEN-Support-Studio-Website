@@ -1,3 +1,5 @@
+import { getPracticeItemsForClient } from '../_lib/practiceItems.js';
+
 export async function onRequestGet(context) {
   const { request, env } = context;
 
@@ -44,12 +46,15 @@ export async function onRequestGet(context) {
       "SELECT b.*, p.service_label FROM pack_bookings b JOIN session_packs p ON p.id = b.pack_id WHERE b.client_id = ? AND b.status = 'booked' ORDER BY b.start_at ASC"
     ).bind(id).all();
 
+    const practiceItems = await getPracticeItemsForClient(env, id);
+
     return new Response(JSON.stringify({
       client,
       interactions: interactionResult.results,
       assignments: assignmentResult.results,
       packs: packResult.results,
       bookings: bookingResult.results,
+      practiceItems: practiceItems,
       hasPortalAccess: !!client.password_hash
     }), {
       status: 200,

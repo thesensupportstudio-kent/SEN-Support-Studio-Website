@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Practice What We've Learnt | SEN Support Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bevan&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=1785335211">
+<link rel="icon" type="image/x-icon" href="favicon.ico?v=1784668545">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png?v=1784668545">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png?v=1784668545">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1784668545">
+</head>
+<body>
+<div class="page practice-page">
+
+  <nav class="navbar no-print">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/img/mini-logo-beige.png" alt="SEN Support Studio" />
+      <span>SEN Support<br>Studio</span>
+    </a>
+    <div class="nav-links">
+      <a href="client-portal.html" class="nav-link">My Account</a>
+    </div>
+    <a href="client-portal.html" class="btn-book btn-book-outline">Back to account</a>
+  </nav>
+
+  <section class="page-hero no-print">
+    <h1>Practice What We've Learnt</h1>
+    <p class="lede" id="practice-lede">Loading…</p>
+  </section>
+
+  <section class="book-section no-print">
+    <div id="practice-error" class="form-error hidden"></div>
+
+    <div id="practice-empty" class="book-card hidden">
+      <p class="clients-empty">Nothing added yet - ask your practitioner to add some words or letter sounds after your next session.</p>
+    </div>
+
+    <div id="practice-content" class="hidden">
+      <div class="practice-mode-toggle">
+        <button type="button" class="role-btn active" id="mode-flashcards-btn">Flashcards</button>
+        <button type="button" class="role-btn" id="mode-quiz-btn">Quiz</button>
+        <button type="button" class="btn btn-outline" id="print-btn" style="margin-left:auto;">Print flashcards &rarr;</button>
+      </div>
+
+      <div id="flashcards-view" class="practice-view">
+        <p class="practice-progress" id="flashcard-progress"></p>
+        <div class="practice-card" id="flashcard" tabindex="0" role="button" aria-label="Tap to reveal the answer"></div>
+        <p class="practice-hint">Tap the card to reveal the answer</p>
+        <div class="practice-controls">
+          <button type="button" class="btn btn-outline" id="flashcard-prev-btn">&larr; Previous</button>
+          <button type="button" class="btn btn-outline" id="flashcard-shuffle-btn">Shuffle</button>
+          <button type="button" class="btn btn-primary" id="flashcard-next-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <div id="quiz-view" class="practice-view hidden">
+        <div id="quiz-unavailable" class="book-card hidden">
+          <p class="clients-empty">Add a few more words or letter sounds to unlock quiz mode - it needs at least 2 to make questions from.</p>
+        </div>
+        <div id="quiz-play">
+          <p class="practice-progress" id="quiz-progress"></p>
+          <div class="practice-card practice-card-static" id="quiz-prompt"></div>
+          <p class="practice-hint" id="quiz-question-text"></p>
+          <div class="practice-quiz-options" id="quiz-options"></div>
+          <div id="quiz-result" class="hidden"></div>
+        </div>
+        <div id="quiz-done" class="book-card hidden">
+          <h3>All done!</h3>
+          <p id="quiz-score"></p>
+          <button type="button" class="btn btn-primary" id="quiz-again-btn">Play again</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="book-footnote">Something not right? <a href="contact.html">Get in touch</a>.</p>
+  </section>
+
+  <div id="print-sheet" class="print-sheet"></div>
+
+  <footer class="site-footer no-print">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-logo-link">
+          <img src="assets/img/mini-logo-green.png" alt="SEN Support Studio" />
+          <span class="footer-brand-name">SEN Support<br>Studio</span>
+        </a>
+        <p class="footer-tagline">Strong roots, space to flourish.</p>
+      </div>
+      <div class="footer-col">
+        <span class="footer-heading">Studio</span>
+        <a href="client-portal.html">My Account</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 SEN Support Studio. All rights reserved.</div>
+  </footer>
+
+</div>
+<script src="js/nav-toggle.js?v=1784020297"></script>
+<script src="js/practice.js?v=1785335211"></script>
+</body>
+</html>

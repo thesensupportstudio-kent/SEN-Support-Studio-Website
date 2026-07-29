@@ -45,6 +45,14 @@
   var packTypeSelect = document.getElementById('pack-type');
   var packTotalSessionsField = document.getElementById('pack-total-sessions-field');
   var packServiceKeyField = document.getElementById('pack-service-key-field');
+  var practiceItemsList = document.getElementById('practice-items-list');
+  var practiceAddForm = document.getElementById('practice-add-form');
+  var practiceAddError = document.getElementById('practice-add-error');
+  var practiceAddSubmit = document.getElementById('practice-add-submit');
+  var practiceKindSelect = document.getElementById('practice-kind');
+  var practiceWordField = document.getElementById('practice-word-field');
+  var practiceLetterField = document.getElementById('practice-letter-field');
+  var practiceExampleField = document.getElementById('practice-example-field');
 
   if (!detail) return;
 
@@ -547,6 +555,69 @@
     });
   }
 
+  function renderPracticeItems(items) {
+    if (!practiceItemsList) return;
+    practiceItemsList.innerHTML = '';
+    if (!items.length) {
+      practiceItemsList.innerHTML = '<p class="clients-empty">No words or letter sounds added yet.</p>';
+      return;
+    }
+    var grid = document.createElement('div');
+    grid.className = 'practice-items-grid';
+    items.forEach(function (item) {
+      var card = document.createElement('div');
+      card.className = 'internal-card practice-item-card';
+
+      var picture = document.createElement('div');
+      picture.className = 'practice-item-picture';
+      if (item.image_key) {
+        var img = document.createElement('img');
+        img.src = '/api/internal/file?key=' + encodeURIComponent(item.image_key);
+        img.alt = '';
+        picture.appendChild(img);
+      } else if (item.emoji) {
+        picture.textContent = item.emoji;
+      } else {
+        picture.textContent = item.kind === 'letter' ? item.main_text : '📝';
+        picture.classList.add('practice-item-picture-placeholder');
+      }
+      card.appendChild(picture);
+
+      var title = document.createElement('p');
+      title.className = 'document-label';
+      title.textContent = item.kind === 'letter' ? (item.main_text + ' is for ' + item.example_text) : item.main_text;
+      card.appendChild(title);
+
+      var meta = document.createElement('p');
+      meta.className = 'timeline-date';
+      meta.textContent = (item.kind === 'letter' ? 'Letter sound' : 'Word') + ' · added ' + formatDateTime(item.created_at);
+      card.appendChild(meta);
+
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'invoice-paid-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', function () {
+        if (!window.confirm('Delete "' + item.main_text + '"? This cannot be undone.')) return;
+        deleteBtn.disabled = true;
+        fetch('/api/internal/practice-items/' + encodeURIComponent(item.id), { method: 'DELETE' })
+          .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+          .then(function (result) {
+            if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not delete this item.');
+            loadClient();
+          })
+          .catch(function (err) {
+            deleteBtn.disabled = false;
+            window.alert(err.message || 'Could not delete this item.');
+          });
+      });
+      card.appendChild(deleteBtn);
+
+      grid.appendChild(card);
+    });
+    practiceItemsList.appendChild(grid);
+  }
+
   function renderPackBookings(bookings) {
     if (!packBookingsList) return;
     packBookingsList.innerHTML = '';
@@ -690,7 +761,7 @@
         t.classList.toggle('active', t === btn);
       });
       var tab = btn.dataset.tab;
-      ['overview', 'forms', 'reports', 'invoices', 'documents', 'packs'].forEach(function (name) {
+      ['overview', 'forms', 'reports', 'invoices', 'documents', 'packs', 'practice'].forEach(function (name) {
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.classList.toggle('hidden', name !== tab);
       });
@@ -744,6 +815,7 @@
         renderPortalAccess(result.data.hasPortalAccess);
         renderPacks(result.data.packs || []);
         renderPackBookings(result.data.bookings || []);
+        renderPracticeItems(result.data.practiceItems || []);
 
         loading.classList.add('hidden');
         detail.classList.remove('hidden');
@@ -903,6 +975,91 @@
         .finally(function () {
           packCreateSubmit.disabled = false;
           packCreateSubmit.textContent = 'Set up';
+        });
+    });
+  }
+
+  if (practiceKindSelect) {
+    var togglePracticeFields = function () {
+      var isLetter = practiceKindSelect.value === 'letter';
+      practiceWordField.classList.toggle('hidden', isLetter);
+      practiceLetterField.classList.toggle('hidden', !isLetter);
+      practiceExampleField.classList.toggle('hidden', !isLetter);
+    };
+    practiceKindSelect.addEventListener('change', togglePracticeFields);
+    togglePracticeFields();
+  }
+
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result.split(',')[1]); };
+      reader.onerror = function () { reject(new Error('Could not read the selected file.')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (practiceAddForm) {
+    practiceAddForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      practiceAddError.classList.add('hidden');
+
+      var kind = practiceKindSelect.value;
+      var mainText = kind === 'letter' ? document.getElementById('practice-letter').value.trim() : document.getElementById('practice-word').value.trim();
+      var exampleText = document.getElementById('practice-example').value.trim();
+      var emoji = document.getElementById('practice-emoji').value.trim();
+      var imageFile = document.getElementById('practice-image').files[0];
+
+      if (!mainText) {
+        practiceAddError.textContent = kind === 'letter' ? 'Please enter a letter.' : 'Please enter a word.';
+        practiceAddError.classList.remove('hidden');
+        return;
+      }
+      if (kind === 'letter' && !exampleText) {
+        practiceAddError.textContent = 'Please enter an example word for this letter.';
+        practiceAddError.classList.remove('hidden');
+        return;
+      }
+      if (imageFile && imageFile.size > 3 * 1024 * 1024) {
+        practiceAddError.textContent = 'That image is too large (max 3MB).';
+        practiceAddError.classList.remove('hidden');
+        return;
+      }
+
+      practiceAddSubmit.disabled = true;
+      practiceAddSubmit.textContent = 'Adding…';
+
+      (imageFile ? fileToBase64(imageFile) : Promise.resolve(null))
+        .then(function (imageBase64) {
+          return fetch('/api/internal/practice-items', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              clientId: clientId,
+              kind: kind,
+              mainText: mainText,
+              exampleText: exampleText,
+              emoji: emoji,
+              imageBase64: imageBase64,
+              imageContentType: imageFile ? imageFile.type : undefined,
+              imageFileName: imageFile ? imageFile.name : undefined
+            })
+          });
+        })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          if (!result.ok) throw new Error((result.data && result.data.error) || 'Could not add this item.');
+          practiceAddForm.reset();
+          togglePracticeFields();
+          loadClient();
+        })
+        .catch(function (err) {
+          practiceAddError.textContent = err.message || 'Could not add this item.';
+          practiceAddError.classList.remove('hidden');
+        })
+        .finally(function () {
+          practiceAddSubmit.disabled = false;
+          practiceAddSubmit.textContent = 'Add';
         });
     });
   }
